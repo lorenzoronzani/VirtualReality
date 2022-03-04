@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="client" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin/Debug/client" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Debug/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin/Release/client" prefix_auto="1" extension_auto="1" />
+				<Option object_output="obj/Release/" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add option="-fexceptions" />
+			<Add directory="../engine/" />
+		</Compiler>
+		<Linker>
+			<Add library="../engine/bin/Release/libengine.so" />
+			<Add library="GLU" />
+		</Linker>
+		<Unit filename="client.depend" />
+		<Unit filename="client.layout" />
+		<Unit filename="client.vcxproj" />
+		<Unit filename="client.vcxproj.filters" />
+		<Unit filename="main.cpp" />
+		<Unit filename="test/50105b.dds" />
+		<Unit filename="test/50105b.jpg" />
+		<Unit filename="test/HTB1dDOvLpXXXXbfaXXXq6xXFXXXc.dds" />
+		<Unit filename="test/HTB1dDOvLpXXXXbfaXXXq6xXFXXXc.jpg" />
+		<Unit filename="test/WOOD-FLOORS-Parquet-Textures-ARCHITECTURE-parquet-flooring-texture-seamless-BPR-material-High-Resolution-Free-Download-substances-4k-full-864x864.dds" />
+		<Unit filename="test/brick_texture___6_by_agf81_d37gm2w-fullview.dds" />
+		<Unit filename="test/brick_texture___6_by_agf81_d37gm2w-fullview.jpg" />
+		<Unit filename="test/bricks.dds" />
+		<Unit filename="test/bricks.jpg" />
+		<Unit filename="test/circuit.jpg" />
+		<Unit filename="test/cube.OVO" />
+		<Unit filename="test/pave.dds" />
+		<Unit filename="test/pave.jpg" />
+		<Unit filename="test/pave_nmap.dds" />
+		<Unit filename="test/pave_nmap.jpg" />
+		<Unit filename="test/scene.OVO" />
+		<Unit filename="test/scene.max" />
+		<Unit filename="test/simple3dScene.max" />
+		<Unit filename="test/simple3dScene.ovo" />
+		<Extensions>
+			<lib_finder disable_auto="1" />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>

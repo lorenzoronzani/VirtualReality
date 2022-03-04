@@ -1,0 +1,91 @@
+# depslib dependency file v1.0
+1635162854 source:/home/vymno/Documents/Progetti_Ing2/Grafica/labingsw022021202202cg/client/main.cpp
+	<iostream>
+	"engine.h"
+
+1635161844 /home/vymno/Documents/Progetti_Ing2/Grafica/labingsw022021202202cg/engine/engine.h
+	<string>
+
+1643130380 source:/home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/client/main.cpp
+	<time.h>
+	<engine.h>
+	<Test.h>
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//engine.h
+	<string>
+	<functional>
+	"Node.h"
+	"Camera.h"
+	"ObjectLoader.h"
+	"List.h"
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//Node.h
+	"Object.h"
+	<vector>
+	<memory>
+	<iostream>
+	<map>
+	"../dependencies/glm/include/glm/glm.hpp"
+	"../dependencies/glm/include/glm/gtc/packing.hpp"
+	"../dependencies/glm/include/glm/gtc/type_ptr.hpp"
+	"../dependencies/glm/include/glm/gtx/string_cast.hpp"
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//Object.h
+	<string>
+	<memory>
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//Camera.h
+	"Node.h"
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//ObjectLoader.h
+	"Node.h"
+	<vector>
+	<iostream>
+	<iomanip>
+	<limits.h>
+	<fstream>
+	<map>
+	<string>
+	"Material.h"
+	"Mesh.h"
+	"Light.h"
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//Material.h
+	"Object.h"
+	"Texture.h"
+	<memory>
+	<iostream>
+	"../dependencies/glm/include/glm/glm.hpp"
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//Texture.h
+	"Object.h"
+	<iostream>
+	<string>
+	<cstring>
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//Mesh.h
+	"Node.h"
+	"Material.h"
+	"Camera.h"
+	<memory>
+	<vector>
+	<array>
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//Light.h
+	"Node.h"
+	"Camera.h"
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//List.h
+	<deque>
+	<memory>
+	<map>
+	"Object.h"
+	"Light.h"
+	"Mesh.h"
+
+1643130021 /home/vymno/Documents/Progetti_Ing2/GraficaNew/labingsw022021202202cg/engine//Test.h
+	"List.h"
+	"Mesh.h"
+	<memory>
+	<iostream>
+

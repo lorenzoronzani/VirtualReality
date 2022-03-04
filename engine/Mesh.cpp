@@ -1,0 +1,126 @@
+#include "Mesh.h"
+#include <GL/freeglut.h>
+
+LIB_API Mesh::Mesh() :m_has_shadows{true} {
+    matrix_shadow = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 1.0f));
+}
+
+LIB_API Mesh::~Mesh(){
+
+}
+
+void LIB_API Mesh::material(std::shared_ptr<Material> material){
+    m_material = material;
+}
+
+std::shared_ptr<Material LIB_API> Mesh::material() const{
+    return m_material;
+}
+
+void LIB_API Mesh::LOD(int LOD) {
+    m_LOD = LOD;
+}
+
+int LIB_API Mesh::LOD() const {
+    return m_LOD;
+}
+
+void LIB_API Mesh::vertices(LODdata vertices)
+{
+    m_vertices = std::make_shared<LODdata>(vertices);
+}
+
+LODdata LIB_API Mesh::vertices() const
+{
+    return *m_vertices;
+}
+
+void LIB_API Mesh::render(std::shared_ptr<Object> camera){
+    int lods = 0;
+    glm::mat4 model_view;
+    model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
+    glLoadMatrixf(glm::value_ptr(model_view));
+    if (m_material) {
+        glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_material->settings().roughness);
+        glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, glm::value_ptr(m_material->settings().ambient));
+        glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, glm::value_ptr(m_material->settings().diffuse));
+        glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, glm::value_ptr(m_material->settings().specular));
+        if (m_material->texture()->name().find("[none]") == std::string::npos) {
+            glBindTexture(GL_TEXTURE_2D, m_material->texture()->id());
+        }
+        else {
+            glBindTexture(GL_TEXTURE_2D, 0);
+        }
+    }
+    auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
+    auto m_lod_normal = &m_vertices->lod.at(lods).normal;
+    auto m_lod_uv = &m_vertices->lod.at(lods).uv;
+    auto m_lod_faces = &m_vertices->lod.at(lods).faces;
+
+    auto size = m_lod_faces->size();
+    //itera vertici
+    glBegin(GL_TRIANGLES);
+    for (int j = 0; j < size; j++) {
+        //prende tutti i vertici della faccia j
+        auto m_lod_faces_0 = m_lod_faces->at(j).at(0);
+        auto m_lod_faces_1 = m_lod_faces->at(j).at(1);
+        auto m_lod_faces_2= m_lod_faces->at(j).at(2);
+        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_0)));
+        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_0)));
+        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_0)));
+        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_1)));
+        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_1)));
+        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_1)));
+        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_2)));
+        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_2)));
+        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_2)));
+    }
+    glEnd();
+
+
+    if (shadow()) {
+        glm::mat4 matrix_shadow_new = matrix_shadow * getFinalMatrix();
+        //view*model
+        matrix_shadow_new = dynamic_cast<Camera*>(camera.get())->inverseCamera() * matrix_shadow_new;
+        glLoadMatrixf(glm::value_ptr(matrix_shadow_new));
+        render_shadow();
+    }
+}
+
+void LIB_API Mesh::render_shadow(){
+    int lods = 0;
+    glm::vec3 color_shadow;
+    color_shadow = glm::vec3(0.0f, 0.0f, 0.0f);
+    glDisable(GL_LIGHTING);
+    glDisable(GL_TEXTURE_2D);
+    auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
+    auto m_lod_faces = &m_vertices->lod.at(lods).faces;
+
+    auto size = m_lod_faces->size();
+    glBegin(GL_TRIANGLES);
+    for (int j = 0; j < size; j++) {
+        glColor3fv(glm::value_ptr(color_shadow));
+        auto m_lod_faces_j = m_lod_faces->at(j);
+        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(0))));
+        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(1))));
+        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(2))));
+    }
+    glEnd();
+    glEnable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+}
+
+void LIB_API Mesh::shadow(const bool& shadow)
+{
+    m_has_shadows = shadow;
+}
+
+bool LIB_API Mesh::shadow() const
+{
+    return m_has_shadows;
+}
+
+Mesh LIB_API* Mesh::clone()
+{
+    return new Mesh(*this);
+}
