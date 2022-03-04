@@ -14,7 +14,7 @@
 
 // FreeGLUT:
 #include <GL/freeglut.h>
-#include "../dependencies/freeimage/include/FreeImage.h"
+#include "FreeImage.h"
 
 int windowId;
 glm::mat4 projection;
