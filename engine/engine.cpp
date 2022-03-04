@@ -9,6 +9,9 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+//Glew
+#include <GL/glew.h>
+
 // FreeGLUT:
 #include <GL/freeglut.h>
 #include "../dependencies/freeimage/include/FreeImage.h"
