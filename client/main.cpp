@@ -281,6 +281,10 @@ void special(int a, int b, int c) {
 
 }
 
+void close() {
+    is_open = false;
+}
+
 int main()
 {
     Engine::Handler handler;
@@ -289,6 +293,7 @@ int main()
     handler.width = 2048;
     handler.height = 1024;
     handler.special = special;
+    handler.close = close;
 
     if (Engine::init(handler)) {
         //Carico scena
@@ -310,7 +315,7 @@ int main()
         while (is_open) {
             current_ticks = clock();
 
-            Engine::update();
+            
             List list;
             
             Engine::clear();
@@ -329,7 +334,7 @@ int main()
             Engine::render(list, camera);
             
             Engine::swap();
-            
+            Engine::update();
             //Ruoto luce blu
             node->getChildByName("Spot001")->setTransformation(glm::rotate(node->getChildByName("Spot001")->getFinalMatrix(), glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
             

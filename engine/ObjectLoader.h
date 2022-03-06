@@ -78,6 +78,7 @@ private:
     int num_light;
     int num_texture;
     std::string m_directory;
+    int num_vao;
 
 public:
 	ObjectLoader();

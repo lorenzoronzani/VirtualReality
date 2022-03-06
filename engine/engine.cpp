@@ -1,4 +1,3 @@
-#include "engine.h"
 #include <iostream>
 
 // GLM:
@@ -11,7 +10,7 @@
 
 // FreeGLUT:
 #include <GL/freeglut.h>
-
+#include "engine.h"
 // FreeImage
 #include "FreeImage.h"
 
@@ -78,7 +77,7 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
 void closeCallback()
 {
-    
+    handler.close();
 }
 
 void mouseMove(int mouseX, int mouseY) {
@@ -105,7 +104,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     glutInit(&argc, argv);
     
     //Flag opzionali
-    glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
+    glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
     //Settaggio handler per callbacks
     handler = t_handler;
