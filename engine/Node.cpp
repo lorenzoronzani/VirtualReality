@@ -45,7 +45,7 @@ Node::NodePtr LIB_API Node::getChildByName(const std::string& name)
 }
 
 int LIB_API Node::getNumberOfChildren() const{
-    return m_children.size();
+    return (int)m_children.size();
 }
 
 void LIB_API Node::render(std::shared_ptr<Object> camera) {

@@ -1,3 +1,5 @@
+//Tolto il warning riguardante l'export delle STL nella dll
+#pragma warning(disable:4251)
 #pragma once
 #include <string>
 #include <memory>

@@ -430,7 +430,7 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
             unsigned char subtype;
             memcpy(&subtype, data + position, sizeof(unsigned char));
             
-            char subtypeName[FILENAME_MAX];
+            //char subtypeName[FILENAME_MAX];
             
             LightSettings settings;
             

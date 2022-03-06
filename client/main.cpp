@@ -6,7 +6,7 @@ const std::string path = "test/cube.OVO";
 
 //Distanze per la palla
 const int min_distance = 7;
-const int distance_ground = 3.2;
+const float distance_ground = 3.2f;
 
 //Oggetto camera
 auto camera = std::make_shared<Camera>();
@@ -239,16 +239,16 @@ void mouseMove(int mouseX, int mouseY) {
     if (dynamic) {
         //Prendo coordinate del mouse
         if (firstMouse) {
-            lastX = mouseX;
-            lastY = mouseY;
+            lastX = (float)mouseX;
+            lastY = (float)mouseY;
             firstMouse = false;
         }
 
         //Sposto offset per movimento camera
         float xoffset = mouseX - lastX;
         float yoffset = lastY - mouseY;
-        lastX = mouseX;
-        lastY = mouseY;
+        lastX = (float)mouseX;
+        lastY = (float)mouseY;
 
         //Sensibilità del mouse
         float sensitivity = 0.5f;

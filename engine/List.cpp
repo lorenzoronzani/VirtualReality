@@ -13,7 +13,7 @@ void LIB_API List::add(std::shared_ptr<Node> object){
 
 int LIB_API List::size() const
 {
-	return m_list.size();
+	return (int)m_list.size();
 }
 
 const LIB_API std::shared_ptr<Node> List::operator[](std::size_t i) const
