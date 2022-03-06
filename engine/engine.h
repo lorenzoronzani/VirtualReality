@@ -29,13 +29,22 @@ public:
 	};
 	
 	static bool init(Handler p_handler);
+	
 	static void clear();
+	
 	static void render(const List& list, std::shared_ptr<Camera> camera);
+	
 	static void swap();
+	
 	static std::shared_ptr<Node> load(std::string file);
+	
 	static void free();
+	
 	static void update();
+	
 	static void drawText(const std::string& text,float x,float y);
+	
+private:
 	Engine(Engine& other) = delete;
 	void operator=(const Engine&) = delete;
 	Engine() = delete;

@@ -1,8 +1,7 @@
 #pragma once
 
-#define GLM_FORCE_CTOR_INIT
-#define _CRT_SECURE_NO_WARNINGS
 #include "Node.h"
+
 #include <vector>   
 #include <iostream>
 #include <iomanip>   
@@ -10,6 +9,7 @@
 #include <fstream>
 #include <map>
 #include <string>
+
 #include "Material.h"
 #include "Mesh.h"
 #include "Light.h"
@@ -21,11 +21,10 @@ private:
 		std::shared_ptr<Node> node;
 		std::shared_ptr<Material> material;
 	};
-    class OvObject
-    {
+    
+    class OvObject{
     public:
-        enum class Type : int
-        {
+        enum class Type : int{
             OBJECT = 0,
             NODE,
             OBJECT2D,
@@ -54,25 +53,32 @@ private:
             LAST,
         };
     };
-    class OvMesh
-    {
+    
+    class OvMesh{
     public:
-        enum class Subtype : int
-        {
+        enum class Subtype : int{
             DEFAULT = 0,
             NORMALMAPPED,
             TESSELLATED,
             LAST,
         };
     };
-	std::vector<char> readFile(std::string filepath);
-	NodeType readNode(char* data, int chunkId);
-	void readMaterials(char* buffer, unsigned int& position);
-	std::shared_ptr<Node> recursiveLoad(char* buffer, unsigned int& position);
+	
+    std::vector<char> readFile(std::string filepath);
+	
+    NodeType readNode(char* data, int chunkId);
+	
+    void readMaterials(char* buffer, unsigned int& position);
+	
+    std::shared_ptr<Node> recursiveLoad(char* buffer, unsigned int& position);
+    
+
+    //Variabili
     std::map<std::string, std::shared_ptr<Material>> material;
     int num_light;
     int num_texture;
     std::string m_directory;
+
 public:
 	ObjectLoader();
 	~ObjectLoader();

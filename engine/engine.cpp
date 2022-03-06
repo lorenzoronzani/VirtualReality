@@ -1,6 +1,3 @@
-#define _CRT_SECURE_NO_WARNINGS
-#define FREEIMAGE_LIB
-
 #include "engine.h"
 #include <iostream>
 
@@ -18,9 +15,14 @@
 // FreeImage
 #include "FreeImage.h"
 
+//Id finestra
 int windowId;
+
+//Matrici di proiezione
 glm::mat4 projection;
 glm::mat4 ortho;
+
+//Fps
 int fps;
 int frames;
 
@@ -52,12 +54,16 @@ void displayCallback()
 
 void reshapeCallback(int width, int height)
 {
+    //Setto matrice di proiezione
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
+    
     projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 1.0f, 1000.0f);
     ortho = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
 
     glLoadMatrixf(glm::value_ptr(projection));
+    
+    //Reimposto in ModelView
     glMatrixMode(GL_MODELVIEW);
 }
 
@@ -178,8 +184,11 @@ void LIB_API Engine::update()
 
 void LIB_API Engine::drawText(const std::string& text,float x,float y)
 {
+    //Setto matrice di proiezione
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(glm::value_ptr(ortho));
+    
+    //Setto matrice di model view
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(glm::value_ptr(glm::mat4(1.0f)));
 
@@ -195,6 +204,8 @@ void LIB_API Engine::drawText(const std::string& text,float x,float y)
     // Reactivate lighting:
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
+
+    // Reimposto proiezione
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(glm::value_ptr(projection));
 }
