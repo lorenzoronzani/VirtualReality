@@ -76,6 +76,11 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     handler.keyboard(key, mouseX, mouseY);
 }
 
+void closeCallback()
+{
+    
+}
+
 void mouseMove(int mouseX, int mouseY) {
     handler.mouse(mouseX, mouseY);
 }
@@ -136,6 +141,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     glutReshapeFunc(reshapeCallback);
     glutSpecialFunc(specialCallback);
     glutKeyboardFunc(keyboardCallback);
+    glutCloseFunc(closeCallback);
     glutPassiveMotionFunc(mouseMove);
     
     //Inizializza lettore texture
