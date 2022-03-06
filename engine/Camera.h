@@ -3,8 +3,8 @@
 
 class LIB_API Camera : public Node{
 public:
-	Camera();
-	~Camera();
+	Camera() = default;
+	~Camera() = default;
 
 	glm::mat4 inverseCamera() const;
 	void setTransformation(const glm::mat4& transformation) override;

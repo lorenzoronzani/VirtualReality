@@ -1,13 +1,5 @@
 #include "Camera.h"
 
-LIB_API Camera::Camera() {
-
-}
-
-LIB_API Camera::~Camera() {
-
-}
-
 glm::mat4 LIB_API Camera::inverseCamera() const{
     return m_camera_inverse;
 }

@@ -26,8 +26,8 @@ struct LightSettings {
 
 class LIB_API Light : public Node {
 public:
-	Light();
-	~Light();
+	Light() = default;
+	~Light() = default;
 
 	void settings(const LightSettings& lightSettings);
 	LightSettings settings() const;
