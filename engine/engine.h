@@ -27,7 +27,7 @@ public:
 		int width;
 		int height;
 	};
-	static void init(Handler p_handler);
+	static bool init(Handler p_handler);
 	static void clear();
 	static void render(const List& list, std::shared_ptr<Camera> camera);
 	static void swap();

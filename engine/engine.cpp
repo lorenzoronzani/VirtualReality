@@ -9,11 +9,13 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-//Glew
+// Glew
 #include <GL/glew.h>
 
 // FreeGLUT:
 #include <GL/freeglut.h>
+
+// FreeImage
 #include "FreeImage.h"
 
 int windowId;
@@ -50,7 +52,6 @@ void displayCallback()
 
 void reshapeCallback(int width, int height)
 {
-
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
     projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 1.0f, 1000.0f);
@@ -73,10 +74,13 @@ void mouseMove(int mouseX, int mouseY) {
     handler.mouse(mouseX, mouseY);
 }
 
-void LIB_API Engine::init(Handler t_handler) {
+bool LIB_API Engine::init(Handler t_handler) {
+    //Inizializzazioni di glut
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowPosition(150, 150);
     glutInitWindowSize(handler.width, handler.height);
+    
+    //default per inizializzazione glut
     char* argv[1];
     int argc = 1;
 
@@ -86,25 +90,56 @@ void LIB_API Engine::init(Handler t_handler) {
     argv[0] = strdup("Application");
     #endif
 
+    //Inizializzazione glut
     glutInit(&argc, argv);
-    handler = t_handler;
+    
+    //Flag opzionali
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_GLUTMAINLOOP_RETURNS);
 
-    windowId = glutCreateWindow("Robotic Arm");
+    //Settaggio handler per callbacks
+    handler = t_handler;
+
+    //Creazione window e contesto OpenGL
+    windowId = glutCreateWindow("VR Robotic Arm");
+
+    //Utilizzo versione più aggiornata OpenGL
+    glewExperimental = GL_TRUE;
+    glewInit();
+
+    // OpenGL 2.1 is required:
+    if (!glewIsSupported("GL_VERSION_2_1"))
+    {
+        std::cout << "OpenGL 2.1 not supported" << std::endl;
+        return false;
+    }
+
+    //Lighting
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
     glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, 1.0f);
     glm::vec4 gAmbient(0.2f, 0.2f, 0.2f, 1.0f);
     glLightModelfv(GL_LIGHT_MODEL_AMBIENT, glm::value_ptr(gAmbient));
+
+    //OpenGL enables
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_NORMALIZE);
     glEnable(GL_LIGHTING);
     glEnable(GL_TEXTURE_2D);
+
+    //Callbacks
     glutDisplayFunc(displayCallback);
     glutReshapeFunc(reshapeCallback);
     glutSpecialFunc(specialCallback);
     glutKeyboardFunc(keyboardCallback);
     glutPassiveMotionFunc(mouseMove);
+    
+    //Inizializza lettore texture
     FreeImage_Initialise();
+
+    //Dice a OpenGL di cercare nella VRAM
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+    
+    return true;
 }
 
 void LIB_API Engine::clear()

@@ -78,10 +78,14 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <TargetName>ENGINE</TargetName>
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>ENGINE</TargetName>
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <TargetName>ENGINE</TargetName>
@@ -92,17 +96,17 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>GLEW_STATIC;FREEGLUT_STATIC;_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FREEIMAGE_STATIC;FREEGLUT_STATIC;GLEW_STATIC;_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\dependencies\freeimage\include;..\dependencies\glew\include;..\dependencies\freeglut\include;..\dependencies\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\dependencies\freeimage\include;..\dependencies\freeglut\include;..\dependencies\glew\include;..\dependencies\glm\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>..\dependencies\freeimage\lib\x64\Debug;..\dependencies\freeglut\lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FreeImageLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\dependencies\freeimage\lib\$(Platform)\$(Configuration);..\dependencies\freeglut\lib\$(Platform)\$(Configuration);..\dependencies\glew\lib\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImageLib.lib;glew.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -110,14 +114,17 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FREEIMAGE_STATIC;FREEGLUT_STATIC;GLEW_STATIC;_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\dependencies\freeimage\include;..\dependencies\freeglut\include;..\dependencies\glew\include;..\dependencies\glm\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>..\dependencies\freeimage\lib\$(Platform)\$(Configuration);..\dependencies\freeglut\lib\$(Platform)\$(Configuration);..\dependencies\glew\lib\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImageLib.lib;glew.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -127,9 +134,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;NDEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FREEIMAGE_STATIC;FREEGLUT_STATIC;GLEW_STATIC;_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
+      <AdditionalIncludeDirectories>..\dependencies\freeimage\include;..\dependencies\freeglut\include;..\dependencies\glew\include;..\dependencies\glm\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -137,6 +145,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
+      <AdditionalLibraryDirectories>..\dependencies\freeimage\lib\$(Platform)\$(Configuration);..\dependencies\freeglut\lib\$(Platform)\$(Configuration);..\dependencies\glew\lib\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImageLib.lib;glew.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -146,10 +156,10 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>FREEGLUT_STATIC;NDEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>FREEIMAGE_STATIC;FREEGLUT_STATIC;GLEW_STATIC;_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\dependencies\freeglut\include;..\dependencies\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\dependencies\freeimage\include;..\dependencies\freeglut\include;..\dependencies\glew\include;..\dependencies\glm\include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,8 +167,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalLibraryDirectories>C:\Users\denis\source\repos\labingsw022021202202cg\dependencies\freeimage\lib\x64\Release;..\dependencies\freeglut\lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>FreeImageLib.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\dependencies\freeimage\lib\$(Platform)\$(Configuration);..\dependencies\freeglut\lib\$(Platform)\$(Configuration);..\dependencies\glew\lib\$(Platform)\$(Configuration);</AdditionalLibraryDirectories>
+      <AdditionalDependencies>FreeImageLib.lib;glew.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
