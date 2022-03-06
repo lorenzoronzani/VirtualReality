@@ -11,16 +11,10 @@ struct LIB_API VerticesData {
 	std::vector<glm::vec3> normal;
 	std::vector<glm::vec2> uv;
 	std::vector<std::array<unsigned int, 3>> faces;
-	VerticesData() {
-
-	}
 };
 
 struct LIB_API LODdata {
 	std::vector<VerticesData> lod;
-	LODdata() {
-
-	}
 };
 
 class LIB_API Mesh : public Node{
@@ -33,10 +27,14 @@ public:
 
 	void LOD(int LOD);
 	int LOD() const;
+	
 	void vertices(LODdata vertices);
 	LODdata vertices() const;
+	
 	void render(std::shared_ptr<Object> camera) override;
+	
 	void render_shadow();
+	
 	void shadow(const bool& shadow);
 	bool shadow() const;
 	virtual Mesh* clone() override;

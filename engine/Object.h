@@ -20,6 +20,7 @@ public:
 	virtual ~Object();
 
 	int id() const;
+	
 	void name(std::string name);
 	std::string name() const;
 

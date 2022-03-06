@@ -1,13 +1,5 @@
 #include "Material.h"
 
-LIB_API Material::Material(){
-
-}
-
-LIB_API Material::~Material(){
-
-}
-
 void LIB_API Material::settings(const MaterialSettings& materialSettings){
 	m_settings = materialSettings;
 }

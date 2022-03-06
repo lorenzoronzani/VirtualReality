@@ -15,8 +15,8 @@ struct MaterialSettings {
 
 class LIB_API Material : public Object{
 public:
-	Material();
-	~Material();
+	Material() = default;
+	~Material() = default;
 
 	void settings(const MaterialSettings& materialSettings);
 	MaterialSettings settings() const;
@@ -29,6 +29,5 @@ public:
 private:
 	MaterialSettings m_settings;
 	std::shared_ptr<Texture> m_texture;
-
 };
 

@@ -6,8 +6,9 @@
 
 class LIB_API Test {
 public:
-	Test();
-	~Test();
+	Test() = default;
+	~Test() = default;
+	
 	void testAll();
 };
 

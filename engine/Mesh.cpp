@@ -37,27 +37,34 @@ LODdata LIB_API Mesh::vertices() const
 
 void LIB_API Mesh::render(std::shared_ptr<Object> camera){
     int lods = 0;
+    
+    //Prendo matrice camera
     glm::mat4 model_view;
     model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
     glLoadMatrixf(glm::value_ptr(model_view));
+    
     if (m_material) {
         glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, m_material->settings().roughness);
         glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, glm::value_ptr(m_material->settings().ambient));
         glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, glm::value_ptr(m_material->settings().diffuse));
         glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, glm::value_ptr(m_material->settings().specular));
+        
+        //Bind della texture
         if (m_material->texture()->name().find("[none]") == std::string::npos) {
             glBindTexture(GL_TEXTURE_2D, m_material->texture()->id());
-        }
-        else {
+        }else {
             glBindTexture(GL_TEXTURE_2D, 0);
         }
     }
+
+    //Dati lod
     auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
     auto m_lod_normal = &m_vertices->lod.at(lods).normal;
     auto m_lod_uv = &m_vertices->lod.at(lods).uv;
     auto m_lod_faces = &m_vertices->lod.at(lods).faces;
 
     auto size = m_lod_faces->size();
+    
     //itera vertici
     glBegin(GL_TRIANGLES);
     for (int j = 0; j < size; j++) {
@@ -65,12 +72,16 @@ void LIB_API Mesh::render(std::shared_ptr<Object> camera){
         auto m_lod_faces_0 = m_lod_faces->at(j).at(0);
         auto m_lod_faces_1 = m_lod_faces->at(j).at(1);
         auto m_lod_faces_2= m_lod_faces->at(j).at(2);
+        
+        //Carico vertici
         glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_0)));
         glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_0)));
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_0)));
+        
         glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_1)));
         glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_1)));
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_1)));
+        
         glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_2)));
         glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_2)));
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_2)));
@@ -80,6 +91,7 @@ void LIB_API Mesh::render(std::shared_ptr<Object> camera){
 
     if (shadow()) {
         glm::mat4 matrix_shadow_new = matrix_shadow * getFinalMatrix();
+        
         //view*model
         matrix_shadow_new = dynamic_cast<Camera*>(camera.get())->inverseCamera() * matrix_shadow_new;
         glLoadMatrixf(glm::value_ptr(matrix_shadow_new));
@@ -89,23 +101,31 @@ void LIB_API Mesh::render(std::shared_ptr<Object> camera){
 
 void LIB_API Mesh::render_shadow(){
     int lods = 0;
+    
     glm::vec3 color_shadow;
     color_shadow = glm::vec3(0.0f, 0.0f, 0.0f);
+    
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
+    
     auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
     auto m_lod_faces = &m_vertices->lod.at(lods).faces;
 
     auto size = m_lod_faces->size();
+    
+    //Renderizzo l'ombra
     glBegin(GL_TRIANGLES);
     for (int j = 0; j < size; j++) {
         glColor3fv(glm::value_ptr(color_shadow));
+       
         auto m_lod_faces_j = m_lod_faces->at(j);
+        
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(0))));
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(1))));
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(2))));
     }
     glEnd();
+    
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
 }
