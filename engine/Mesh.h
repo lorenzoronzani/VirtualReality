@@ -5,15 +5,17 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include <GL/glew.h>
 
 struct LIB_API VerticesData {
-	/*unsigned int vertexVbo = 0;
+	unsigned int vertexVbo = 0;
 	unsigned int normalVbo = 0;
-	unsigned int uvVbo = 0;*/
-	std::vector<glm::vec3> vertices;
+	unsigned int uvVbo = 0;
+	unsigned int faceVbo = 0;
+	/*std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normal;
-	std::vector<glm::vec2> uv;
-	std::vector<std::array<unsigned int, 3>> faces;
+	std::vector<glm::vec2> uv;*/
+	//std::vector<std::array<unsigned int, 3>> faces;
 };
 
 struct LIB_API LODdata {
