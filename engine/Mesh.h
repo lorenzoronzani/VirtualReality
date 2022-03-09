@@ -5,9 +5,11 @@
 #include <memory>
 #include <vector>
 #include <array>
-#include <GL/glew.h>
 
 struct LIB_API VerticesData {
+	/*unsigned int vertexVbo = 0;
+	unsigned int normalVbo = 0;
+	unsigned int uvVbo = 0;*/
 	std::vector<glm::vec3> vertices;
 	std::vector<glm::vec3> normal;
 	std::vector<glm::vec2> uv;
@@ -38,8 +40,10 @@ public:
 	
 	void shadow(const bool& shadow);
 	bool shadow() const;
-	void VAO(int vao);
-	int VAO() const;
+	
+	/*void VAO(int vao);
+	int VAO() const;*/
+	
 	virtual Mesh* clone() override;
 private:
 	std::shared_ptr<Material> m_material;
@@ -47,7 +51,7 @@ private:
 	std::shared_ptr<LODdata> m_vertices;
 	bool m_has_shadows;
 	glm::mat4 matrix_shadow;
-	int m_VAO;
+	/*int m_VAO;
 
 	// VBO id:
 	GLuint faceVbo;
@@ -56,5 +60,5 @@ private:
 
 	unsigned int normal;
 
-	unsigned int uv;
+	unsigned int uv;*/
 };

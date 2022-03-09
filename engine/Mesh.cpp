@@ -40,9 +40,7 @@ void LIB_API Mesh::vertices(LODdata vertices)
             faces[i][j] = m_lod_faces->at(i).at(j);
         }
     }
-    /*glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+    /*
     glGenBuffers(1, &faceVbo);
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
@@ -165,7 +163,7 @@ bool LIB_API Mesh::shadow() const
     return m_has_shadows;
 }
 
-void LIB_API Mesh::VAO(int vao)
+/*void LIB_API Mesh::VAO(int vao)
 {
     m_VAO = vao;
 }
@@ -173,7 +171,7 @@ void LIB_API Mesh::VAO(int vao)
 int LIB_API Mesh::VAO() const
 {
     return m_VAO;
-}
+}*/
 
 Mesh LIB_API* Mesh::clone()
 {
