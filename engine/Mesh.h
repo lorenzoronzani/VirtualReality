@@ -9,6 +9,7 @@
 struct LIB_API VerticesData {
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	unsigned int vertexVbo = 0;
 	unsigned int normalVbo = 0;
 	unsigned int uvVbo = 0;
@@ -17,6 +18,12 @@ struct LIB_API VerticesData {
 =======
 	std::vector<glm::vec3> vertices;
 >>>>>>> parent of 215b7fe (Comments vbo try)
+=======
+	/*unsigned int vertexVbo = 0;
+	unsigned int normalVbo = 0;
+	unsigned int uvVbo = 0;*/
+	std::vector<glm::vec3> vertices;
+>>>>>>> parent of 0c66d09 (try but not work)
 =======
 	/*unsigned int vertexVbo = 0;
 	unsigned int normalVbo = 0;

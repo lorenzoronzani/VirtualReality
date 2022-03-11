@@ -41,7 +41,11 @@ void LIB_API Mesh::vertices(LODdata vertices)
         }
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
     }*/
+=======
+    }
+>>>>>>> parent of 0c66d09 (try but not work)
 =======
     }
 >>>>>>> parent of 0c66d09 (try but not work)
