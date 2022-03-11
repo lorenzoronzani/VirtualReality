@@ -1,4 +1,5 @@
 #include "Mesh.h"
+#include <GL/glew.h>
 #include <GL/freeglut.h>
 
 LIB_API Mesh::Mesh() :m_has_shadows{true} {

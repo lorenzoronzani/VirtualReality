@@ -5,7 +5,6 @@
 #include <memory>
 #include <vector>
 #include <array>
-#include <GL/glew.h>
 
 struct LIB_API VerticesData {
 	std::vector<glm::vec3> vertices;
@@ -49,12 +48,12 @@ private:
 	glm::mat4 matrix_shadow;
 	int m_VAO;
 
-	// VBO id:
+	/*// VBO id:
 	GLuint faceVbo;
 	// VBO id:
 	unsigned int vertexVbo;
 
 	unsigned int normal;
 
-	unsigned int uv;
+	unsigned int uv;*/
 };
