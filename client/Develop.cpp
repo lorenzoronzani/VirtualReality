@@ -1,5 +1,5 @@
 #include <time.h>
-#include <engine.h>
+#include "engine.h"
 
 //Path scena
 const std::string path = "test/simple3Rect.OVO";
@@ -299,8 +299,7 @@ int main()
     if (Engine::init(handler)) {
         //Carico scena
         node = Engine::load(path);
-        //Disattivo l'ombra al piano di base
-        dynamic_cast<Mesh*>(node->getChildByName("Plane001").get())->shadow(false);
+       
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
 
         bool passed_1_sec = false;
@@ -322,12 +321,6 @@ int main()
 
             list.pass(node);
 
-            //Prendo sfera e centro del braccio dalla scena
-            auto sphere_center = list.getByName("CenterSphere");
-            auto arm_center = list.getByName("Center");
-            auto sphere_column = sphere_center->getFinalMatrix()[3];
-            auto arm_column = arm_center->getFinalMatrix()[3];
-
             Engine::drawText(to_screen, x_text, y_text);
             Engine::drawText("fps: " + std::to_string(fps), 1, 2);
 
@@ -335,46 +328,6 @@ int main()
 
             Engine::swap();
             Engine::update();
-            //Ruoto luce blu
-            node->getChildByName("Spot001")->setTransformation(glm::rotate(node->getChildByName("Spot001")->getFinalMatrix(), glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-
-            //Controllo per presa palla
-            if (!is_attached && !is_falling && glm::length(arm_column - sphere_column) < min_distance) {
-                auto distance = glm::vec4(0, 0, 0, 0) - sphere_column;
-
-                //Catturo palla
-                node->getChildByName("Sphere004")->setTransformation(glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(distance)) * node->getChildByName("Sphere004")->getFinalMatrix(), glm::vec3(0, 2.5, -0.5)));
-                node->getChildByName("Center")->addChild(node->getChildByName("Sphere004"));
-                node->removeChild(node->getChildByName("Sphere004")->id());
-
-                is_attached = true;
-                has_touched = false;
-            }
-
-            if (is_falling && !has_touched) {
-                if (is_attached) {
-                    is_attached = false;
-
-                    auto last = sphere_column;
-
-                    //Stacco la palla
-                    node->addChild(node->getChildByName("Sphere004"));
-                    node->getChildByName("Center")->removeChild(node->getChildByName("Sphere004")->id());
-                    node->getChildByName("Sphere004")->setTransformation(glm::translate(glm::mat4(1.0f), -glm::vec3(0, 2.5, -0.5)) * glm::translate(glm::mat4(1.0f), glm::vec3(last)) * node->getChildByName("Sphere004")->getFinalMatrix());
-                }
-
-                if (sphere_center->getFinalMatrix()[3][1] >= distance_ground) {
-                    //Simulo gravità
-                    node->getChildByName("Sphere004")->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0, -0.1, 0)) * node->getChildByName("Sphere004")->getFinalMatrix());
-                }
-                else {
-                    //La palla è a terra
-                    has_touched = true;
-                    is_attached = false;
-                    is_falling = false;
-                }
-            }
-
 
             //Calcolo fps
             delta_ticks = clock() - current_ticks;

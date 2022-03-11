@@ -1,4 +1,4 @@
-#include <time.h>
+/*#include <time.h>
 #include <engine.h>
 
 //Path scena
@@ -389,4 +389,4 @@ int main()
             current = clock();
         }
     }
-}
+}*/

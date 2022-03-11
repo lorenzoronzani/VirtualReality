@@ -18,5 +18,8 @@
     <ClCompile Include="main.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
+    <ClCompile Include="Develop.cpp">
+      <Filter>File di risorse</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
