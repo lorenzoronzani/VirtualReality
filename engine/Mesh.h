@@ -5,31 +5,10 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include <GL/glew.h>
 
 struct LIB_API VerticesData {
-<<<<<<< HEAD
-<<<<<<< HEAD
-<<<<<<< HEAD
-	unsigned int vertexVbo = 0;
-	unsigned int normalVbo = 0;
-	unsigned int uvVbo = 0;
-	unsigned int faceVbo = 0;
-	/*std::vector<glm::vec3> vertices;
-=======
 	std::vector<glm::vec3> vertices;
->>>>>>> parent of 215b7fe (Comments vbo try)
-=======
-	/*unsigned int vertexVbo = 0;
-	unsigned int normalVbo = 0;
-	unsigned int uvVbo = 0;*/
-	std::vector<glm::vec3> vertices;
->>>>>>> parent of 0c66d09 (try but not work)
-=======
-	/*unsigned int vertexVbo = 0;
-	unsigned int normalVbo = 0;
-	unsigned int uvVbo = 0;*/
-	std::vector<glm::vec3> vertices;
->>>>>>> parent of 0c66d09 (try but not work)
 	std::vector<glm::vec3> normal;
 	std::vector<glm::vec2> uv;
 	std::vector<std::array<unsigned int, 3>> faces;
