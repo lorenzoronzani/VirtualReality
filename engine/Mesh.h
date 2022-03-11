@@ -46,14 +46,12 @@ private:
 	std::shared_ptr<LODdata> m_vertices;
 	bool m_has_shadows;
 	glm::mat4 matrix_shadow;
+	
 	int m_VAO;
 
-	/*// VBO id:
-	GLuint faceVbo;
-	// VBO id:
+	unsigned int faceVbo;
+
 	unsigned int vertexVbo;
-
-	unsigned int normal;
-
-	unsigned int uv;*/
+	unsigned int normalVbo;
+	unsigned int uvVbo;
 };
