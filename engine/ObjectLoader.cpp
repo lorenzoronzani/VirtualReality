@@ -336,12 +336,9 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
                 for (unsigned int c = 0; c < vertices; c++)
                 {
                     //Leggo e setto vertice
-                    float* vertex = new float[3];
+                    glm::vec3 vertex;
                     memcpy(&vertex, data + position, sizeof(glm::vec3));
-                    glGenBuffers(1, &vertices_data.vertexVbo);
-                    glBindBuffer(GL_ARRAY_BUFFER, vertices_data.vertexVbo);
-                    glBufferData(GL_ARRAY_BUFFER, 1 * 3 * sizeof(float), vertex, GL_STATIC_DRAW);
-                    //vertices_data.vertices.push_back(vertex);
+                    vertices_data.vertices.push_back(vertex);
                     
                     position += sizeof(glm::vec3);
                     
@@ -349,11 +346,8 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
                     unsigned int normalData;
                     memcpy(&normalData, data + position, sizeof(unsigned int));
 
-                    const float *normal = glm::value_ptr(glm::unpackSnorm3x10_1x2(normalData));
-                    glGenBuffers(1, &vertices_data.normalVbo);
-                    glBindBuffer(GL_ARRAY_BUFFER, vertices_data.normalVbo);
-                    glBufferData(GL_ARRAY_BUFFER, 1 * 4 * sizeof(float), normal, GL_STATIC_DRAW);
-                    //vertices_data.normal.push_back(normal);
+                    glm::vec4 normal = glm::unpackSnorm3x10_1x2(normalData);
+                    vertices_data.normal.push_back(normal);
 
                     position += sizeof(unsigned int);
                     
@@ -361,11 +355,8 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
                     unsigned int textureData;
                     memcpy(&textureData, data + position, sizeof(unsigned int));
 
-                    const float *uv = glm::value_ptr(glm::unpackHalf2x16(textureData));
-                    glGenBuffers(1, &vertices_data.uvVbo);
-                    glBindBuffer(GL_ARRAY_BUFFER, vertices_data.uvVbo);
-                    glBufferData(GL_ARRAY_BUFFER, 1 * 2 * sizeof(float), uv, GL_STATIC_DRAW);
-                    //vertices_data.uv.push_back(uv);
+                    glm::vec2 uv = glm::unpackHalf2x16(textureData);
+                    vertices_data.uv.push_back(uv);
 
                     position += sizeof(unsigned int);
                 
@@ -387,13 +378,9 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
                     position += sizeof(unsigned int) * 3;
                     
                     //Compongo e setto le faccia
-                    //std::array<unsigned int, 3> face_array;
-                    float *face_array = new float[3];
-                    std::copy(std::begin(face), std::end(face), 0);
-                    glGenBuffers(1, &vertices_data.faceVbo);
-                    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vertices_data.faceVbo);
-                    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 1 * 2 * sizeof(float), face_array, GL_STATIC_DRAW);
-                    //vertices_data.faces.push_back(face_array);
+                    std::array<unsigned int, 3> face_array;
+                    std::copy(std::begin(face), std::end(face), std::begin(face_array));
+                    vertices_data.faces.push_back(face_array);
                 }
 
                 lods.lod.push_back(vertices_data);

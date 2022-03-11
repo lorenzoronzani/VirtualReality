@@ -27,7 +27,7 @@ int LIB_API Mesh::LOD() const {
 
 void LIB_API Mesh::vertices(LODdata vertices)
 {
-    /*m_vertices = std::make_shared<LODdata>(vertices);
+    m_vertices = std::make_shared<LODdata>(vertices);
     int lods = 0;
     auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
     auto m_lod_normal = &m_vertices->lod.at(lods).normal;
@@ -40,7 +40,11 @@ void LIB_API Mesh::vertices(LODdata vertices)
             faces[i][j] = m_lod_faces->at(i).at(j);
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
     }*/
+=======
+    }
+>>>>>>> parent of 0c66d09 (try but not work)
     /*
 =======
     }
@@ -96,7 +100,7 @@ void LIB_API Mesh::render(std::shared_ptr<Object> camera){
     if (m_material) {
         m_material->render(camera);
     }
-    /*auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
+    auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
     auto m_lod_normal = &m_vertices->lod.at(lods).normal;
     auto m_lod_uv = &m_vertices->lod.at(lods).uv;
     auto m_lod_faces = &m_vertices->lod.at(lods).faces;
@@ -118,22 +122,15 @@ void LIB_API Mesh::render(std::shared_ptr<Object> camera){
         glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_2)));
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_2)));
     }
-    glEnd();*/
-
-    glBindBuffer(GL_ARRAY_BUFFER, m_vertices_data.vertexVbo);
-    glVertexPointer(3, GL_FLOAT, 0, nullptr);
-    glBindBuffer(GL_ARRAY_BUFFER, colorVbo);
-    glColorPointer(3, GL_UNSIGNED_BYTE, 0, nullptr);
-    glDrawArrays(GL_POINTS, 0, maxNrOfPoints);
-
-    /*if (shadow()) {
+    glEnd();
+    if (shadow()) {
         glm::mat4 matrix_shadow_new = matrix_shadow * getFinalMatrix();
         
         //view*model
         matrix_shadow_new = dynamic_cast<Camera*>(camera.get())->inverseCamera() * matrix_shadow_new;
         glLoadMatrixf(glm::value_ptr(matrix_shadow_new));
         render_shadow();
-    }*/
+    }
 }
 
 void LIB_API Mesh::render_shadow(){

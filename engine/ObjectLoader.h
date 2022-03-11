@@ -10,8 +10,6 @@
 #include <map>
 #include <string>
 
-#include<GL/glew.h>
-
 #include "Material.h"
 #include "Mesh.h"
 #include "Light.h"

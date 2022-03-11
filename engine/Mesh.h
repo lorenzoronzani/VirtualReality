@@ -5,9 +5,9 @@
 #include <memory>
 #include <vector>
 #include <array>
-#include <GL/glew.h>
 
 struct LIB_API VerticesData {
+<<<<<<< HEAD
 <<<<<<< HEAD
 	unsigned int vertexVbo = 0;
 	unsigned int normalVbo = 0;
@@ -17,9 +17,15 @@ struct LIB_API VerticesData {
 =======
 	std::vector<glm::vec3> vertices;
 >>>>>>> parent of 215b7fe (Comments vbo try)
+=======
+	/*unsigned int vertexVbo = 0;
+	unsigned int normalVbo = 0;
+	unsigned int uvVbo = 0;*/
+	std::vector<glm::vec3> vertices;
+>>>>>>> parent of 0c66d09 (try but not work)
 	std::vector<glm::vec3> normal;
-	std::vector<glm::vec2> uv;*/
-	//std::vector<std::array<unsigned int, 3>> faces;
+	std::vector<glm::vec2> uv;
+	std::vector<std::array<unsigned int, 3>> faces;
 };
 
 struct LIB_API LODdata {
