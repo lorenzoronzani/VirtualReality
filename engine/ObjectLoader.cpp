@@ -398,7 +398,7 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
 
                 lods.lod.push_back(vertices_data);
             }
-            //dynamic_cast<Mesh*>(node.node.get())->VAO(num_vao);
+            dynamic_cast<Mesh*>(node.node.get())->VAO(num_vao);
             dynamic_cast<Mesh*>(node.node.get())->vertices(lods);
             num_vao = num_vao + 1;
             node.length = children;

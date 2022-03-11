@@ -315,6 +315,7 @@ int main()
         while (is_open) {
             current_ticks = clock();
 
+            
             List list;
             
             Engine::clear();

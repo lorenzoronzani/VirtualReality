@@ -149,7 +149,6 @@ bool LIB_API Engine::init(Handler t_handler) {
     //Dice a OpenGL di cercare nella VRAM
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
     
     return true;
 }
