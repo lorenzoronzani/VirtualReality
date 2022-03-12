@@ -48,8 +48,8 @@ int LIB_API Node::getNumberOfChildren() const{
     return (int)m_children.size();
 }
 
-void LIB_API Node::render(std::shared_ptr<Object> camera) {
-    
+void LIB_API Node::render(glm::mat4 modelView) {
+
 }
 
 void LIB_API Node::setTransformation(const glm::mat4& transformation) {

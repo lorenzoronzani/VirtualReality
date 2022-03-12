@@ -27,14 +27,16 @@ public:
 
 	void LOD(int LOD);
 	int LOD() const;
-	
+
 	void vertices(LODdata vertices);
 	LODdata vertices() const;
-	
-	void render(std::shared_ptr<Object> camera) override;
-	
-	void render_shadow();
-	
+
+	//void render(std::shared_ptr<Object> camera) override;
+	void render(glm::mat4 modelView) override;
+
+	void render_shadow(glm::mat4 modelViewShadow);
+	glm::mat4 get_shadow_mat(){return matrix_shadow;};
+
 	void shadow(const bool& shadow);
 	bool shadow() const;
 	void VAO(int vao);
@@ -46,7 +48,7 @@ private:
 	std::shared_ptr<LODdata> m_vertices;
 	bool m_has_shadows;
 	glm::mat4 matrix_shadow;
-	
+
 	int m_VAO;
 
 	unsigned int faceVbo;

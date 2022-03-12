@@ -23,7 +23,7 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float fov = 45.0f;
 
 //Camera Flags
-bool dynamic = true;
+bool dynamic = false;
 
 //Movimento con mouse
 bool firstMouse = true;
@@ -91,14 +91,14 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
                 camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3]+glm::vec4(0.0f,0.0f,5.0f,0.0f)), glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3]+ glm::vec4(0.0f, 0.0f, 10.0f, 0.0f)) + cameraFront, cameraUp)));
             }
             break;
-        
+
         case 's':
             //Movimento indietro
             if (dynamic) {
                 cameraPos -= cameraSpeed * cameraFront;
             }
             break;
-        
+
         case 'a':
             //Cambio camera / Movimento a sinistra
             if (dynamic) {
@@ -109,46 +109,46 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
                 camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(node->getChildByName("Camera2")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)) + cameraFront, cameraUp)));
             }
             break;
-        
+
         case 'd':
             //Movimento a destra
             if (dynamic) {
                 cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
             }
             break;
-        
+
         case 'i':
             //Rotazione braccio avanti
             sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
             break;
-        
+
         case 'j':
             //Rotazione braccio sinistra
             sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
             break;
-        
+
         case 'k':
             //Rotazione braccio indietro
             sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
             break;
-        
+
         case 'l':
             //Rotazione braccio destra
             sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
             break;
-        
+
         case 'n':
             //Cambio nodo
             choose = (choose + 1) % 3;
             break;
-        
+
         case 'c': {
             //Comprime palla
             if (is_attached) {
                 auto cube = node->getChildByName("Box006");
                 auto cube1 = node->getChildByName("Box007");
                 auto sphere1 = node->getChildByName("Sphere004");
-                
+
                 cube->setTransformation(glm::translate(cube->getFinalMatrix(), glm::vec3(0.0f, 0.0f, 0.1f)));
                 cube1->setTransformation(glm::translate(cube1->getFinalMatrix(), glm::vec3(0.0f, 0.0f, -0.1f)));
                 sphere1->setTransformation(glm::scale(sphere1->getFinalMatrix(), glm::vec3(1.0f, 1.0f, 0.95f)));
@@ -162,31 +162,31 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
                 auto cube = node->getChildByName("Box006");
                 auto cube1 = node->getChildByName("Box007");
                 auto sphere1 = node->getChildByName("Sphere004");
-                
+
                 cube->setTransformation(glm::translate(cube->getFinalMatrix(), glm::vec3(0.0f, 0.0f, -0.1f)));
                 cube1->setTransformation(glm::translate(cube1->getFinalMatrix(), glm::vec3(0.0f, 0.0f, 0.1f)));
                 sphere1->setTransformation(glm::scale(sphere1->getFinalMatrix(), glm::vec3(1.0f, 1.0f, 1.05f)));
             }
             break;
         }
-        
+
         case 't':
             //Rilascia palla
             if (is_attached) {
                 is_falling = true;
             }
             break;
-        
+
         case 'p':
             //Switch dynamic/static camera
             dynamic = !dynamic;
             break;
-        
+
         case 'y':
             //Exit
             is_open = false;
             break;
-        
+
         case 'h':
             //Tutorial
             is_tutorial = !is_tutorial;
@@ -205,22 +205,22 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
                 x_text = 1;
                 y_text = 300;
-            
+
             }else{
                 x_text = 1;
                 y_text = 15;
                 to_screen = "h -help";
             }
-            
+
             break;
-        
+
         case 'r':
             //Reset
             node = Engine::load(path);
-            
+
             //Disattivo ombra piano base
             dynamic_cast<Mesh*>(node->getChildByName("Plane001").get())->shadow(false);
-            
+
             //Reset flag
             is_falling = false;
             is_attached = false;
@@ -228,7 +228,7 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
             has_touched = false;
             break;
         }
-        
+
         //effettuo movimento con camera dinamica
         if (dynamic) {
             camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
@@ -250,7 +250,7 @@ void mouseMove(int mouseX, int mouseY) {
         lastX = (float)mouseX;
         lastY = (float)mouseY;
 
-        //Sensibilità del mouse
+        //Sensibilitï¿½ del mouse
         float sensitivity = 0.5f;
         xoffset *= sensitivity;
         yoffset *= sensitivity;
@@ -301,13 +301,13 @@ int main()
         //Disattivo l'ombra al piano di base
         dynamic_cast<Mesh*>(node->getChildByName("Plane001").get())->shadow(false);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
-        
+
         bool passed_1_sec = false;
-        
+
         //Clock per fps
         clock_t last = clock();
         clock_t current = last;
-        
+
         //Setto posizione camera iniziale
         cameraPos = glm::vec3(-10, 10, 0);
         camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
@@ -316,36 +316,36 @@ int main()
             current_ticks = clock();
 
             List list;
-            
+
             Engine::clear();
-            
+
             list.pass(node);
-            
+
             //Prendo sfera e centro del braccio dalla scena
             auto sphere_center = list.getByName("CenterSphere");
             auto arm_center = list.getByName("Center");
             auto sphere_column = sphere_center->getFinalMatrix()[3];
             auto arm_column = arm_center->getFinalMatrix()[3];
-            
+
             Engine::drawText(to_screen, x_text, y_text);
             Engine::drawText("fps: " + std::to_string(fps), 1, 2);
 
             Engine::render(list, camera);
-            
+
             Engine::swap();
             Engine::update();
             //Ruoto luce blu
             node->getChildByName("Spot001")->setTransformation(glm::rotate(node->getChildByName("Spot001")->getFinalMatrix(), glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-            
+
             //Controllo per presa palla
             if (!is_attached && !is_falling && glm::length(arm_column - sphere_column) < min_distance) {
                 auto distance = glm::vec4(0, 0, 0, 0) - sphere_column;
-                
+
                 //Catturo palla
                 node->getChildByName("Sphere004")->setTransformation(glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(distance)) * node->getChildByName("Sphere004")->getFinalMatrix(), glm::vec3(0, 2.5, -0.5)));
                 node->getChildByName("Center")->addChild(node->getChildByName("Sphere004"));
                 node->removeChild(node->getChildByName("Sphere004")->id());
-                
+
                 is_attached = true;
                 has_touched = false;
             }
@@ -353,9 +353,9 @@ int main()
             if (is_falling && !has_touched) {
                 if (is_attached) {
                     is_attached = false;
-                    
+
                     auto last = sphere_column;
-                    
+
                     //Stacco la palla
                     node->addChild(node->getChildByName("Sphere004"));
                     node->getChildByName("Center")->removeChild(node->getChildByName("Sphere004")->id());
@@ -363,20 +363,20 @@ int main()
                 }
 
                 if (sphere_center->getFinalMatrix()[3][1] >= distance_ground) {
-                    //Simulo gravità
+                    //Simulo gravitï¿½
                     node->getChildByName("Sphere004")->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0, -0.1, 0)) * node->getChildByName("Sphere004")->getFinalMatrix());
                 } else {
-                    //La palla è a terra
+                    //La palla ï¿½ a terra
                     has_touched = true;
                     is_attached = false;
                     is_falling = false;
                 }
             }
-            
+
 
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
-            
+
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;

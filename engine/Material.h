@@ -24,7 +24,8 @@ public:
 	void texture(std::shared_ptr<Texture> texture);
 	std::shared_ptr<Texture> texture() const;
 
-	void render(std::shared_ptr<Object> camera);
+	//void render(std::shared_ptr<Object> camera);
+	void render(glm::mat4 modelView);
 
 private:
 	MaterialSettings m_settings;

@@ -81,16 +81,17 @@ LODdata LIB_API Mesh::vertices() const
     return *m_vertices;
 }
 
-void LIB_API Mesh::render(std::shared_ptr<Object> camera){
+void LIB_API Mesh::render(glm::mat4 modelView){
     int lods = 0;
-    
+
     //Prendo matrice camera
-    glm::mat4 model_view;
-    model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
-    glLoadMatrixf(glm::value_ptr(model_view));
-    
+    //glm::mat4 model_view;
+    //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
+    //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() ;
+    glLoadMatrixf(glm::value_ptr(modelView));
+
     if (m_material) {
-        m_material->render(camera);
+        m_material->render(modelView);
     }
     auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
     auto m_lod_normal = &m_vertices->lod.at(lods).normal;
@@ -115,43 +116,48 @@ void LIB_API Mesh::render(std::shared_ptr<Object> camera){
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_2)));
     }
     glEnd();
-    if (shadow()) {
-        glm::mat4 matrix_shadow_new = matrix_shadow * getFinalMatrix();
-        
+    //if (shadow()) {
+    //std::cout << this->name() << " ho l'ombra" << std::endl;
+        //glm::mat4 matrix_shadow_new = matrix_shadow * getFinalMatrix();
+        //glm::mat4 matrix_shadow_new = modelView * matrix_shadow;
+
         //view*model
-        matrix_shadow_new = dynamic_cast<Camera*>(camera.get())->inverseCamera() * matrix_shadow_new;
-        glLoadMatrixf(glm::value_ptr(matrix_shadow_new));
-        render_shadow();
-    }
+        //matrix_shadow_new = dynamic_cast<Camera*>(camera.get())->inverseCamera() * matrix_shadow_new;
+        //matrix_shadow_new = modelView * matrix_shadow_new;
+        //glLoadMatrixf(glm::value_ptr(matrix_shadow_new));
+        //render_shadow();
+    //}
 }
 
-void LIB_API Mesh::render_shadow(){
+void LIB_API Mesh::render_shadow(glm::mat4 modelViewShadow){
+    glLoadMatrixf(glm::value_ptr(modelViewShadow));
+
     int lods = 0;
-    
+
     glm::vec3 color_shadow;
     color_shadow = glm::vec3(0.0f, 0.0f, 0.0f);
-    
+
     glDisable(GL_LIGHTING);
     glDisable(GL_TEXTURE_2D);
-    
+
     auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
     auto m_lod_faces = &m_vertices->lod.at(lods).faces;
 
     auto size = m_lod_faces->size();
-    
+
     //Renderizzo l'ombra
     glBegin(GL_TRIANGLES);
     for (int j = 0; j < size; j++) {
         glColor3fv(glm::value_ptr(color_shadow));
-       
+
         auto m_lod_faces_j = m_lod_faces->at(j);
-        
+
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(0))));
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(1))));
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(2))));
     }
     glEnd();
-    
+
     glEnable(GL_TEXTURE_2D);
     glEnable(GL_LIGHTING);
 }

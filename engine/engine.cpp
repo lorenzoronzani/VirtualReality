@@ -56,12 +56,12 @@ void reshapeCallback(int width, int height)
     //Setto matrice di proiezione
     glViewport(0, 0, width, height);
     glMatrixMode(GL_PROJECTION);
-    
+
     projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 1.0f, 1000.0f);
     ortho = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
 
     glLoadMatrixf(glm::value_ptr(projection));
-    
+
     //Reimposto in ModelView
     glMatrixMode(GL_MODELVIEW);
 }
@@ -89,7 +89,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowPosition(150, 150);
     glutInitWindowSize(handler.width, handler.height);
-    
+
     //default per inizializzazione glut
     char* argv[1];
     int argc = 1;
@@ -102,7 +102,7 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     //Inizializzazione glut
     glutInit(&argc, argv);
-    
+
     //Flag opzionali
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 
@@ -142,14 +142,14 @@ bool LIB_API Engine::init(Handler t_handler) {
     glutKeyboardFunc(keyboardCallback);
     glutCloseFunc(closeCallback);
     glutPassiveMotionFunc(mouseMove);
-    
+
     //Inizializza lettore texture
     FreeImage_Initialise();
 
     //Dice a OpenGL di cercare nella VRAM
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
-    
+
     return true;
 }
 
@@ -163,7 +163,11 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
     glMatrixMode(GL_MODELVIEW);
     for (int i = 0; i < list.size(); i++) {
-        list[i]->render(camera);
+        list[i].first->render(camera->inverseCamera()*list[i].second);
+        Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
+        if(mesh)
+            if(mesh->shadow())
+                mesh->render_shadow(camera->inverseCamera()*mesh->get_shadow_mat()*list[i].second);
     }
 }
 
@@ -192,7 +196,7 @@ void LIB_API Engine::drawText(const std::string& text,float x,float y)
     //Setto matrice di proiezione
     glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(glm::value_ptr(ortho));
-    
+
     //Setto matrice di model view
     glMatrixMode(GL_MODELVIEW);
     glLoadMatrixf(glm::value_ptr(glm::mat4(1.0f)));

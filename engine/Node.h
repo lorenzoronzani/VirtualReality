@@ -21,22 +21,23 @@ public:
 
 	void addChild(NodePtr child);
 	void removeChild(int idChild);
-	
+
 	void parent(NodePtr parent);
 	NodePtr parent() const;
-	
+
 	void removeParent();
 
 	NodePtr getChild(int num) const;
 	NodePtr getChildByName(const std::string& name);
-	
+
 	int getNumberOfChildren() const;
-	
-	void render(std::shared_ptr<Object> camera);
-	
+
+	//void render(std::shared_ptr<Object> camera);
+	void render(glm::mat4 modelView);
+
 	virtual void setTransformation(const glm::mat4& transformation);
 	glm::mat4 getFinalMatrix() const;
-	
+
 	virtual Node* clone();
 
 private:

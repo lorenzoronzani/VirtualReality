@@ -16,13 +16,13 @@ LightSettings LIB_API Light::settings() const{
 	return m_settings;
 }
 
-void LIB_API Light::render(std::shared_ptr<Object> camera){
+void LIB_API Light::render(glm::mat4 modelView){
 	if (m_settings.light_number < GL_MAX_LIGHTS) {
 
 		//Prendo matrice camera
 		glm::mat4 model_view;
-		model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
-		glLoadMatrixf(glm::value_ptr(model_view));
+		//model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
+		glLoadMatrixf(glm::value_ptr(modelView));
 
 		//Switch per tipologia luce
 		switch ((OvLight::Subtype)m_settings.light_type)

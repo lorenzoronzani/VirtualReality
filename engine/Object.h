@@ -3,6 +3,7 @@
 #pragma once
 #include <string>
 #include <memory>
+#include <glm/glm.hpp>
 
 #ifdef _WINDOWS
 // Export API:
@@ -22,11 +23,12 @@ public:
 	virtual ~Object();
 
 	int id() const;
-	
+
 	void name(std::string name);
 	std::string name() const;
 
-	virtual void render(std::shared_ptr<Object> camera) = 0;
+	//virtual void render(std::shared_ptr<Object> camera) = 0;
+	virtual void render(glm::mat4 modelView) = 0;
 
 private:
 	const int m_id;
