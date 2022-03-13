@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 
 //Path scena
-const std::string path = "test/simple3Rect.OVO";
+const std::string path = "test/cube.OVO";
 
 //Distanze per la palla
 const int min_distance = 7;
