@@ -50,7 +50,8 @@ private:
 	glm::mat4 matrix_shadow;
 
 	int m_VAO;
-
+	unsigned int normal;
+	unsigned int uv;
 	unsigned int faceVbo;
 
 	unsigned int vertexVbo;

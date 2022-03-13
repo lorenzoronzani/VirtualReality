@@ -146,9 +146,6 @@ bool LIB_API Engine::init(Handler t_handler) {
     //Inizializza lettore texture
     FreeImage_Initialise();
 
-    //Dice a OpenGL di cercare nella VRAM
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
 
     return true;
 }
