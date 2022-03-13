@@ -3,7 +3,7 @@
 #include "Texture.h"
 #include <memory>
 #include <iostream>
-#include "../dependencies/glm/include/glm/glm.hpp"
+#include <glm/glm.hpp>
 
 struct MaterialSettings {
 	glm::vec3 emission;

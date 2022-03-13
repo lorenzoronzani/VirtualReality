@@ -1,5 +1,5 @@
-#include <time.h>
 #include "engine.h"
+#include <glm/glm.hpp>
 
 //Path scena
 const std::string path = "test/simple3Rect.OVO";

@@ -4,10 +4,10 @@
 #include <memory>
 #include <iostream>
 #include <map>
-#include "../dependencies/glm/include/glm/glm.hpp"
-#include "../dependencies/glm/include/glm/gtc/packing.hpp"
-#include "../dependencies/glm/include/glm/gtc/type_ptr.hpp"
-#include "../dependencies/glm/include/glm/gtx/string_cast.hpp"
+#include <glm/glm.hpp>
+#include <glm/gtc/packing.hpp>
+#include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/string_cast.hpp>
 
 
 
