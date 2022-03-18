@@ -53,7 +53,7 @@ void LIB_API Mesh::vertices(LODdata vertices)
     glBufferData(GL_ARRAY_BUFFER, m_lod_vertices.size() * sizeof(glm::vec3),
         m_lod_vertices.data(), GL_STATIC_DRAW);
 
-    glGenBuffers(1, &normalVbo);
+    /*glGenBuffers(1, &normalVbo);
     glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
     // Copy the normal data from system to video memory:
     glBufferData(GL_ARRAY_BUFFER, m_lod_normal->size() * sizeof(glm::vec3),
@@ -63,7 +63,7 @@ void LIB_API Mesh::vertices(LODdata vertices)
     glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
     // Copy the uv data from system to video memory:
     glBufferData(GL_ARRAY_BUFFER, m_lod_uv->size() * sizeof(glm::vec2),
-        m_lod_uv->data(), GL_STATIC_DRAW);
+        m_lod_uv->data(), GL_STATIC_DRAW);*/
 
     glGenBuffers(1, &faceVbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
@@ -71,6 +71,8 @@ void LIB_API Mesh::vertices(LODdata vertices)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
         m_lod_faces->size() * 3 * sizeof(unsigned int),
         faces.data(), GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(0);
 
 }
@@ -87,14 +89,10 @@ void LIB_API Mesh::render(glm::mat4 modelView) {
     //glm::mat4 model_view;
     //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
     //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() ;
-    glLoadMatrixf(glm::value_ptr(modelView));
-
+    //glLoadMatrixf(glm::value_ptr(modelView));
     if (m_material) {
-        m_material->render(modelView);
+        //m_material->render(modelView);
     }
-    auto m_lod_vertices = m_vertices->lod.at(lods).vertices;
-    auto m_lod_normal = &m_vertices->lod.at(lods).normal;
-    auto m_lod_uv = &m_vertices->lod.at(lods).uv;
     auto m_lod_faces = &m_vertices->lod.at(lods).faces;
     auto size = m_lod_faces->size();
     //itera vertici
@@ -116,7 +114,7 @@ void LIB_API Mesh::render(glm::mat4 modelView) {
     }
     glEnd();*/
 
-    glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
+    /*glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
     glNormalPointer(GL_FLOAT, 0, nullptr);
 
     glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
@@ -127,7 +125,10 @@ void LIB_API Mesh::render(glm::mat4 modelView) {
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
     glDrawElements(GL_TRIANGLES, m_lod_faces->size() * 3, GL_UNSIGNED_INT, nullptr);
-
+    */
+    glBindVertexArray(m_VAO);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
+    glDrawElements(GL_TRIANGLES, m_lod_faces->size() * 3, GL_UNSIGNED_INT, nullptr);
 
 
     //if (shadow()) {

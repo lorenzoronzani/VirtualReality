@@ -18,7 +18,7 @@ LightSettings LIB_API Light::settings() const{
 
 void LIB_API Light::render(glm::mat4 modelView){
 	if (m_settings.light_number < GL_MAX_LIGHTS) {
-
+		/*
 		//Prendo matrice camera
 		glm::mat4 model_view;
 		//model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
@@ -54,8 +54,9 @@ void LIB_API Light::render(glm::mat4 modelView){
 
 		glLightfv(GL_LIGHT0 + m_settings.light_number, GL_DIFFUSE, glm::value_ptr(m_settings.color));
 		glLightfv(GL_LIGHT0 + m_settings.light_number, GL_SPECULAR, glm::value_ptr(m_settings.color));
+		*/
 	}
-
+	
 }
 
 Light LIB_API* Light::clone()

@@ -43,16 +43,11 @@ static const char* vertShader = R"(
    uniform mat4 modelview;
 
    layout(location = 0) in vec3 in_Position;
-   layout(location = 1) in vec4 in_Color;
 
-   out vec3 out_Color;
-   out float dist;
 
    void main(void)
    {
       gl_Position = projection * modelview * vec4(in_Position, 1.0f);
-      dist = abs(gl_Position.z / 100.0f);
-      out_Color = in_Color.rgb;
    }
 )";
 
@@ -60,15 +55,12 @@ static const char* vertShader = R"(
 static const char* fragShader = R"(
    #version 440 core
 
-   in  vec3 out_Color;
-   in  float dist;
    
    out vec4 frag_Output;
 
    void main(void)
    {
-      vec3 fog = vec3(1.0f, 1.0f, 1.0f);
-      frag_Output = vec4(mix(out_Color, fog, dist), 1.0f);
+      frag_Output = vec4(1.0f,0.0f,0.0f, 1.0f);
    }
 )";
 
@@ -186,15 +178,15 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     //Lighting
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-    glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, 1.0f);
+   /* glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, 1.0f);
     glm::vec4 gAmbient(0.2f, 0.2f, 0.2f, 1.0f);
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, glm::value_ptr(gAmbient));
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, glm::value_ptr(gAmbient));*/
 
     //OpenGL enables
     glEnable(GL_DEPTH_TEST);
-    glEnable(GL_NORMALIZE);
-    glEnable(GL_LIGHTING);
-    glEnable(GL_TEXTURE_2D);
+    //glEnable(GL_NORMALIZE);
+    //glEnable(GL_LIGHTING);
+    //glEnable(GL_TEXTURE_2D);
 
     //Callbacks
     glutDisplayFunc(displayCallback);
@@ -240,13 +232,17 @@ void LIB_API Engine::clear()
 
 void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
-    glMatrixMode(GL_MODELVIEW);
+    //glMatrixMode(GL_MODELVIEW);
     for (int i = 0; i < list.size(); i++) {
+        shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
+        shader.m_shader->render();
         list[i].first->render(camera->inverseCamera() * list[i].second);
         Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
-        if (mesh)
-            if (mesh->shadow())
-                mesh->render_shadow(camera->inverseCamera() * mesh->get_shadow_mat() * list[i].second);
+        if (mesh) {
+            if (mesh->shadow()) {
+                //mesh->render_shadow(camera->inverseCamera() * mesh->get_shadow_mat() * list[i].second);
+            }
+        }
     }
 }
 
@@ -273,7 +269,7 @@ void LIB_API Engine::update()
 void LIB_API Engine::drawText(const std::string& text, float x, float y)
 {
     //Setto matrice di proiezione
-    glMatrixMode(GL_PROJECTION);
+   /* glMatrixMode(GL_PROJECTION);
     glLoadMatrixf(glm::value_ptr(ortho));
 
     //Setto matrice di model view
@@ -295,5 +291,5 @@ void LIB_API Engine::drawText(const std::string& text, float x, float y)
 
     // Reimposto proiezione
     glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(projection));
+    glLoadMatrixf(glm::value_ptr(projection));*/
 }
