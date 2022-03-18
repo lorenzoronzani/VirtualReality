@@ -43,6 +43,9 @@ void LIB_API Mesh::vertices(LODdata vertices)
     }
     //std::cout << m_lod_faces->size() << " " << faces.size() << std::endl;
     //std::cout << m_lod_vertices.size() << std::endl;
+    // Init VAO:   
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
 
     glGenBuffers(1, &vertexVbo);
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
@@ -68,7 +71,7 @@ void LIB_API Mesh::vertices(LODdata vertices)
     glBufferData(GL_ELEMENT_ARRAY_BUFFER,
         m_lod_faces->size() * 3 * sizeof(unsigned int),
         faces.data(), GL_STATIC_DRAW);
-
+    glEnableVertexAttribArray(0);
 
 }
 
@@ -112,9 +115,6 @@ void LIB_API Mesh::render(glm::mat4 modelView) {
         glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_2)));
     }
     glEnd();*/
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
     glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
     glNormalPointer(GL_FLOAT, 0, nullptr);
@@ -128,9 +128,6 @@ void LIB_API Mesh::render(glm::mat4 modelView) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
     glDrawElements(GL_TRIANGLES, m_lod_faces->size() * 3, GL_UNSIGNED_INT, nullptr);
 
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 
     //if (shadow()) {

@@ -12,6 +12,7 @@
 #include <GL/freeglut.h>
 #include "engine.h"
 // FreeImage
+#include "Shader.h"
 #include "FreeImage.h"
 
 //Id finestra
@@ -25,7 +26,51 @@ glm::mat4 ortho;
 int fps;
 int frames;
 
+struct ShaderSettings {
+    std::shared_ptr<Shader> m_shader;
+    int modelview;
+    int projection;
+};
+
 static Engine::Handler handler;
+static ShaderSettings shader;
+
+////////////////////////////
+static const char* vertShader = R"(
+   #version 440 core
+
+   uniform mat4 projection;
+   uniform mat4 modelview;
+
+   layout(location = 0) in vec3 in_Position;
+   layout(location = 1) in vec4 in_Color;
+
+   out vec3 out_Color;
+   out float dist;
+
+   void main(void)
+   {
+      gl_Position = projection * modelview * vec4(in_Position, 1.0f);
+      dist = abs(gl_Position.z / 100.0f);
+      out_Color = in_Color.rgb;
+   }
+)";
+
+////////////////////////////
+static const char* fragShader = R"(
+   #version 440 core
+
+   in  vec3 out_Color;
+   in  float dist;
+   
+   out vec4 frag_Output;
+
+   void main(void)
+   {
+      vec3 fog = vec3(1.0f, 1.0f, 1.0f);
+      frag_Output = vec4(mix(out_Color, fog, dist), 1.0f);
+   }
+)";
 
 #ifdef _WINDOWS
 #include <Windows.h>
@@ -55,15 +100,16 @@ void reshapeCallback(int width, int height)
 {
     //Setto matrice di proiezione
     glViewport(0, 0, width, height);
-    glMatrixMode(GL_PROJECTION);
+    //glMatrixMode(GL_PROJECTION);
 
     projection = glm::perspective(glm::radians(45.0f), (float)width / (float)height, 1.0f, 1000.0f);
     ortho = glm::ortho(0.0f, (float)width, 0.0f, (float)height, -1.0f, 1.0f);
 
-    glLoadMatrixf(glm::value_ptr(projection));
+    //glLoadMatrixf(glm::value_ptr(projection));
+    shader.m_shader->setMatrix(shader.projection, projection);
 
     //Reimposto in ModelView
-    glMatrixMode(GL_MODELVIEW);
+    //glMatrixMode(GL_MODELVIEW);
 }
 
 void specialCallback(int key, int mouseX, int mouseY)
@@ -84,9 +130,18 @@ void mouseMove(int mouseX, int mouseY) {
     handler.mouse(mouseX, mouseY);
 }
 
+void __stdcall DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam)
+{
+    std::cout << "OpenGL says: \"" << std::string(message) << "\"" << std::endl;
+}
+
 bool LIB_API Engine::init(Handler t_handler) {
     //Inizializzazioni di glut
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
+    glutInitContextVersion(4, 4);
+    glutInitContextProfile(GLUT_CORE_PROFILE);
+    glutInitContextFlags(GLUT_DEBUG); // <-- Debug flag required by the OpenGL debug callback      
+
     glutInitWindowPosition(150, 150);
     glutInitWindowSize(handler.width, handler.height);
 
@@ -94,11 +149,11 @@ bool LIB_API Engine::init(Handler t_handler) {
     char* argv[1];
     int argc = 1;
 
-    #ifdef _WINDOWS
+#ifdef _WINDOWS
     argv[0] = _strdup("Application");
-    #else
+#else
     argv[0] = strdup("Application");
-    #endif
+#endif
 
     //Inizializzazione glut
     glutInit(&argc, argv);
@@ -116,12 +171,18 @@ bool LIB_API Engine::init(Handler t_handler) {
     glewExperimental = GL_TRUE;
     glewInit();
 
-    // OpenGL 2.1 is required:
-    if (!glewIsSupported("GL_VERSION_2_1"))
+    if (GLEW_VERSION_4_4)
+        std::cout << "Driver supports OpenGL 4.4\n" << std::endl;
+    else
     {
-        std::cout << "OpenGL 2.1 not supported" << std::endl;
-        return false;
+        std::cout << "[ERROR] OpenGL 4.4 not supported\n" << std::endl;
+        return -1;
     }
+
+
+    // Register OpenGL debug callback:
+    glDebugMessageCallback((GLDEBUGPROC)DebugCallback, nullptr);
+    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
     //Lighting
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -146,6 +207,27 @@ bool LIB_API Engine::init(Handler t_handler) {
     //Inizializza lettore texture
     FreeImage_Initialise();
 
+    std::shared_ptr<Shader> m_vertex_shader;
+    std::shared_ptr<Shader> m_fragment_shader;
+
+    // Compile vertex shader:
+    m_vertex_shader = std::make_shared<Shader>();
+    m_vertex_shader->loadFromMemory(Shader::TYPE_VERTEX, vertShader);
+
+    // Compile fragment shader:
+    m_fragment_shader = std::make_shared<Shader>();
+    m_fragment_shader->loadFromMemory(Shader::TYPE_FRAGMENT, fragShader);
+
+    shader.m_shader = std::make_shared<Shader>();
+
+    shader.m_shader->build(m_vertex_shader.get(), m_fragment_shader.get());
+
+    shader.m_shader->render();
+    shader.m_shader->bind(0, "in_Position");
+
+    // Get shader variable locations:
+    shader.modelview = shader.m_shader->getParamLocation("modelview");
+    shader.projection = shader.m_shader->getParamLocation("projection");
 
     return true;
 }
@@ -160,11 +242,11 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
     glMatrixMode(GL_MODELVIEW);
     for (int i = 0; i < list.size(); i++) {
-        list[i].first->render(camera->inverseCamera()*list[i].second);
+        list[i].first->render(camera->inverseCamera() * list[i].second);
         Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
-        if(mesh)
-            if(mesh->shadow())
-                mesh->render_shadow(camera->inverseCamera()*mesh->get_shadow_mat()*list[i].second);
+        if (mesh)
+            if (mesh->shadow())
+                mesh->render_shadow(camera->inverseCamera() * mesh->get_shadow_mat() * list[i].second);
     }
 }
 
@@ -188,7 +270,7 @@ void LIB_API Engine::update()
     glutMainLoopEvent();
 }
 
-void LIB_API Engine::drawText(const std::string& text,float x,float y)
+void LIB_API Engine::drawText(const std::string& text, float x, float y)
 {
     //Setto matrice di proiezione
     glMatrixMode(GL_PROJECTION);

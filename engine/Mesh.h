@@ -17,7 +17,7 @@ struct LIB_API LODdata {
 	std::vector<VerticesData> lod;
 };
 
-class LIB_API Mesh : public Node{
+class LIB_API Mesh : public Node {
 public:
 	Mesh();
 	~Mesh();
@@ -35,7 +35,7 @@ public:
 	void render(glm::mat4 modelView) override;
 
 	void render_shadow(glm::mat4 modelViewShadow);
-	glm::mat4 get_shadow_mat(){return matrix_shadow;};
+	glm::mat4 get_shadow_mat() { return matrix_shadow; };
 
 	void shadow(const bool& shadow);
 	bool shadow() const;
@@ -49,7 +49,7 @@ private:
 	bool m_has_shadows;
 	glm::mat4 matrix_shadow;
 
-	int m_VAO;
+	unsigned int m_VAO;
 	unsigned int normal;
 	unsigned int uv;
 	unsigned int faceVbo;
@@ -57,4 +57,5 @@ private:
 	unsigned int vertexVbo;
 	unsigned int normalVbo;
 	unsigned int uvVbo;
+
 };
