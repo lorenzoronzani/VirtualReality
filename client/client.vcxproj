@@ -156,10 +156,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Develop.cpp" />
-    <ClCompile Include="DevelopTmp.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="RoboticArm.cpp" />
-    <ClCompile Include="RoboticArmTmp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Develop.h" />
