@@ -41,6 +41,8 @@ public:
 	bool shadow() const;
 	void VAO(int vao);
 	int VAO() const;
+	virtual Mesh* clone() override;
+
 private:
 	std::shared_ptr<Material> m_material;
 	int m_LOD;

@@ -201,3 +201,8 @@ int LIB_API Mesh::VAO() const
 {
     return m_VAO;
 }
+
+Mesh LIB_API* Mesh::clone()
+{
+    return new Mesh(*this);
+}

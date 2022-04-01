@@ -61,3 +61,8 @@ void LIB_API Light::render(glm::mat4 modelView, ShaderSettings &shader){
 	}
 	
 }
+
+Light LIB_API* Light::clone()
+{
+	return new Light(*this);
+}

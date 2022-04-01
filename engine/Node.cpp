@@ -60,4 +60,7 @@ glm::mat4 LIB_API Node::getFinalMatrix() const{
     return m_matrix;
 }
 
-
+Node LIB_API* Node::clone()
+{
+    return new Node(*this);
+}

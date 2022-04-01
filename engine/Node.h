@@ -37,9 +37,12 @@ public:
 	virtual void setTransformation(const glm::mat4& transformation);
 	glm::mat4 getFinalMatrix() const;
 
+	virtual Node* clone();
+
 
 private:
 	glm::mat4 m_matrix;
 	std::vector<NodePtr> m_children;
 	NodePtr m_parent;
+
 };
