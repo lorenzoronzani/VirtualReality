@@ -26,12 +26,6 @@ void LIB_API Texture::load(const std::string& file,ShaderSettings &shader){
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
 
 		//Filtro anisotropico
-		/*if (strstr((const char*)glGetString(GL_EXTENSIONS), "GL_EXT_texture_filter_anisotropic"))
-		{
-			int anisotropical_level;
-			glGetIntegerv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &anisotropical_level);
-			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropical_level);
-		}*/
 		FIBITMAP* bitmap = FreeImage_Load(FreeImage_GetFileType(file.c_str(), 0), file.c_str());
 
 		int intFormat = GL_COMPRESSED_RGB;

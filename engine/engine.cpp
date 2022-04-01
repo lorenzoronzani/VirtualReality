@@ -221,15 +221,11 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     //Lighting
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-   /* glLightModelf(GL_LIGHT_MODEL_LOCAL_VIEWER, 1.0f);
-    glm::vec4 gAmbient(0.2f, 0.2f, 0.2f, 1.0f);
-    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, glm::value_ptr(gAmbient));*/
+
 
     //OpenGL enables
     glEnable(GL_DEPTH_TEST);
-    //glEnable(GL_NORMALIZE);
-    //glEnable(GL_LIGHTING);
-    //glEnable(GL_TEXTURE_2D);
+
 
     //Callbacks
     glutDisplayFunc(displayCallback);

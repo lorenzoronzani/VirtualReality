@@ -45,7 +45,6 @@ public:
 	void name(std::string name);
 	std::string name() const;
 
-	//virtual void render(std::shared_ptr<Object> camera) = 0;
 	virtual void render(glm::mat4 modelView,ShaderSettings &shader) = 0;
 
 private:

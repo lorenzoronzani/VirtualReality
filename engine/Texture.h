@@ -11,7 +11,6 @@ public:
 
 	void load(const std::string& file,ShaderSettings &shader);
 
-	//void render(std::shared_ptr<Object> camera);
 	void render(glm::mat4 modelView,ShaderSettings &shader);
 
 	void id(unsigned int id);

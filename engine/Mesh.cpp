@@ -40,11 +40,8 @@ void LIB_API Mesh::vertices(LODdata vertices)
     for (int i = 0; i < m_lod_faces->size(); i++) {
         for (int j = 0; j < 3; j++) {
             faces.push_back(m_lod_faces->at(i).at(j));
-            //std::cout << m_lod_faces->at(i).at(j);
         }
     }
-    //std::cout << m_lod_faces->size() << " " << faces.size() << std::endl;
-    //std::cout << m_lod_vertices.size() << std::endl;
     // Init VAO:   
     glGenVertexArrays(1, &m_VAO);
     glBindVertexArray(m_VAO);
@@ -90,12 +87,6 @@ LODdata LIB_API Mesh::vertices() const
 
 void LIB_API Mesh::render(glm::mat4 modelView, ShaderSettings &shader) {
     int lods = 0;
-
-    //Prendo matrice camera
-    //glm::mat4 model_view;
-    //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
-    //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() ;
-    //glLoadMatrixf(glm::value_ptr(modelView));
     shader.m_shader->setMatrix3(shader.normalMatLoc, glm::inverseTranspose(glm::mat3(modelView)));
 
     if (m_material) {
@@ -103,37 +94,7 @@ void LIB_API Mesh::render(glm::mat4 modelView, ShaderSettings &shader) {
     }
     auto m_lod_faces = &m_vertices->lod.at(lods).faces;
     auto size = m_lod_faces->size();
-    //itera vertici
-    /*glBegin(GL_TRIANGLES);
-    for (int j = 0; j < size; j++) {
-        //prende tutti i vertici della faccia j
-        auto m_lod_faces_0 = m_lod_faces->at(j).at(0);
-        auto m_lod_faces_1 = m_lod_faces->at(j).at(1);
-        auto m_lod_faces_2 = m_lod_faces->at(j).at(2);
-        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_0)));
-        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_0)));
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_0)));
-        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_1)));
-        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_1)));
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_1)));
-        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_2)));
-        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_2)));
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_2)));
-    }
-    glEnd();*/
 
-    /*glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
-    glNormalPointer(GL_FLOAT, 0, nullptr);
-
-    glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
-    glTexCoordPointer(2, GL_FLOAT, 0, nullptr);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-    glVertexPointer(3, GL_FLOAT, 0, nullptr);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
-    glDrawElements(GL_TRIANGLES, m_lod_faces->size() * 3, GL_UNSIGNED_INT, nullptr);
-    */
     glBindVertexArray(m_VAO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
     glDrawElements(GL_TRIANGLES, m_lod_faces->size() * 3, GL_UNSIGNED_INT, nullptr);
