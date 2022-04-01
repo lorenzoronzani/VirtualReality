@@ -32,6 +32,7 @@ struct ShaderSettings {
 	int lightAmbientLoc;
 	int lightDiffuseLoc;
 	int lightSpecularLoc;
+	int texture;
 };
 
 class LIB_API Object {

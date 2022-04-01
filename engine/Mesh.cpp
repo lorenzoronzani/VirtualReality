@@ -54,11 +54,7 @@ void LIB_API Mesh::vertices(LODdata vertices)
     // Copy the vertex data from system to video memory:
     glBufferData(GL_ARRAY_BUFFER, m_lod_vertices.size() * sizeof(glm::vec3),
         m_lod_vertices.data(), GL_STATIC_DRAW);
-    /*glGenBuffers(1, &uvVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
-    // Copy the uv data from system to video memory:
-    glBufferData(GL_ARRAY_BUFFER, m_lod_uv->size() * sizeof(glm::vec2),
-        m_lod_uv->data(), GL_STATIC_DRAW);*/
+
 
     glGenBuffers(1, &faceVbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
@@ -78,6 +74,13 @@ void LIB_API Mesh::vertices(LODdata vertices)
     glVertexAttribPointer((GLuint)1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(1);
 
+    glGenBuffers(1, &uvVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
+    // Copy the uv data from system to video memory:
+    glBufferData(GL_ARRAY_BUFFER, m_lod_uv->size() * sizeof(glm::vec2),
+        m_lod_uv->data(), GL_STATIC_DRAW);
+    glVertexAttribPointer((GLuint)2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(2);
 }
 
 LODdata LIB_API Mesh::vertices() const

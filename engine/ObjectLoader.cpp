@@ -1,5 +1,5 @@
 #include "ObjectLoader.h"
-LIB_API ObjectLoader::ObjectLoader() : num_light{0}, num_texture{1}{
+LIB_API ObjectLoader::ObjectLoader(ShaderSettings& shader) : m_shader{ shader },num_light { 0 }, num_texture{ 1 }{
 }
 
 LIB_API ObjectLoader::~ObjectLoader(){
@@ -167,7 +167,7 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
             
             //Cerco e carico texture
             directory = directory + "/"+textureName;
-            texture->load(directory);
+            texture->load(directory,m_shader);
             
             position += (unsigned int)strlen(textureName) + 1;
             

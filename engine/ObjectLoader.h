@@ -79,9 +79,9 @@ private:
     int num_texture;
     std::string m_directory;
     int num_vao;
-
+    ShaderSettings m_shader;
 public:
-	ObjectLoader();
+	ObjectLoader(ShaderSettings &shader);
 	~ObjectLoader();
 	std::shared_ptr<Node> LoadScene(const std::string& file);
 };

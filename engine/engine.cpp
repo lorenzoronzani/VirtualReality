@@ -42,16 +42,21 @@ static const char* vertShader = R"(
 
    layout(location = 0) in vec3 in_Position;
    layout(location = 1) in vec3 in_Normal;
+   layout (location = 2) in vec2 aTexCoord;
+
 
    // Varying:
    out vec4 fragPosition;
    out vec3 normal; 
+   out vec2 TexCoord;
+
 
    void main(void)
    {
       fragPosition = modelview * vec4(in_Position, 1.0f);
       gl_Position = projection * fragPosition; 
       normal = normalMatrix * in_Normal;
+      TexCoord = vec2(aTexCoord.x, aTexCoord.y);
    }
 )";
 
@@ -63,7 +68,8 @@ static const char* fragShader = R"(
    out vec4 frag_Output;
    in vec4 fragPosition;
    in vec3 normal;   
-   
+   in vec2 TexCoord;   
+
    // Material properties:
    uniform vec3 matEmission;
    uniform vec3 matAmbient;
@@ -77,6 +83,7 @@ static const char* fragShader = R"(
    uniform vec3 lightDiffuse; 
    uniform vec3 lightSpecular;
 
+   layout(binding = 0) uniform sampler2D texture1;
    void main(void)
    {
       
@@ -96,7 +103,7 @@ static const char* fragShader = R"(
          float nDotHV = dot(_normal, halfVector);         
          fragColor += matSpecular * pow(nDotHV, matShininess) * lightSpecular;
       } 
-      frag_Output = vec4(fragColor, 1.0f);
+      frag_Output = texture(texture1, TexCoord)*vec4(fragColor, 1.0f);
    }
 )";
 
@@ -253,6 +260,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.m_shader->render();
     shader.m_shader->bind(0, "in_Position");
     shader.m_shader->bind(1, "in_Normal");
+    shader.m_shader->bind(2, "aTexCoord");
 
     // Get shader variable locations:
     shader.modelview = shader.m_shader->getParamLocation("modelview");
@@ -269,6 +277,8 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.lightAmbientLoc = shader.m_shader->getParamLocation("lightAmbient");
     shader.lightDiffuseLoc = shader.m_shader->getParamLocation("lightDiffuse");
     shader.lightSpecularLoc = shader.m_shader->getParamLocation("lightSpecular");
+    shader.texture = shader.m_shader->getParamLocation("texture");
+
     return true;
 }
 
@@ -301,7 +311,7 @@ void LIB_API Engine::swap()
 }
 
 std::shared_ptr<Node LIB_API> Engine::load(std::string file) {
-    ObjectLoader object_loader;
+    ObjectLoader object_loader(shader);
     return object_loader.LoadScene(file);
 }
 
