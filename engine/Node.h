@@ -33,12 +33,11 @@ public:
 	int getNumberOfChildren() const;
 
 	//void render(std::shared_ptr<Object> camera);
-	void render(glm::mat4 modelView);
+	virtual void render(glm::mat4 modelView,Shader &shader);
 
 	virtual void setTransformation(const glm::mat4& transformation);
 	glm::mat4 getFinalMatrix() const;
 
-	virtual Node* clone();
 
 private:
 	glm::mat4 m_matrix;

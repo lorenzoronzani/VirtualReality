@@ -238,7 +238,7 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     for (int i = 0; i < list.size(); i++) {
         shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
         shader.m_shader->render();
-        list[i].first->render(camera->inverseCamera() * list[i].second);
+        list[i].first->render(camera->inverseCamera() * list[i].second,*shader.m_shader);
         Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
         if (mesh) {
             if (mesh->shadow()) {

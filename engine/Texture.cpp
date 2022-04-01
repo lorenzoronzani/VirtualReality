@@ -37,16 +37,16 @@ void LIB_API Texture::load(const std::string& file){
 	}
 }
 
-void LIB_API Texture::render(glm::mat4 modelView){
+void LIB_API Texture::render(glm::mat4 modelView,Shader &shader){
 
 }
 
-void Texture::id(unsigned int id)
+void LIB_API Texture::id(unsigned int id)
 {
 	m_id = id;
 }
 
-unsigned int Texture::id() const
+unsigned int LIB_API Texture::id() const
 {
 	return m_id;
 }

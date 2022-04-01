@@ -12,7 +12,7 @@ public:
 	void load(const std::string& file);
 
 	//void render(std::shared_ptr<Object> camera);
-	void render(glm::mat4 modelView);
+	void render(glm::mat4 modelView,Shader &shader);
 
 	void id(unsigned int id);
 	unsigned int id() const;

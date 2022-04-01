@@ -33,9 +33,8 @@ public:
 	LightSettings settings() const;
 
 	//void render(std::shared_ptr<Object> camera);
-	void render(glm::mat4 modelView);
+	void render(glm::mat4 modelView, Shader &shader) override;
 
-    virtual Light* clone() override;
 private:
 	LightSettings m_settings;
 };

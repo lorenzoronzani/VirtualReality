@@ -18,7 +18,7 @@ std::shared_ptr<Texture> Material::texture() const{
 	return m_texture;
 }
 
-void LIB_API Material::render(glm::mat4 modelView){
+void LIB_API Material::render(glm::mat4 modelView, Shader &shader){
 	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, settings().roughness);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, glm::value_ptr(settings().ambient));
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, glm::value_ptr(settings().diffuse));

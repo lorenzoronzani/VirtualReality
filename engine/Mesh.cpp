@@ -82,7 +82,7 @@ LODdata LIB_API Mesh::vertices() const
     return *m_vertices;
 }
 
-void LIB_API Mesh::render(glm::mat4 modelView) {
+void LIB_API Mesh::render(glm::mat4 modelView, Shader &shader) {
     int lods = 0;
 
     //Prendo matrice camera
@@ -195,9 +195,4 @@ void LIB_API Mesh::VAO(int vao)
 int LIB_API Mesh::VAO() const
 {
     return m_VAO;
-}
-
-Mesh LIB_API* Mesh::clone()
-{
-    return new Mesh(*this);
 }

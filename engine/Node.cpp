@@ -48,7 +48,7 @@ int LIB_API Node::getNumberOfChildren() const{
     return (int)m_children.size();
 }
 
-void LIB_API Node::render(glm::mat4 modelView) {
+void LIB_API Node::render(glm::mat4 modelView, Shader &shader) {
 
 }
 
@@ -58,11 +58,6 @@ void LIB_API Node::setTransformation(const glm::mat4& transformation) {
 
 glm::mat4 LIB_API Node::getFinalMatrix() const{
     return m_matrix;
-}
-
-Node LIB_API* Node::clone()
-{
-    return new Node(*this);
 }
 
 

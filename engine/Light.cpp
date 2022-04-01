@@ -16,7 +16,7 @@ LightSettings LIB_API Light::settings() const{
 	return m_settings;
 }
 
-void LIB_API Light::render(glm::mat4 modelView){
+void LIB_API Light::render(glm::mat4 modelView, Shader &shader){
 	if (m_settings.light_number < GL_MAX_LIGHTS) {
 		/*
 		//Prendo matrice camera
@@ -57,9 +57,4 @@ void LIB_API Light::render(glm::mat4 modelView){
 		*/
 	}
 	
-}
-
-Light LIB_API* Light::clone()
-{
-	return new Light(*this);
 }
