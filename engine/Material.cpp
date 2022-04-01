@@ -18,12 +18,18 @@ std::shared_ptr<Texture> Material::texture() const{
 	return m_texture;
 }
 
-void LIB_API Material::render(glm::mat4 modelView, Shader &shader){
-	glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, settings().roughness);
+void LIB_API Material::render(glm::mat4 modelView, ShaderSettings &shader){
+	/*glMaterialf(GL_FRONT_AND_BACK, GL_SHININESS, settings().roughness);
     glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, glm::value_ptr(settings().ambient));
     glMaterialfv(GL_FRONT_AND_BACK, GL_DIFFUSE, glm::value_ptr(settings().diffuse));
     glMaterialfv(GL_FRONT_AND_BACK, GL_SPECULAR, glm::value_ptr(settings().specular));
-
+    */
+    // Set initial material and light params:
+    shader.m_shader->setVec3(shader.matEmissionLoc, glm::vec3(0.0f, 0.0f, 0.0f));
+    shader.m_shader->setVec3(shader.matAmbientLoc, settings().ambient);
+    shader.m_shader->setVec3(shader.matDiffuseLoc, settings().diffuse);
+    shader.m_shader->setVec3(shader.matSpecularLoc, settings().specular);
+    shader.m_shader->setFloat(shader.matShininessLoc, 128.0f);
     //Bind della texture
     if (texture()->name().find("[none]") == std::string::npos) {
         glBindTexture(GL_TEXTURE_2D, texture()->id());

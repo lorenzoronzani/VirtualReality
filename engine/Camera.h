@@ -9,7 +9,7 @@ public:
 	glm::mat4 inverseCamera() const;
 	void setTransformation(const glm::mat4& transformation) override;
 	//void render(std::shared_ptr<Object> camera);
-	void render(glm::mat4 modelView, Shader &shader);
+	void render(glm::mat4 modelView, ShaderSettings &shader);
 
 private:
 	glm::mat4 m_camera_inverse;

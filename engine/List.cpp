@@ -26,12 +26,14 @@ void LIB_API List::pass(std::shared_ptr<Node> node)
 	//Attraversa la lista
 	for (int i = 0; i < node->getNumberOfChildren(); i++) {
 		//virtual copy pattern
+		std::shared_ptr<Node> current(node->getChild(i));
 
-		glm::mat4 posMat = node->getFinalMatrix() * node->getChild(i)->getFinalMatrix();
+		glm::mat4 posMat = node->getFinalMatrix() * current->getFinalMatrix();
 
+		current->setTransformation(posMat);
 
-		add(node->getChild(i), posMat);
-		pass(node->getChild(i));
+		add(current, posMat);
+		pass(current);
 	}
 }
 

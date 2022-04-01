@@ -68,6 +68,7 @@ public: //
 	void setInt(int param, int value);
 	void setVec3(int param, const glm::vec3& vect);
 	void setVec4(int param, const glm::vec4& vect);
+	void setMatrix3(int param, const glm::mat3& mat);
 
 	// Accessing data:
 	bool loadFromMemory(int kind, const char* data);

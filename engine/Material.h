@@ -26,7 +26,7 @@ public:
 	std::shared_ptr<Texture> texture() const;
 
 	//void render(std::shared_ptr<Object> camera);
-	void render(glm::mat4 modelView, Shader &shader);
+	void render(glm::mat4 modelView, ShaderSettings &shader);
 
 private:
 	MaterialSettings m_settings;

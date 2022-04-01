@@ -1,6 +1,8 @@
 #include "Mesh.h"
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include <glm/gtc/matrix_inverse.hpp>
+
 
 LIB_API Mesh::Mesh() :m_has_shadows{ true } {
     matrix_shadow = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 1.0f));
@@ -52,14 +54,7 @@ void LIB_API Mesh::vertices(LODdata vertices)
     // Copy the vertex data from system to video memory:
     glBufferData(GL_ARRAY_BUFFER, m_lod_vertices.size() * sizeof(glm::vec3),
         m_lod_vertices.data(), GL_STATIC_DRAW);
-
-    /*glGenBuffers(1, &normalVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
-    // Copy the normal data from system to video memory:
-    glBufferData(GL_ARRAY_BUFFER, m_lod_normal->size() * sizeof(glm::vec3),
-        m_lod_normal->data(), GL_STATIC_DRAW);
-
-    glGenBuffers(1, &uvVbo);
+    /*glGenBuffers(1, &uvVbo);
     glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
     // Copy the uv data from system to video memory:
     glBufferData(GL_ARRAY_BUFFER, m_lod_uv->size() * sizeof(glm::vec2),
@@ -75,6 +70,14 @@ void LIB_API Mesh::vertices(LODdata vertices)
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
     glEnableVertexAttribArray(0);
 
+    glGenBuffers(1, &normalVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
+    // Copy the normal data from system to video memory:
+    glBufferData(GL_ARRAY_BUFFER, m_lod_normal->size() * sizeof(glm::vec3),
+        m_lod_normal->data(), GL_STATIC_DRAW);
+    glVertexAttribPointer((GLuint)1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(1);
+
 }
 
 LODdata LIB_API Mesh::vertices() const
@@ -82,7 +85,7 @@ LODdata LIB_API Mesh::vertices() const
     return *m_vertices;
 }
 
-void LIB_API Mesh::render(glm::mat4 modelView, Shader &shader) {
+void LIB_API Mesh::render(glm::mat4 modelView, ShaderSettings &shader) {
     int lods = 0;
 
     //Prendo matrice camera
@@ -90,8 +93,10 @@ void LIB_API Mesh::render(glm::mat4 modelView, Shader &shader) {
     //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
     //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() ;
     //glLoadMatrixf(glm::value_ptr(modelView));
+    shader.m_shader->setMatrix3(shader.normalMatLoc, glm::inverseTranspose(glm::mat3(modelView)));
+
     if (m_material) {
-        //m_material->render(modelView);
+        m_material->render(modelView,shader);
     }
     auto m_lod_faces = &m_vertices->lod.at(lods).faces;
     auto size = m_lod_faces->size();

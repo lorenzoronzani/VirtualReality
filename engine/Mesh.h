@@ -32,7 +32,7 @@ public:
 	LODdata vertices() const;
 
 	//void render(std::shared_ptr<Object> camera) override;
-	void render(glm::mat4 modelView, Shader &shader) override;
+	void render(glm::mat4 modelView, ShaderSettings &shader) override;
 
 	void render_shadow(glm::mat4 modelViewShadow);
 	glm::mat4 get_shadow_mat() { return matrix_shadow; };

@@ -18,6 +18,22 @@
 #define LIB_API  // Dummy declaration
 #endif
 
+struct ShaderSettings {
+	std::shared_ptr<Shader> m_shader;
+	int modelview;
+	int projection;
+	int normalMatLoc;
+	int matEmissionLoc;
+	int matAmbientLoc;
+	int matDiffuseLoc;
+	int matSpecularLoc;
+	int matShininessLoc;
+	int lightPositionLoc;
+	int lightAmbientLoc;
+	int lightDiffuseLoc;
+	int lightSpecularLoc;
+};
+
 class LIB_API Object {
 public:
 	Object();
@@ -29,7 +45,7 @@ public:
 	std::string name() const;
 
 	//virtual void render(std::shared_ptr<Object> camera) = 0;
-	virtual void render(glm::mat4 modelView,Shader &shader) = 0;
+	virtual void render(glm::mat4 modelView,ShaderSettings &shader) = 0;
 
 private:
 	const int m_id;

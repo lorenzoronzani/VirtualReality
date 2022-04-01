@@ -28,12 +28,6 @@ glm::mat4 ortho;
 int fps;
 int frames;
 
-struct ShaderSettings {
-    std::shared_ptr<Shader> m_shader;
-    int modelview;
-    int projection;
-};
-
 static Engine::Handler handler;
 static ShaderSettings shader;
 
@@ -43,13 +37,21 @@ static const char* vertShader = R"(
 
    uniform mat4 projection;
    uniform mat4 modelview;
+   uniform mat3 normalMatrix;
+
 
    layout(location = 0) in vec3 in_Position;
+   layout(location = 1) in vec3 in_Normal;
 
+   // Varying:
+   out vec4 fragPosition;
+   out vec3 normal; 
 
    void main(void)
    {
-      gl_Position = projection * modelview * vec4(in_Position, 1.0f);
+      fragPosition = modelview * vec4(in_Position, 1.0f);
+      gl_Position = projection * fragPosition; 
+      normal = normalMatrix * in_Normal;
    }
 )";
 
@@ -59,10 +61,42 @@ static const char* fragShader = R"(
 
    
    out vec4 frag_Output;
+   in vec4 fragPosition;
+   in vec3 normal;   
+   
+   // Material properties:
+   uniform vec3 matEmission;
+   uniform vec3 matAmbient;
+   uniform vec3 matDiffuse;
+   uniform vec3 matSpecular;
+   uniform float matShininess;
+
+   // Light properties:
+   uniform vec3 lightPosition; 
+   uniform vec3 lightAmbient; 
+   uniform vec3 lightDiffuse; 
+   uniform vec3 lightSpecular;
 
    void main(void)
    {
-      frag_Output = vec4(1.0f,0.0f,0.0f, 1.0f);
+      
+      // Ambient term:
+      vec3 fragColor = matEmission + matAmbient * lightAmbient;
+
+      // Diffuse term:
+      vec3 _normal = normalize(normal);
+      vec3 lightDirection = normalize(lightPosition - fragPosition.xyz);      
+      float nDotL = dot(lightDirection, _normal);   
+      if (nDotL > 0.0f)
+      {
+         fragColor += matDiffuse * nDotL * lightDiffuse;
+      
+         // Specular term:
+         vec3 halfVector = normalize(lightDirection + normalize(-fragPosition.xyz));                     
+         float nDotHV = dot(_normal, halfVector);         
+         fragColor += matSpecular * pow(nDotHV, matShininess) * lightSpecular;
+      } 
+      frag_Output = vec4(fragColor, 1.0f);
    }
 )";
 
@@ -218,11 +252,23 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     shader.m_shader->render();
     shader.m_shader->bind(0, "in_Position");
+    shader.m_shader->bind(1, "in_Normal");
 
     // Get shader variable locations:
     shader.modelview = shader.m_shader->getParamLocation("modelview");
     shader.projection = shader.m_shader->getParamLocation("projection");
+    shader.normalMatLoc = shader.m_shader->getParamLocation("normalMatrix");
 
+    shader.matEmissionLoc = shader.m_shader->getParamLocation("matEmission");
+    shader.matAmbientLoc = shader.m_shader->getParamLocation("matAmbient");
+    shader.matDiffuseLoc = shader.m_shader->getParamLocation("matDiffuse");
+    shader.matSpecularLoc = shader.m_shader->getParamLocation("matSpecular");
+    shader.matShininessLoc = shader.m_shader->getParamLocation("matShininess");
+
+    shader.lightPositionLoc = shader.m_shader->getParamLocation("lightPosition");
+    shader.lightAmbientLoc = shader.m_shader->getParamLocation("lightAmbient");
+    shader.lightDiffuseLoc = shader.m_shader->getParamLocation("lightDiffuse");
+    shader.lightSpecularLoc = shader.m_shader->getParamLocation("lightSpecular");
     return true;
 }
 
@@ -236,9 +282,19 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
     //glMatrixMode(GL_MODELVIEW);
     for (int i = 0; i < list.size(); i++) {
-        shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
         shader.m_shader->render();
-        list[i].first->render(camera->inverseCamera() * list[i].second,*shader.m_shader);
+        shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
+        shader.m_shader->setVec3(shader.matEmissionLoc, glm::vec3(0.0f, 0.0f, 0.0f));
+        shader.m_shader->setVec3(shader.matAmbientLoc, glm::vec3(0.1f, 0.1f, 0.1f));
+        shader.m_shader->setVec3(shader.matDiffuseLoc, glm::vec3(0.7f, 0.7f, 0.7f));
+        shader.m_shader->setVec3(shader.matSpecularLoc, glm::vec3(0.6f, 0.6f, 0.6f));
+        shader.m_shader->setFloat(shader.matShininessLoc, 128.0f);
+
+        shader.m_shader->setVec3(shader.lightAmbientLoc, glm::vec3(1.0f, 1.0f, 1.0f));
+        shader.m_shader->setVec3(shader.lightDiffuseLoc, glm::vec3(1.0f, 1.0f, 1.0f));
+        shader.m_shader->setVec3(shader.lightSpecularLoc, glm::vec3(1.0f, 1.0f, 1.0f));
+        list[i].first->render(camera->inverseCamera() * list[i].second,shader);
+
         Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
         if (mesh) {
             if (mesh->shadow()) {

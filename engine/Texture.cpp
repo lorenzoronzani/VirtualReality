@@ -37,7 +37,7 @@ void LIB_API Texture::load(const std::string& file){
 	}
 }
 
-void LIB_API Texture::render(glm::mat4 modelView,Shader &shader){
+void LIB_API Texture::render(glm::mat4 modelView,ShaderSettings &shader){
 
 }
 

@@ -335,3 +335,8 @@ void Shader::bind(int location, const char* attribName)
 {
 	glBindAttribLocation(glId, location, attribName);
 }
+
+void Shader::setMatrix3(int param, const glm::mat3& mat)
+{
+	glUniformMatrix3fv(param, 1, GL_FALSE, glm::value_ptr(mat));
+}

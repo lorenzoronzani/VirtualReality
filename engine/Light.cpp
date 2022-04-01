@@ -16,7 +16,7 @@ LightSettings LIB_API Light::settings() const{
 	return m_settings;
 }
 
-void LIB_API Light::render(glm::mat4 modelView, Shader &shader){
+void LIB_API Light::render(glm::mat4 modelView, ShaderSettings &shader){
 	if (m_settings.light_number < GL_MAX_LIGHTS) {
 		/*
 		//Prendo matrice camera
@@ -55,6 +55,9 @@ void LIB_API Light::render(glm::mat4 modelView, Shader &shader){
 		glLightfv(GL_LIGHT0 + m_settings.light_number, GL_DIFFUSE, glm::value_ptr(m_settings.color));
 		glLightfv(GL_LIGHT0 + m_settings.light_number, GL_SPECULAR, glm::value_ptr(m_settings.color));
 		*/
+		shader.m_shader->setVec3(shader.lightAmbientLoc, glm::vec3(1.0f, 1.0f, 1.0f));
+		shader.m_shader->setVec3(shader.lightDiffuseLoc, glm::vec3(1.0f, 1.0f, 1.0f));
+		shader.m_shader->setVec3(shader.lightSpecularLoc, glm::vec3(1.0f, 1.0f, 1.0f));
 	}
 	
 }
