@@ -284,15 +284,6 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     for (int i = 0; i < list.size(); i++) {
         shader.m_shader->render();
         shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
-        shader.m_shader->setVec3(shader.matEmissionLoc, glm::vec3(0.0f, 0.0f, 0.0f));
-        shader.m_shader->setVec3(shader.matAmbientLoc, glm::vec3(0.1f, 0.1f, 0.1f));
-        shader.m_shader->setVec3(shader.matDiffuseLoc, glm::vec3(0.7f, 0.7f, 0.7f));
-        shader.m_shader->setVec3(shader.matSpecularLoc, glm::vec3(0.6f, 0.6f, 0.6f));
-        shader.m_shader->setFloat(shader.matShininessLoc, 128.0f);
-
-        shader.m_shader->setVec3(shader.lightAmbientLoc, glm::vec3(1.0f, 1.0f, 1.0f));
-        shader.m_shader->setVec3(shader.lightDiffuseLoc, glm::vec3(1.0f, 1.0f, 1.0f));
-        shader.m_shader->setVec3(shader.lightSpecularLoc, glm::vec3(1.0f, 1.0f, 1.0f));
         list[i].first->render(camera->inverseCamera() * list[i].second,shader);
 
         Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
