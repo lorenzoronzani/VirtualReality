@@ -13,7 +13,11 @@
 
 	// Header:
 #include "Shader.h"
+// Glew (include it before GL.h):
+#include <GL/glew.h>
 
+// FreeGLUT:
+#include <GL/freeglut.h>
 
 
 //////////////////////////
@@ -304,4 +308,30 @@ bool LIB_API Shader::render(void* data)
 
 	// Done:
 	return true;
+}
+
+void Shader::setMatrix(int param, const glm::mat4& mat)
+{
+	glUniformMatrix4fv(param, 1, GL_FALSE, glm::value_ptr(mat));
+}
+void Shader::setFloat(int param, float value)
+{
+	glUniform1f(param, value);
+}
+void Shader::setInt(int param, int value)
+{
+	glUniform1i(param, value);
+}
+void Shader::setVec3(int param, const glm::vec3& vect)
+{
+	glUniform3fv(param, 1, glm::value_ptr(vect));
+}
+void Shader::setVec4(int param, const glm::vec4& vect)
+{
+	glUniform4fv(param, 1, glm::value_ptr(vect));
+}
+
+void Shader::bind(int location, const char* attribName)
+{
+	glBindAttribLocation(glId, location, attribName);
 }

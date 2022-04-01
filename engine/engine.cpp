@@ -14,6 +14,8 @@
 // FreeImage
 #include "Shader.h"
 #include "FreeImage.h"
+#include "ObjectLoader.h"
+
 
 //Id finestra
 int windowId;
