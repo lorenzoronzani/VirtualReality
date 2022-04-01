@@ -79,7 +79,7 @@ void LIB_API Mesh::vertices(LODdata vertices)
     // Copy the uv data from system to video memory:
     glBufferData(GL_ARRAY_BUFFER, m_lod_uv->size() * sizeof(glm::vec2),
         m_lod_uv->data(), GL_STATIC_DRAW);
-    glVertexAttribPointer((GLuint)2, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(2);
 }
 

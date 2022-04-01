@@ -22,6 +22,7 @@ void LIB_API Texture::load(const std::string& file,ShaderSettings &shader){
 		// Set min/mag filters:
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
 
 		//Filtro anisotropico
@@ -40,6 +41,7 @@ void LIB_API Texture::load(const std::string& file,ShaderSettings &shader){
 			intFormat = GL_COMPRESSED_RGBA;
 			extFormat = GL_BGRA;
 		}
+
 		//gluBuild2DMipmaps(GL_TEXTURE_2D, 4, FreeImage_GetWidth(bitmap), FreeImage_GetHeight(bitmap), GL_BGRA_EXT, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
 		glTexImage2D(GL_TEXTURE_2D, 0, intFormat, FreeImage_GetWidth(bitmap), FreeImage_GetHeight(bitmap), 0, extFormat, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
 		//Unloda texture
