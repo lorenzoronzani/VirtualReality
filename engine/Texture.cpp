@@ -46,9 +46,6 @@ void LIB_API Texture::load(const std::string& file,ShaderSettings &shader){
 		//Disattivo bind texture
 		glBindTexture(GL_TEXTURE_2D, 0);
 	}
-	else {
-		std::cout << "No texture" << std::endl;
-	}
 }
 
 void LIB_API Texture::render(glm::mat4 modelView,ShaderSettings &shader){
