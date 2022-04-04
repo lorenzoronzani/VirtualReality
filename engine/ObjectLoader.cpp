@@ -1,4 +1,6 @@
 #include "ObjectLoader.h"
+
+
 LIB_API ObjectLoader::ObjectLoader(ShaderSettings& shader) : m_shader{ shader },num_light { 0 }, num_texture{ 1 }{
 }
 

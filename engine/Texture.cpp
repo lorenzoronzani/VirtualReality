@@ -8,6 +8,8 @@
 #define GL_TEXTURE_MAX_ANISOTROPY_EXT        0x84FE
 #define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT    0x84FF
 
+
+
 void LIB_API Texture::load(const std::string& file,ShaderSettings &shader){
 	if (file.find("[none]")==std::string::npos) {
 		//Crea e fa il bind della texture
@@ -43,6 +45,9 @@ void LIB_API Texture::load(const std::string& file,ShaderSettings &shader){
 
 		//Disattivo bind texture
 		glBindTexture(GL_TEXTURE_2D, 0);
+	}
+	else {
+		std::cout << "No texture" << std::endl;
 	}
 }
 

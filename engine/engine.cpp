@@ -131,6 +131,35 @@ void displayCallback()
 
 }
 
+void createVoidTexture() {
+    glBindTexture(GL_TEXTURE_2D, 0);
+
+
+    // Set circular coordinates:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+
+    // Set min/mag filters:
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
+
+    //Filtro anisotropico
+
+    int intFormat = GL_COMPRESSED_RGB;
+    GLenum extFormat = GL_BGR;
+
+    char image[1];
+    image[0] = 1;
+    //gluBuild2DMipmaps(GL_TEXTURE_2D, 4, FreeImage_GetWidth(bitmap), FreeImage_GetHeight(bitmap), GL_BGRA_EXT, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
+    glTexImage2D(GL_TEXTURE_2D, 0, intFormat, 1, 1, 0, extFormat, GL_UNSIGNED_BYTE, (void*)image);
+    //Unloda texture
+
+    //Disattivo bind texture
+    glBindTexture(GL_TEXTURE_2D, 0);
+}
+
 void reshapeCallback(int width, int height)
 {
     //Setto matrice di proiezione
@@ -273,8 +302,8 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.lightAmbientLoc = shader.m_shader->getParamLocation("lightAmbient");
     shader.lightDiffuseLoc = shader.m_shader->getParamLocation("lightDiffuse");
     shader.lightSpecularLoc = shader.m_shader->getParamLocation("lightSpecular");
-    shader.texture = shader.m_shader->getParamLocation("texture");
-
+    shader.texture = shader.m_shader->getParamLocation("texture1");
+    createVoidTexture();
     return true;
 }
 

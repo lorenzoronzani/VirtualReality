@@ -1,5 +1,7 @@
 #include "Material.h"
 #include <glm/gtc/type_ptr.hpp>
+#include <GL/glew.h>
+
 #include <GL/freeglut.h>
 
 void LIB_API Material::settings(const MaterialSettings& materialSettings){
