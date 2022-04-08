@@ -80,6 +80,7 @@ public: //
 	// Rendering:				
 	bool render(void* data = nullptr);
 
+	unsigned int glId;
 
 	///////////	 
 private:	//
@@ -89,5 +90,4 @@ private:	//
 	int type;
 
 	// OGL id:
-	unsigned int glId;
 };

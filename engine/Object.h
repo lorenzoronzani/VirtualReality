@@ -34,7 +34,16 @@ struct ShaderSettings {
 	int lightDiffuseLoc;
 	int lightSpecularLoc;
 	int texture;
+
+
 	std::shared_ptr<Fbo> fbo;
+	std::shared_ptr<Shader> passthroughShader;
+	int ptProjLoc;
+	int ptMvLoc;
+	unsigned int boxVertexVbo;
+	unsigned int boxTexCoordVbo;
+	unsigned int fboTexId;
+
 };
 
 class LIB_API Object {

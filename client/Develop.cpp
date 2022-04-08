@@ -299,7 +299,6 @@ int main()
     if (Engine::init(handler)) {
         //Carico scena
         node = Engine::load(path);
-       
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
 
         bool passed_1_sec = false;

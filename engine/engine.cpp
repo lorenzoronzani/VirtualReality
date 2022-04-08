@@ -107,6 +107,48 @@ static const char* fragShader = R"(
    }
 )";
 
+// Passthrough shader with texture mapping:
+static const char* passthroughVertShader = R"(
+   #version 440 core
+
+   // Uniforms:
+   uniform mat4 projection;
+   uniform mat4 modelview;   
+
+   // Attributes:
+   layout(location = 0) in vec2 in_Position;   
+   layout(location = 2) in vec2 in_TexCoord;
+
+   // Varying:   
+   out vec2 texCoord;
+
+   void main(void)
+   {      
+      gl_Position = projection * modelview * vec4(in_Position, 0.0f, 1.0f);    
+      texCoord = in_TexCoord;
+   }
+)";
+
+static const char* passthroughFragShader = R"(
+   #version 440 core
+   
+   in vec2 texCoord;
+   
+   out vec4 fragOutput;   
+
+   // Texture mapping:
+   layout(binding = 0) uniform sampler2D texSampler;
+
+   void main(void)   
+   {  
+      // Texture element:
+      vec4 texel = texture(texSampler, texCoord);      
+      
+      // Final color:
+      fragOutput = texel;       
+   }
+)";
+
 #ifdef _WINDOWS
 #include <Windows.h>
 
@@ -199,6 +241,8 @@ void __stdcall DebugCallback(GLenum source, GLenum type, GLuint id, GLenum sever
     std::cout << "OpenGL says: \"" << std::string(message) << "\"" << std::endl;
 }
 
+unsigned int vao;
+
 bool LIB_API Engine::init(Handler t_handler) {
     //Inizializzazioni di glut
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
@@ -278,6 +322,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     m_fragment_shader = std::make_shared<Shader>();
     m_fragment_shader->loadFromMemory(Shader::TYPE_FRAGMENT, fragShader);
 
+
     shader.m_shader = std::make_shared<Shader>();
 
     shader.m_shader->build(m_vertex_shader.get(), m_fragment_shader.get());
@@ -303,24 +348,76 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.lightDiffuseLoc = shader.m_shader->getParamLocation("lightDiffuse");
     shader.lightSpecularLoc = shader.m_shader->getParamLocation("lightSpecular");
     shader.texture = shader.m_shader->getParamLocation("texture1");
+
+    //FBO SETTINGS
+
     shader.fbo = std::make_shared<Fbo>();
+    std::shared_ptr<Shader> passthroughVs = std::make_shared<Shader>();
+    passthroughVs->loadFromMemory(Shader::TYPE_VERTEX, passthroughVertShader);
+
+    std::shared_ptr<Shader> passthroughFs = std::make_shared<Shader>();
+    passthroughFs->loadFromMemory(Shader::TYPE_FRAGMENT, passthroughFragShader);
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+    // Copy data into VBOs:
+    glGenBuffers(1, &shader.boxVertexVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, shader.boxVertexVbo);
+    createVoidTexture();
+    // 
+    // 
+    // Create a 2D box for screen rendering:
+
+
+    glm::vec2* boxPlane = new glm::vec2[4];
+    boxPlane[0] = glm::vec2(0.0f, 0.0f);
+    boxPlane[1] = glm::vec2(handler.width, 0.0f);
+    boxPlane[2] = glm::vec2(0.0f, handler.height);
+    boxPlane[3] = glm::vec2(handler.width, handler.height);
+    glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec2), boxPlane, GL_STATIC_DRAW);
+    glVertexAttribPointer((GLuint)0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(0);
+
+    glm::vec2 texCoord[4];
+    texCoord[0] = glm::vec2(0.0f, 0.0f);
+    texCoord[1] = glm::vec2(1.0f, 0.0f);
+    texCoord[2] = glm::vec2(0.0f, 1.0f);
+    texCoord[3] = glm::vec2(1.0f, 1.0f);
+    glGenBuffers(1, &shader.boxTexCoordVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, shader.boxTexCoordVbo);
+    glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec2), texCoord, GL_STATIC_DRAW);
+    glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(2);
+
+    shader.passthroughShader = std::make_shared<Shader>();
+
+    shader.passthroughShader->build(passthroughVs.get(), passthroughFs.get());
+    shader.passthroughShader->render();
+
+
+    // Bind params:
+    shader.passthroughShader->bind(0, "in_Position");
+    shader.passthroughShader->bind(2, "in_TexCoord");
+
+    shader.ptProjLoc = shader.passthroughShader->getParamLocation("projection");
+    shader.ptMvLoc = shader.passthroughShader->getParamLocation("modelview");
+    std::cout <<"Projection: "<< shader.ptProjLoc << "Modelview: " << shader.ptMvLoc << std::endl;
     GLint prevViewport[4];
     glGetIntegerv(GL_VIEWPORT, prevViewport);
-    unsigned int fboTex;
-    glGenTextures(1, &fboTex);
-    glBindTexture(GL_TEXTURE_2D, fboTex);
+    glGenTextures(1, &shader.fboTexId);
+    glBindTexture(GL_TEXTURE_2D, shader.fboTexId);
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, handler.width, handler.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    shader.fbo->bindTexture(0, Fbo::BIND_COLORTEXTURE, fboTex);
+    shader.fbo->bindTexture(0, Fbo::BIND_COLORTEXTURE, shader.fboTexId);
     shader.fbo->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, handler.width, handler.height);
     if (!shader.fbo->isOk())
         std::cout << "[ERROR] Invalid FBO" << std::endl;
     Fbo::disable();
     glViewport(0, 0, prevViewport[2], prevViewport[3]);
-    createVoidTexture();
+
+    glBindVertexArray(0);
 
     return true;
 }
@@ -333,7 +430,13 @@ void LIB_API Engine::clear()
 
 void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
-    //glMatrixMode(GL_MODELVIEW);
+
+    // Store the current viewport size:
+    GLint prevViewport[4];
+    glGetIntegerv(GL_VIEWPORT, prevViewport);
+    shader.fbo->render();
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     for (int i = 0; i < list.size(); i++) {
         shader.m_shader->render();
         shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
@@ -346,6 +449,23 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
             }
         }
     }
+    // Done with the FBO, go back to rendering into the window context buffers:
+    Fbo::disable();
+    glViewport(0, 0, prevViewport[2], prevViewport[3]);
+    // Set a matrix for the left "eye":    
+    glm::mat4 f = glm::mat4(1.0f);
+    glBindVertexArray(vao);
+
+    // Setup the passthrough shader:
+    shader.passthroughShader->render();
+    shader.passthroughShader->setMatrix(shader.ptProjLoc, ortho);
+    shader.passthroughShader->setMatrix(shader.ptMvLoc, f);
+
+
+    // Bind the FBO buffer as texture and render:
+    glBindTexture(GL_TEXTURE_2D, shader.fboTexId);
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+    
 }
 
 void LIB_API Engine::swap()
