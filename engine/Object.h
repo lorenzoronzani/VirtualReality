@@ -5,6 +5,7 @@
 #include <memory>
 #include <glm/glm.hpp>
 #include "Shader.h"
+#include "Fbo.h"
 
 #ifdef _WINDOWS
 // Export API:
@@ -33,6 +34,7 @@ struct ShaderSettings {
 	int lightDiffuseLoc;
 	int lightSpecularLoc;
 	int texture;
+	std::shared_ptr<Fbo> fbo;
 };
 
 class LIB_API Object {

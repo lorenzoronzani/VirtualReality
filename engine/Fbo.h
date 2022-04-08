@@ -18,7 +18,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 // Glew (include it before GL.h):
-#include <GL/glew.h>
 
 // C/C++:
 #include <iostream>

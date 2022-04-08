@@ -303,7 +303,25 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.lightDiffuseLoc = shader.m_shader->getParamLocation("lightDiffuse");
     shader.lightSpecularLoc = shader.m_shader->getParamLocation("lightSpecular");
     shader.texture = shader.m_shader->getParamLocation("texture1");
+    shader.fbo = std::make_shared<Fbo>();
+    GLint prevViewport[4];
+    glGetIntegerv(GL_VIEWPORT, prevViewport);
+    unsigned int fboTex;
+    glGenTextures(1, &fboTex);
+    glBindTexture(GL_TEXTURE_2D, fboTex);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, handler.width, handler.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    shader.fbo->bindTexture(0, Fbo::BIND_COLORTEXTURE, fboTex);
+    shader.fbo->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, handler.width, handler.height);
+    if (!shader.fbo->isOk())
+        std::cout << "[ERROR] Invalid FBO" << std::endl;
+    Fbo::disable();
+    glViewport(0, 0, prevViewport[2], prevViewport[3]);
     createVoidTexture();
+
     return true;
 }
 

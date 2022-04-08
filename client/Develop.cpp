@@ -291,8 +291,8 @@ int main()
     Engine::Handler handler;
     handler.keyboard = keyboardCallback;
     handler.mouse = mouseMove;
-    handler.width = 2048;
-    handler.height = 1024;
+    handler.width = 1920;
+    handler.height = 1080;
     handler.special = special;
     handler.close = close;
 
