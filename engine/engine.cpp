@@ -31,6 +31,9 @@ int frames;
 static Engine::Handler handler;
 static ShaderSettings shader;
 
+//Vao fbo
+unsigned int vao;
+
 ////////////////////////////
 static const char* vertShader = R"(
    #version 440 core
@@ -238,10 +241,6 @@ void __stdcall DebugCallback(GLenum source, GLenum type, GLuint id, GLenum sever
     std::cout << "OpenGL says: \"" << std::string(message) << "\"" << std::endl;
 }
 
-unsigned int vao;
-unsigned int vao1;
-unsigned int ebo;
-
 bool LIB_API Engine::init(Handler t_handler) {
     //Inizializzazioni di glut
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
@@ -323,41 +322,7 @@ bool LIB_API Engine::init(Handler t_handler) {
 
 
     shader.m_shader = std::make_shared<Shader>();
-    float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
-    };
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
-    };
-    unsigned int VBO;
-    glGenVertexArrays(1, &vao1);
-    glGenBuffers(1, &VBO);
-    glGenBuffers(1, &ebo);
-    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
-    glBindVertexArray(vao1);
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
-    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
-    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
-    glBindVertexArray(0);
     shader.m_shader->build(m_vertex_shader.get(), m_fragment_shader.get());
 
     shader.m_shader->render();
@@ -472,7 +437,6 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     shader.m_shader->setMatrix(shader.projection, projection);
 
     for (int i = 0; i < list.size(); i++) {
-        shader.m_shader->render();
         shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
         list[i].first->render(camera->inverseCamera() * list[i].second, shader);
 
