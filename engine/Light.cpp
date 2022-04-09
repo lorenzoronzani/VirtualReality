@@ -52,8 +52,8 @@ void LIB_API Light::render(glm::mat4 modelView, ShaderSettings &shader){
 	glLightfv(GL_LIGHT0 + m_settings.light_number, GL_SPECULAR, glm::value_ptr(m_settings.color));
 	*/
 	shader.m_shader->setVec3(shader.lightAmbientLoc, glm::vec3(1.0f, 1.0f, 1.0f));
-	shader.m_shader->setVec3(shader.lightDiffuseLoc, glm::vec3(1.0f, 1.0f, 1.0f));
-	shader.m_shader->setVec3(shader.lightSpecularLoc, glm::vec3(1.0f, 1.0f, 1.0f));
+	shader.m_shader->setVec3(shader.lightDiffuseLoc, m_settings.color);
+	shader.m_shader->setVec3(shader.lightSpecularLoc, m_settings.color);
 	shader.m_shader->setVec3(shader.lightPositionLoc, glm::vec3(modelView * glm::vec4(1.0f)));
 
 	

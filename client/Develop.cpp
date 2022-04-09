@@ -2,7 +2,7 @@
 #include <glm/glm.hpp>
 
 //Path scena
-const std::string path = "test/cube1.OVO";
+const std::string path = "test/cube.OVO";
 
 //Distanze per la palla
 const int min_distance = 7;
@@ -68,7 +68,7 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     switch (choose) {
     case 0:
         //Basso
-        sphere = node->getChildByName("Omni001");
+        sphere = node->getChildByName("Sphere001");
         break;
     case 1:
         //Mezzo
@@ -119,22 +119,22 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
     case 'i':
         //Rotazione braccio avanti
-        sphere->setTransformation(glm::translate(sphere->getFinalMatrix(),  glm::vec3(1.0f, 0.0f, 0.0f)));
+        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
         break;
 
     case 'j':
         //Rotazione braccio sinistra
-        sphere->setTransformation(glm::translate(sphere->getFinalMatrix(), glm::vec3(0.0f, 1.0f, 0.0f)));
+        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
         break;
 
     case 'k':
         //Rotazione braccio indietro
-        sphere->setTransformation(glm::translate(sphere->getFinalMatrix(), glm::vec3(0.0f, 0.0f, 1.0f)));
+        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
         break;
 
     case 'l':
         //Rotazione braccio destra
-        sphere->setTransformation(glm::translate(sphere->getFinalMatrix(), glm::vec3(0.0f, -1.0f, 0.0f)));
+        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 0.0f, -1.0f)));
         break;
 
     case 'n':
