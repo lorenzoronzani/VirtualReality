@@ -34,6 +34,9 @@ static ShaderSettings shader;
 //Vao fbo
 unsigned int vao;
 
+//viewport
+GLint prevViewport[4];
+
 ////////////////////////////
 static const char* vertShader = R"(
    #version 440 core
@@ -396,7 +399,6 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.ptProjLoc = shader.passthroughShader->getParamLocation("projection");
     shader.ptMvLoc = shader.passthroughShader->getParamLocation("modelview");
     std::cout <<"Projection: "<< shader.ptProjLoc << "Modelview: " << shader.ptMvLoc << std::endl;
-    GLint prevViewport[4];
     glGetIntegerv(GL_VIEWPORT, prevViewport);
     glGenTextures(1, &shader.fboTexId);
     glBindTexture(GL_TEXTURE_2D, shader.fboTexId);
@@ -413,7 +415,6 @@ bool LIB_API Engine::init(Handler t_handler) {
     glViewport(0, 0, prevViewport[2], prevViewport[3]);
     clear();
     glBindVertexArray(0);
-
     return true;
 }
 
@@ -427,8 +428,6 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
 
     // Store the current viewport size:
-    GLint prevViewport[4];
-    glGetIntegerv(GL_VIEWPORT, prevViewport);
     shader.fbo->render();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
