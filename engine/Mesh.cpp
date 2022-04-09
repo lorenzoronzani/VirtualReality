@@ -96,7 +96,7 @@ void LIB_API Mesh::render(glm::mat4 modelView, ShaderSettings &shader) {
     auto size = m_lod_faces->size();
 
     glBindVertexArray(m_VAO);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
     glDrawElements(GL_TRIANGLES, m_lod_faces->size() * 3, GL_UNSIGNED_INT, nullptr);
 
 

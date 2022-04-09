@@ -32,6 +32,7 @@ void LIB_API Texture::load(const std::string& file,ShaderSettings &shader){
 
 		int intFormat = GL_COMPRESSED_RGB;
 		GLenum extFormat = GL_BGR;
+		
 		if (FreeImage_GetBPP(bitmap) == 32)
 		{
 			intFormat = GL_COMPRESSED_RGBA;

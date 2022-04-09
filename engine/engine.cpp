@@ -35,20 +35,19 @@ static ShaderSettings shader;
 static const char* vertShader = R"(
    #version 440 core
 
+
+
    uniform mat4 projection;
    uniform mat4 modelview;
    uniform mat3 normalMatrix;
-
-
    layout(location = 0) in vec3 in_Position;
    layout(location = 1) in vec3 in_Normal;
    layout (location = 2) in vec2 aTexCoord;
-
-
    // Varying:
    out vec4 fragPosition;
    out vec3 normal; 
    out vec2 TexCoord;
+
 
 
    void main(void)
@@ -69,27 +68,25 @@ static const char* fragShader = R"(
    in vec4 fragPosition;
    in vec3 normal;   
    in vec2 TexCoord;   
-
    // Material properties:
    uniform vec3 matEmission;
    uniform vec3 matAmbient;
    uniform vec3 matDiffuse;
    uniform vec3 matSpecular;
    uniform float matShininess;
-
    // Light properties:
    uniform vec3 lightPosition; 
    uniform vec3 lightAmbient; 
    uniform vec3 lightDiffuse; 
    uniform vec3 lightSpecular;
-
    layout(binding = 0) uniform sampler2D texture1;
+
+
+
    void main(void)
    {
-      
       // Ambient term:
       vec3 fragColor = matEmission + matAmbient * lightAmbient;
-
       // Diffuse term:
       vec3 _normal = normalize(normal);
       vec3 lightDirection = normalize(lightPosition - fragPosition.xyz);      
@@ -242,6 +239,8 @@ void __stdcall DebugCallback(GLenum source, GLenum type, GLuint id, GLenum sever
 }
 
 unsigned int vao;
+unsigned int vao1;
+unsigned int ebo;
 
 bool LIB_API Engine::init(Handler t_handler) {
     //Inizializzazioni di glut
@@ -251,7 +250,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     glutInitContextFlags(GLUT_DEBUG); // <-- Debug flag required by the OpenGL debug callback      
 
     glutInitWindowPosition(150, 150);
-    glutInitWindowSize(handler.width, handler.height);
+    glutInitWindowSize(1920, 1080);
 
     //default per inizializzazione glut
     char* argv[1];
@@ -324,7 +323,41 @@ bool LIB_API Engine::init(Handler t_handler) {
 
 
     shader.m_shader = std::make_shared<Shader>();
+    float vertices[] = {
+         0.5f,  0.5f, 0.0f,  // top right
+         0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f   // top left 
+    };
+    unsigned int indices[] = {  // note that we start from 0!
+        0, 1, 3,  // first Triangle
+        1, 2, 3   // second Triangle
+    };
+    unsigned int VBO;
+    glGenVertexArrays(1, &vao1);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &ebo);
+    // bind the Vertex Array Object first, then bind and set vertex buffer(s), and then configure vertex attributes(s).
+    glBindVertexArray(vao1);
 
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    // note that this is allowed, the call to glVertexAttribPointer registered VBO as the vertex attribute's bound vertex buffer object so afterwards we can safely unbind
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    // remember: do NOT unbind the EBO while a VAO is active as the bound element buffer object IS stored in the VAO; keep the EBO bound.
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    // You can unbind the VAO afterwards so other VAO calls won't accidentally modify this VAO, but this rarely happens. Modifying other
+    // VAOs requires a call to glBindVertexArray anyways so we generally don't unbind VAOs (nor VBOs) when it's not directly necessary.
+    glBindVertexArray(0);
     shader.m_shader->build(m_vertex_shader.get(), m_fragment_shader.get());
 
     shader.m_shader->render();
@@ -348,9 +381,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.lightDiffuseLoc = shader.m_shader->getParamLocation("lightDiffuse");
     shader.lightSpecularLoc = shader.m_shader->getParamLocation("lightSpecular");
     shader.texture = shader.m_shader->getParamLocation("texture1");
-
     //FBO SETTINGS
-
     shader.fbo = std::make_shared<Fbo>();
     std::shared_ptr<Shader> passthroughVs = std::make_shared<Shader>();
     passthroughVs->loadFromMemory(Shader::TYPE_VERTEX, passthroughVertShader);
@@ -367,12 +398,11 @@ bool LIB_API Engine::init(Handler t_handler) {
     // 
     // Create a 2D box for screen rendering:
 
-
     glm::vec2* boxPlane = new glm::vec2[4];
     boxPlane[0] = glm::vec2(0.0f, 0.0f);
-    boxPlane[1] = glm::vec2(handler.width, 0.0f);
-    boxPlane[2] = glm::vec2(0.0f, handler.height);
-    boxPlane[3] = glm::vec2(handler.width, handler.height);
+    boxPlane[1] = glm::vec2(1920, 0.0f);
+    boxPlane[2] = glm::vec2(0.0f, 1080);
+    boxPlane[3] = glm::vec2(1920, 1080);
     glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec2), boxPlane, GL_STATIC_DRAW);
     glVertexAttribPointer((GLuint)0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(0);
@@ -405,18 +435,18 @@ bool LIB_API Engine::init(Handler t_handler) {
     glGetIntegerv(GL_VIEWPORT, prevViewport);
     glGenTextures(1, &shader.fboTexId);
     glBindTexture(GL_TEXTURE_2D, shader.fboTexId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, handler.width, handler.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     shader.fbo->bindTexture(0, Fbo::BIND_COLORTEXTURE, shader.fboTexId);
-    shader.fbo->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, handler.width, handler.height);
+    shader.fbo->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, 1920, 1080);
     if (!shader.fbo->isOk())
         std::cout << "[ERROR] Invalid FBO" << std::endl;
     Fbo::disable();
     glViewport(0, 0, prevViewport[2], prevViewport[3]);
-
+    clear();
     glBindVertexArray(0);
 
     return true;
@@ -437,10 +467,14 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     shader.fbo->render();
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    shader.m_shader->render();
+
+    shader.m_shader->setMatrix(shader.projection, projection);
+
     for (int i = 0; i < list.size(); i++) {
         shader.m_shader->render();
         shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
-        list[i].first->render(camera->inverseCamera() * list[i].second,shader);
+        list[i].first->render(camera->inverseCamera() * list[i].second, shader);
 
         Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
         if (mesh) {
@@ -451,6 +485,7 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     }
     // Done with the FBO, go back to rendering into the window context buffers:
     Fbo::disable();
+
     glViewport(0, 0, prevViewport[2], prevViewport[3]);
     // Set a matrix for the left "eye":    
     glm::mat4 f = glm::mat4(1.0f);
