@@ -37,6 +37,9 @@ unsigned int vao;
 //viewport
 GLint prevViewport[4];
 
+//total lights
+int total_lights;
+
 ////////////////////////////
 static const char* vertShader = R"(
    #version 440 core
@@ -69,7 +72,7 @@ static const char* vertShader = R"(
 static const char* fragShader = R"(
    #version 440 core
 
-   
+   #define MAX_LIGHTS 128
    out vec4 frag_Output;
    in vec4 fragPosition;
    in vec3 normal;   
@@ -81,32 +84,39 @@ static const char* fragShader = R"(
    uniform vec3 matSpecular;
    uniform float matShininess;
    // Light properties:
-   uniform vec3 lightPosition; 
-   uniform vec3 lightAmbient; 
-   uniform vec3 lightDiffuse; 
-   uniform vec3 lightSpecular;
+   struct omniLight{
+       vec3 lightPosition; 
+       vec3 lightAmbient; 
+       vec3 lightDiffuse; 
+       vec3 lightSpecular;
+   };
+   uniform omniLight lights[MAX_LIGHTS];
+   uniform int numLights;
    layout(binding = 0) uniform sampler2D texture1;
-
-
 
    void main(void)
    {
-      // Ambient term:
-      vec3 fragColor = matEmission + matAmbient * lightAmbient;
-      // Diffuse term:
-      vec3 _normal = normalize(normal);
-      vec3 lightDirection = normalize(lightPosition - fragPosition.xyz);      
-      float nDotL = dot(lightDirection, _normal);   
-      if (nDotL > 0.0f)
-      {
-         fragColor += matDiffuse * nDotL * lightDiffuse;
+      vec3 finalColor=vec3(0.0,0.0,0.0);
+      for(int i=0;i<numLights;i++){
+
+          // Ambient term:
+          vec3 fragColor = matEmission + matAmbient * lights[i].lightAmbient;
+          // Diffuse term:
+          vec3 _normal = normalize(normal);
+          vec3 lightDirection = normalize(lights[i].lightPosition - fragPosition.xyz);      
+          float nDotL = dot(lightDirection, _normal);   
+          if (nDotL > 0.0f)
+          {
+             fragColor += matDiffuse * nDotL * lights[i].lightDiffuse;
       
-         // Specular term:
-         vec3 halfVector = normalize(lightDirection + normalize(-fragPosition.xyz));                     
-         float nDotHV = dot(_normal, halfVector);         
-         fragColor += matSpecular * pow(nDotHV, matShininess) * lightSpecular;
-      } 
-      frag_Output = texture(texture1, TexCoord)*vec4(fragColor, 1.0f);
+             // Specular term:
+             vec3 halfVector = normalize(lightDirection + normalize(-fragPosition.xyz));                     
+             float nDotHV = dot(_normal, halfVector);         
+             fragColor += matSpecular * pow(nDotHV, matShininess) * lights[i].lightSpecular;
+          } 
+          finalColor=finalColor+fragColor;
+        }
+        frag_Output = texture(texture1, TexCoord)*vec4(finalColor, 1.0f);
    }
 )";
 
@@ -121,7 +131,7 @@ static const char* passthroughVertShader = R"(
    // Attributes:
    layout(location = 0) in vec2 in_Position;   
    layout(location = 2) in vec2 in_TexCoord;
-
+   
    // Varying:   
    out vec2 texCoord;
 
@@ -253,7 +263,7 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     glutInitWindowPosition(150, 150);
     glutInitWindowSize(1920, 1080);
-
+    total_lights = 0;
     //default per inizializzazione glut
     char* argv[1];
     int argc = 1;
@@ -343,12 +353,16 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.matDiffuseLoc = shader.m_shader->getParamLocation("matDiffuse");
     shader.matSpecularLoc = shader.m_shader->getParamLocation("matSpecular");
     shader.matShininessLoc = shader.m_shader->getParamLocation("matShininess");
+    shader.num_lights = shader.m_shader->getParamLocation("numLights");
 
-    shader.lightPositionLoc = shader.m_shader->getParamLocation("lightPosition");
-    shader.lightAmbientLoc = shader.m_shader->getParamLocation("lightAmbient");
-    shader.lightDiffuseLoc = shader.m_shader->getParamLocation("lightDiffuse");
-    shader.lightSpecularLoc = shader.m_shader->getParamLocation("lightSpecular");
+    for (int i = 0; i < 128; i++) {
+        shader.lightSettings[i].lightPositionLoc = shader.m_shader->getParamLocation(std::string("lights["+std::to_string(i)+"].lightPosition").c_str());
+        shader.lightSettings[i].lightAmbientLoc = shader.m_shader->getParamLocation(std::string("lights[" + std::to_string(i) + "].lightAmbient").c_str());
+        shader.lightSettings[i].lightDiffuseLoc = shader.m_shader->getParamLocation(std::string("lights[" + std::to_string(i) + "].lightDiffuse").c_str());
+        shader.lightSettings[i].lightSpecularLoc = shader.m_shader->getParamLocation(std::string("lights[" + std::to_string(i) + "].lightSpecular").c_str());
+    }
     shader.texture = shader.m_shader->getParamLocation("texture1");
+
     //FBO SETTINGS
     shader.fbo = std::make_shared<Fbo>();
     std::shared_ptr<Shader> passthroughVs = std::make_shared<Shader>();
@@ -436,8 +450,9 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     shader.m_shader->setMatrix(shader.projection, projection);
 
     for (int i = 0; i < list.size(); i++) {
-
         shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
+        shader.m_shader->setInt(shader.num_lights, total_lights);
+
         list[i].first->render(camera->inverseCamera() * list[i].second, shader);
 
         Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
@@ -474,7 +489,9 @@ void LIB_API Engine::swap()
 
 std::shared_ptr<Node LIB_API> Engine::load(std::string file) {
     ObjectLoader object_loader(shader);
-    return object_loader.LoadScene(file);
+    auto scene = object_loader.LoadScene(file);
+    total_lights = object_loader.getLights();
+    return scene;
 }
 
 void LIB_API Engine::free()

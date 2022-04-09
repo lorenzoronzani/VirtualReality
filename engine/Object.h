@@ -19,6 +19,13 @@
 #define LIB_API  // Dummy declaration
 #endif
 
+struct LightSettingsShader {
+	int lightPositionLoc;
+	int lightAmbientLoc;
+	int lightDiffuseLoc;
+	int lightSpecularLoc;
+};
+
 struct ShaderSettings {
 	std::shared_ptr<Shader> m_shader;
 	int modelview;
@@ -29,12 +36,9 @@ struct ShaderSettings {
 	int matDiffuseLoc;
 	int matSpecularLoc;
 	int matShininessLoc;
-	int lightPositionLoc;
-	int lightAmbientLoc;
-	int lightDiffuseLoc;
-	int lightSpecularLoc;
+	LightSettingsShader lightSettings[128];
+	int num_lights;
 	int texture;
-
 
 	std::shared_ptr<Fbo> fbo;
 	std::shared_ptr<Shader> passthroughShader;
@@ -58,7 +62,7 @@ public:
 
 	virtual void render(glm::mat4 modelView,ShaderSettings &shader) = 0;
 
-private:
+protected:
 	const int m_id;
 	std::string m_name;
 };

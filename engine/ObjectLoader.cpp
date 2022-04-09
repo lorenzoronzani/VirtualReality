@@ -15,8 +15,12 @@ std::shared_ptr<Node LIB_API> ObjectLoader::LoadScene(const std::string& file)
     position = 0;
     
     readMaterials(read_file.data(), position);
-	
     return recursiveLoad(read_file.data(),position);
+}
+
+int LIB_API ObjectLoader::getLights()
+{
+    return num_light;
 }
 
 std::vector<char> LIB_API ObjectLoader::readFile(std::string filepath)
@@ -439,7 +443,6 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
             //Setto numero luce
             settings.light_number = num_light;
             num_light = num_light + 1;
-            
             //Setto tipologia luce
             settings.light_type = (OvLight::Subtype)subtype;
             

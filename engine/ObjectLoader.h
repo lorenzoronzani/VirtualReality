@@ -84,4 +84,5 @@ public:
 	ObjectLoader(ShaderSettings &shader);
 	~ObjectLoader();
 	std::shared_ptr<Node> LoadScene(const std::string& file);
+    int getLights();
 };
