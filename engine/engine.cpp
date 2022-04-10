@@ -138,7 +138,7 @@ static const char* fragShader = R"(
           vec3 _normal = normalize(normal);
           vec3 lightDirection = normalize(lightsSpot[i].lightPosition - fragPosition.xyz);      
           float nDotL = dot(lightDirection, _normal);   
-          if (nDotL > 0.0f)
+          if (nDotL > 0 )
           {
              fragColor += matDiffuse * nDotL * lightsSpot[i].lightDiffuse;
       
@@ -147,9 +147,7 @@ static const char* fragShader = R"(
              float nDotHV = dot(_normal, halfVector);         
              fragColor += matSpecular * pow(nDotHV, matShininess) * lightsSpot[i].lightSpecular;
           } 
-          float theta = dot(lightDirection, normalize(-lightsSpot[i].direction)); 
-          float epsilon = lightsSpot[i].cutOff - lightsSpot[i].outerCutOff;
-          float intensity = clamp((theta - lightsSpot[i].outerCutOff) / epsilon, 0.0, 1.0);
+          
           finalColor=finalColor+fragColor;
       }
       frag_Output = texture(texture1, TexCoord)*vec4(finalColor, 1.0f);
