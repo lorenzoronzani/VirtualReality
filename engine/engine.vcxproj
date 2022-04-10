@@ -189,7 +189,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
-    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="engine.cpp" />
     <ClCompile Include="Fbo.cpp" />
     <ClCompile Include="GraphFinder.cpp" />
     <ClCompile Include="Light.cpp" />

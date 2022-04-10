@@ -36,10 +36,9 @@ void LIB_API Light::render(glm::mat4 modelView, ShaderSettings &shader){
 			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].lightDiffuseLoc, m_settings.color);
 			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].lightSpecularLoc, m_settings.color);
 			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].lightPositionLoc, glm::vec3(modelView * glm::vec4(1.0f)));
-			shader.m_shader->setFloat(shader.lightSpotSettings[m_settings.light_number].cutOff, m_settings.cutoff);
+			shader.m_shader->setFloat(shader.lightSpotSettings[m_settings.light_number].cutOff, glm::radians(m_settings.cutoff));
 			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].direction, m_settings.direction);
 			shader.m_shader->setFloat(shader.lightSpotSettings[m_settings.light_number].outerCutOff, m_settings.radius);
-
 			break;
 		}
 	}
