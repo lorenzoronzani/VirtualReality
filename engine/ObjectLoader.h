@@ -63,7 +63,7 @@ private:
             LAST,
         };
     };
-	
+
     std::vector<char> readFile(std::string filepath);
 	
     NodeType readNode(char* data, int chunkId);
@@ -72,17 +72,23 @@ private:
 	
     std::shared_ptr<Node> recursiveLoad(char* buffer, unsigned int& position);
     
-
     //Variabili
     std::map<std::string, std::shared_ptr<Material>> material;
-    int num_light;
+
     int num_texture;
     std::string m_directory;
     int num_vao;
     ShaderSettings m_shader;
 public:
+    struct LightsType {
+        int numOmni;
+        int numSpot;
+    };
+private:
+    LightsType lights;
+public:
 	ObjectLoader(ShaderSettings &shader);
 	~ObjectLoader();
 	std::shared_ptr<Node> LoadScene(const std::string& file);
-    int getLights();
+    LightsType getLights();
 };

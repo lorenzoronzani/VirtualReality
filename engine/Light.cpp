@@ -24,19 +24,26 @@ void LIB_API Light::render(glm::mat4 modelView, ShaderSettings &shader){
 			break;
 		}
 		case OvLight::Subtype::OMNI: {
-
+			shader.m_shader->setVec3(shader.lightSettings[m_settings.light_number].lightAmbientLoc, glm::vec3(0.1f, 0.1f, 0.1f));
+			shader.m_shader->setVec3(shader.lightSettings[m_settings.light_number].lightDiffuseLoc, m_settings.color);
+			shader.m_shader->setVec3(shader.lightSettings[m_settings.light_number].lightSpecularLoc, m_settings.color);
+			shader.m_shader->setVec3(shader.lightSettings[m_settings.light_number].lightPositionLoc, glm::vec3(modelView * glm::vec4(1.0f)));
 
 			break;
 		}
 		case OvLight::Subtype::SPOT: {
+			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].lightAmbientLoc, glm::vec3(0.1f, 0.1f, 0.1f));
+			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].lightDiffuseLoc, m_settings.color);
+			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].lightSpecularLoc, m_settings.color);
+			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].lightPositionLoc, glm::vec3(modelView * glm::vec4(1.0f)));
+			shader.m_shader->setFloat(shader.lightSpotSettings[m_settings.light_number].cutOff, m_settings.cutoff);
+			shader.m_shader->setVec3(shader.lightSpotSettings[m_settings.light_number].direction, m_settings.direction);
+			shader.m_shader->setFloat(shader.lightSpotSettings[m_settings.light_number].outerCutOff, m_settings.radius);
 
 			break;
 		}
 	}
-	shader.m_shader->setVec3(shader.lightSettings[m_settings.light_number].lightAmbientLoc, glm::vec3(0.1f, 0.1f, 0.1f));
-	shader.m_shader->setVec3(shader.lightSettings[m_settings.light_number].lightDiffuseLoc, m_settings.color);
-	shader.m_shader->setVec3(shader.lightSettings[m_settings.light_number].lightSpecularLoc, m_settings.color);
-	shader.m_shader->setVec3(shader.lightSettings[m_settings.light_number].lightPositionLoc, glm::vec3(modelView * glm::vec4(1.0f)));
+
 }
 
 Light LIB_API* Light::clone()

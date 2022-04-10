@@ -26,6 +26,17 @@ struct LightSettingsShader {
 	int lightSpecularLoc;
 };
 
+struct LightSpotSettingShader {
+	int direction;
+	float cutOff;
+	float outerCutOff;
+
+	int lightPositionLoc;
+	int lightAmbientLoc;
+	int lightDiffuseLoc;
+	int lightSpecularLoc;
+};
+
 struct ShaderSettings {
 	std::shared_ptr<Shader> m_shader;
 	int modelview;
@@ -36,8 +47,10 @@ struct ShaderSettings {
 	int matDiffuseLoc;
 	int matSpecularLoc;
 	int matShininessLoc;
-	LightSettingsShader lightSettings[128];
+	LightSettingsShader lightSettings[16];
+	LightSpotSettingShader lightSpotSettings[16];
 	int num_lights;
+	int num_lights_spot;
 	int texture;
 
 	std::shared_ptr<Fbo> fbo;
