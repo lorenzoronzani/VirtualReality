@@ -57,11 +57,12 @@ static const char* vertShader = R"(
    out vec4 fragPosition;
    out vec3 normal; 
    out vec2 TexCoord;
-
+   out mat4 model_view;
 
 
    void main(void)
    {
+      model_view=modelview;
       fragPosition = modelview * vec4(in_Position, 1.0f);
       gl_Position = projection * fragPosition; 
       normal = normalMatrix * in_Normal;
@@ -78,6 +79,7 @@ static const char* fragShader = R"(
    in vec4 fragPosition;
    in vec3 normal;   
    in vec2 TexCoord;   
+   in mat4 model_view;
    // Material properties:
    uniform vec3 matEmission;
    uniform vec3 matAmbient;
@@ -137,7 +139,7 @@ static const char* fragShader = R"(
           vec3 fragColor = matEmission + matAmbient * lightsSpot[i].lightAmbient;
           // Diffuse term:
           vec3 _normal = normalize(normal);
-          vec3 lightDirection = normalize(lightsSpot[i].lightPosition - fragPosition.xyz);   
+          vec3 lightDirection = normalize(lightsSpot[i].lightPosition - fragPosition.xyz)*mat3(model_view);   
           float theta = dot(lightDirection, normalize(-lightsSpot[i].direction));    
           float nDotL = dot(lightDirection, _normal);   
           if (nDotL > 0 && theta > 0.95)
