@@ -1,5 +1,14 @@
 #pragma once
-#include "Shader.h"
+#include "Object.h"
 class ShaderSetup {
-	ShaderSetup(Shader shader);
+public:
+	ShaderSetup(ShaderSettings& shader);
+	void setupShader();
+	void setupFboShader();
+	int* viewport();
+	unsigned int vao();
+private:
+	ShaderSettings& m_shader;
+	int prevViewPort[4];
+	unsigned int m_vao;
 };

@@ -15,6 +15,7 @@
 #include "Shader.h"
 #include "FreeImage.h"
 #include "ObjectLoader.h"
+#include "ShaderSetup.h"
 
 
 
@@ -32,11 +33,8 @@ int frames;
 static Engine::Handler handler;
 static ShaderSettings shader;
 
-//Vao fbo
-unsigned int vao;
+std::shared_ptr<ShaderSetup> shaderSetup;
 
-//viewport
-GLint prevViewport[4];
 
 //total lights
 ObjectLoader::LightsType total_lights;
@@ -357,6 +355,8 @@ bool LIB_API Engine::init(Handler t_handler) {
     glutCloseFunc(closeCallback);
     glutPassiveMotionFunc(mouseMove);
 
+    createVoidTexture();
+
     //Inizializza lettore texture
     FreeImage_Initialise();
 
@@ -375,42 +375,8 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.m_shader = std::make_shared<Shader>();
 
     shader.m_shader->build(m_vertex_shader.get(), m_fragment_shader.get());
-
-    shader.m_shader->render();
-    shader.m_shader->bind(0, "in_Position");
-    shader.m_shader->bind(1, "in_Normal");
-    shader.m_shader->bind(2, "aTexCoord");
-
-    // Get shader variable locations:
-    shader.modelview = shader.m_shader->getParamLocation("modelview");
-    shader.projection = shader.m_shader->getParamLocation("projection");
-    shader.normalMatLoc = shader.m_shader->getParamLocation("normalMatrix");
-
-    shader.matEmissionLoc = shader.m_shader->getParamLocation("matEmission");
-    shader.matAmbientLoc = shader.m_shader->getParamLocation("matAmbient");
-    shader.matDiffuseLoc = shader.m_shader->getParamLocation("matDiffuse");
-    shader.matSpecularLoc = shader.m_shader->getParamLocation("matSpecular");
-    shader.matShininessLoc = shader.m_shader->getParamLocation("matShininess");
-    shader.num_lights = shader.m_shader->getParamLocation("numLights");
-    shader.num_lights_spot = shader.m_shader->getParamLocation("numLightsSpot");
-
-    for (int i = 0; i < 16; i++) {
-        shader.lightSettings[i].lightPositionLoc = shader.m_shader->getParamLocation(std::string("lights["+std::to_string(i)+"].lightPosition").c_str());
-        shader.lightSettings[i].lightAmbientLoc = shader.m_shader->getParamLocation(std::string("lights[" + std::to_string(i) + "].lightAmbient").c_str());
-        shader.lightSettings[i].lightDiffuseLoc = shader.m_shader->getParamLocation(std::string("lights[" + std::to_string(i) + "].lightDiffuse").c_str());
-        shader.lightSettings[i].lightSpecularLoc = shader.m_shader->getParamLocation(std::string("lights[" + std::to_string(i) + "].lightSpecular").c_str());
-    }
-    for (int i = 0; i < 16; i++) {
-        shader.lightSpotSettings[i].lightPositionLoc = shader.m_shader->getParamLocation(std::string("lightsSpot[" + std::to_string(i) + "].lightPosition").c_str());
-        shader.lightSpotSettings[i].lightAmbientLoc = shader.m_shader->getParamLocation(std::string("lightsSpot[" + std::to_string(i) + "].lightAmbient").c_str());
-        shader.lightSpotSettings[i].lightDiffuseLoc = shader.m_shader->getParamLocation(std::string("lightsSpot[" + std::to_string(i) + "].lightDiffuse").c_str());
-        shader.lightSpotSettings[i].lightSpecularLoc = shader.m_shader->getParamLocation(std::string("lightsSpot[" + std::to_string(i) + "].lightSpecular").c_str());
-        shader.lightSpotSettings[i].cutOff = shader.m_shader->getParamLocation(std::string("lightsSpot[" + std::to_string(i) + "].cutOff").c_str());
-        shader.lightSpotSettings[i].direction = shader.m_shader->getParamLocation(std::string("lightsSpot[" + std::to_string(i) + "].direction").c_str());
-        shader.lightSpotSettings[i].outerCutOff = shader.m_shader->getParamLocation(std::string("lightsSpot[" + std::to_string(i) + "].outerCutOff").c_str());
-    }
-    shader.texture = shader.m_shader->getParamLocation("texture1");
-
+    shaderSetup = std::make_shared<ShaderSetup>(shader);
+    shaderSetup->setupShader();
     //FBO SETTINGS
     shader.fbo = std::make_shared<Fbo>();
     std::shared_ptr<Shader> passthroughVs = std::make_shared<Shader>();
@@ -418,65 +384,13 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     std::shared_ptr<Shader> passthroughFs = std::make_shared<Shader>();
     passthroughFs->loadFromMemory(Shader::TYPE_FRAGMENT, passthroughFragShader);
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    // Copy data into VBOs:
-    glGenBuffers(1, &shader.boxVertexVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, shader.boxVertexVbo);
-    createVoidTexture();
-    // 
-    // 
-    // Create a 2D box for screen rendering:
 
-    glm::vec2* boxPlane = new glm::vec2[4];
-    boxPlane[0] = glm::vec2(0.0f, 0.0f);
-    boxPlane[1] = glm::vec2(1920, 0.0f);
-    boxPlane[2] = glm::vec2(0.0f, 1080);
-    boxPlane[3] = glm::vec2(1920, 1080);
-    glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec2), boxPlane, GL_STATIC_DRAW);
-    glVertexAttribPointer((GLuint)0, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-    glEnableVertexAttribArray(0);
-
-    glm::vec2 texCoord[4];
-    texCoord[0] = glm::vec2(0.0f, 0.0f);
-    texCoord[1] = glm::vec2(1.0f, 0.0f);
-    texCoord[2] = glm::vec2(0.0f, 1.0f);
-    texCoord[3] = glm::vec2(1.0f, 1.0f);
-    glGenBuffers(1, &shader.boxTexCoordVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, shader.boxTexCoordVbo);
-    glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(glm::vec2), texCoord, GL_STATIC_DRAW);
-    glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
-    glEnableVertexAttribArray(2);
 
     shader.passthroughShader = std::make_shared<Shader>();
 
     shader.passthroughShader->build(passthroughVs.get(), passthroughFs.get());
-    shader.passthroughShader->render();
-
-
-    // Bind params:
-    shader.passthroughShader->bind(0, "in_Position");
-    shader.passthroughShader->bind(2, "in_TexCoord");
-
-    shader.ptProjLoc = shader.passthroughShader->getParamLocation("projection");
-    shader.ptMvLoc = shader.passthroughShader->getParamLocation("modelview");
-    std::cout <<"Projection: "<< shader.ptProjLoc << "Modelview: " << shader.ptMvLoc << std::endl;
-    glGetIntegerv(GL_VIEWPORT, prevViewport);
-    glGenTextures(1, &shader.fboTexId);
-    glBindTexture(GL_TEXTURE_2D, shader.fboTexId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1920, 1080, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    shader.fbo->bindTexture(0, Fbo::BIND_COLORTEXTURE, shader.fboTexId);
-    shader.fbo->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, 1920, 1080);
-    if (!shader.fbo->isOk())
-        std::cout << "[ERROR] Invalid FBO" << std::endl;
-    Fbo::disable();
-    glViewport(0, 0, prevViewport[2], prevViewport[3]);
+    shaderSetup->setupFboShader();
     clear();
-    glBindVertexArray(0);
     return true;
 }
 
@@ -514,10 +428,10 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     // Done with the FBO, go back to rendering into the window context buffers:
     Fbo::disable();
 
-    glViewport(0, 0, prevViewport[2], prevViewport[3]);
+    glViewport(0, 0, shaderSetup->viewport()[2], shaderSetup->viewport()[3]);
     // Set a matrix for the left "eye":    
     glm::mat4 f = glm::mat4(1.0f);
-    glBindVertexArray(vao);
+    glBindVertexArray(shaderSetup->vao());
 
     // Setup the passthrough shader:
     shader.passthroughShader->render();
