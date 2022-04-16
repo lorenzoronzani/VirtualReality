@@ -184,6 +184,7 @@
     <ClInclude Include="Object.h" />
     <ClInclude Include="ObjectLoader.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="ShaderSetup.h" />
     <ClInclude Include="Test.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
@@ -200,6 +201,7 @@
     <ClCompile Include="Object.cpp" />
     <ClCompile Include="ObjectLoader.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="ShaderSetup.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>

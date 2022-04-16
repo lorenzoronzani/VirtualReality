@@ -139,10 +139,10 @@ static const char* fragShader = R"(
           vec3 fragColor = matEmission + matAmbient * lightsSpot[i].lightAmbient;
           // Diffuse term:
           vec3 _normal = normalize(normal);
-          vec3 lightDirection = normalize(lightsSpot[i].lightPosition - fragPosition.xyz)*mat3(model_view);   
+          vec3 lightDirection = normalize(normalize(lightsSpot[i].lightPosition - fragPosition.xyz)*mat3(model_view));   
           float theta = dot(lightDirection, normalize(-lightsSpot[i].direction));    
           float nDotL = dot(lightDirection, _normal);   
-          if (nDotL > 0 && theta > 0.95)
+          if (nDotL > 0 && theta > lightsSpot[i].cutOff)
           {
              fragColor += matDiffuse * nDotL * lightsSpot[i].lightDiffuse;
       
