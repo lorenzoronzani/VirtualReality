@@ -10,6 +10,9 @@
 
 // FreeGLUT:
 #include <GL/freeglut.h>
+
+#include <openvr.h>
+
 #include "engine.h"
 // FreeImage
 #include "Shader.h"
@@ -143,9 +146,8 @@ static const char* fragShader = R"(
           if (nDotL > 0 && theta > lightsSpot[i].cutOff)
           {
              fragColor += matDiffuse * nDotL * lightsSpot[i].lightDiffuse;
-      
              // Specular term:
-             vec3 halfVector = normalize(lightDirection + normalize(-fragPosition.xyz));                     
+             vec3 halfVector = normalize(lightDirection + normalize((-fragPosition.xyz)));                     
              float nDotHV = dot(_normal, halfVector);         
              fragColor += matSpecular * pow(nDotHV, matShininess) * lightsSpot[i].lightSpecular;
           } 
