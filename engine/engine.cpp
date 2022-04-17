@@ -42,163 +42,6 @@ std::shared_ptr<ShaderSetup> shaderSetup;
 //total lights
 ObjectLoader::LightsType total_lights;
 
-////////////////////////////
-static const char* vertShader = R"(
-   #version 440 core
-
-
-
-   uniform mat4 projection;
-   uniform mat4 modelview;
-   uniform mat3 normalMatrix;
-   layout(location = 0) in vec3 in_Position;
-   layout(location = 1) in vec3 in_Normal;
-   layout (location = 2) in vec2 aTexCoord;
-   // Varying:
-   out vec4 fragPosition;
-   out vec3 normal; 
-   out vec2 TexCoord;
-   out mat4 model_view;
-
-
-   void main(void)
-   {
-      model_view=modelview;
-      fragPosition = modelview * vec4(in_Position, 1.0f);
-      gl_Position = projection * fragPosition; 
-      normal = normalMatrix * in_Normal;
-      TexCoord = vec2(aTexCoord.x, aTexCoord.y);
-   }
-)";
-
-////////////////////////////
-static const char* fragShader = R"(
-   #version 440 core
-
-   #define MAX_LIGHTS 16
-   out vec4 frag_Output;
-   in vec4 fragPosition;
-   in vec3 normal;   
-   in vec2 TexCoord;   
-   in mat4 model_view;
-   // Material properties:
-   uniform vec3 matEmission;
-   uniform vec3 matAmbient;
-   uniform vec3 matDiffuse;
-   uniform vec3 matSpecular;
-   uniform float matShininess;
-   // Light properties:
-   struct omniLight{
-       vec3 lightPosition; 
-       vec3 lightAmbient; 
-       vec3 lightDiffuse; 
-       vec3 lightSpecular;
-   };
-   struct SpotLight {
-    vec3 direction;
-    float cutOff;
-    float outerCutOff;
-  
-    vec3 lightPosition; 
-    vec3 lightAmbient; 
-    vec3 lightDiffuse; 
-    vec3 lightSpecular;    
-};
-
-   uniform omniLight lights[MAX_LIGHTS];
-   uniform SpotLight lightsSpot[MAX_LIGHTS];
-
-   uniform int numLights;
-   uniform int numLightsSpot;
-
-   layout(binding = 0) uniform sampler2D texture1;
-
-   void main(void)
-   {
-      vec3 finalColor=vec3(0.0,0.0,0.0);
-      for(int i=0;i<numLights;i++){
-
-          // Ambient term:
-          vec3 fragColor = matEmission + matAmbient * lights[i].lightAmbient;
-          // Diffuse term:
-          vec3 _normal = normalize(normal);
-          vec3 lightDirection = normalize(lights[i].lightPosition - fragPosition.xyz);      
-          float nDotL = dot(lightDirection, _normal);   
-          if (nDotL > 0.0f)
-          {
-             fragColor += matDiffuse * nDotL * lights[i].lightDiffuse;
-      
-             // Specular term:
-             vec3 halfVector = normalize(lightDirection + normalize(-fragPosition.xyz));                     
-             float nDotHV = dot(_normal, halfVector);         
-             fragColor += matSpecular * pow(nDotHV, matShininess) * lights[i].lightSpecular;
-          } 
-          finalColor=finalColor+fragColor;
-      }
-      for(int i=0;i<numLightsSpot;i++){
-          // Ambient term:
-          vec3 fragColor = matEmission + matAmbient * lightsSpot[i].lightAmbient;
-          // Diffuse term:
-          vec3 _normal = normalize(normal);
-          vec3 lightDirection = normalize(normalize(lightsSpot[i].lightPosition - fragPosition.xyz)*mat3(model_view));   
-          float theta = dot(lightDirection, normalize(-lightsSpot[i].direction));    
-          float nDotL = dot(lightDirection, _normal);   
-          if (nDotL > 0 && theta > lightsSpot[i].cutOff)
-          {
-             fragColor += matDiffuse * nDotL * lightsSpot[i].lightDiffuse;
-             // Specular term:
-             vec3 halfVector = normalize(lightDirection + normalize((-fragPosition.xyz)));                     
-             float nDotHV = dot(_normal, halfVector);         
-             fragColor += matSpecular * pow(nDotHV, matShininess) * lightsSpot[i].lightSpecular;
-          } 
-          
-          finalColor=finalColor+fragColor;
-      }
-      frag_Output = texture(texture1, TexCoord)*vec4(finalColor, 1.0f);
-   }
-)";
-
-// Passthrough shader with texture mapping:
-static const char* passthroughVertShader = R"(
-   #version 440 core
-
-   // Uniforms:
-   uniform mat4 projection;
-   uniform mat4 modelview;   
-
-   // Attributes:
-   layout(location = 0) in vec2 in_Position;   
-   layout(location = 2) in vec2 in_TexCoord;
-   
-   // Varying:   
-   out vec2 texCoord;
-
-   void main(void)
-   {      
-      gl_Position = projection * modelview * vec4(in_Position, 0.0f, 1.0f);    
-      texCoord = in_TexCoord;
-   }
-)";
-
-static const char* passthroughFragShader = R"(
-   #version 440 core
-   
-   in vec2 texCoord;
-   
-   out vec4 fragOutput;   
-
-   // Texture mapping:
-   layout(binding = 0) uniform sampler2D texSampler;
-
-   void main(void)   
-   {  
-      // Texture element:
-      vec4 texel = texture(texSampler, texCoord);      
-      
-      // Final color:
-      fragOutput = texel;       
-   }
-)";
 
 #ifdef _WINDOWS
 #include <Windows.h>
@@ -367,11 +210,11 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     // Compile vertex shader:
     m_vertex_shader = std::make_shared<Shader>();
-    m_vertex_shader->loadFromMemory(Shader::TYPE_VERTEX, vertShader);
+    m_vertex_shader->loadFromMemory(Shader::TYPE_VERTEX, "../engine/resources/vertex.glsl");
 
     // Compile fragment shader:
     m_fragment_shader = std::make_shared<Shader>();
-    m_fragment_shader->loadFromMemory(Shader::TYPE_FRAGMENT, fragShader);
+    m_fragment_shader->loadFromMemory(Shader::TYPE_FRAGMENT, "../engine/resources/fragment.glsl");
 
 
     shader.m_shader = std::make_shared<Shader>();
@@ -382,16 +225,17 @@ bool LIB_API Engine::init(Handler t_handler) {
     //FBO SETTINGS
     shader.fbo = std::make_shared<Fbo>();
     std::shared_ptr<Shader> passthroughVs = std::make_shared<Shader>();
-    passthroughVs->loadFromMemory(Shader::TYPE_VERTEX, passthroughVertShader);
+    passthroughVs->loadFromMemory(Shader::TYPE_VERTEX, "../engine/resources/vertex_fbo.glsl");
 
     std::shared_ptr<Shader> passthroughFs = std::make_shared<Shader>();
-    passthroughFs->loadFromMemory(Shader::TYPE_FRAGMENT, passthroughFragShader);
+    passthroughFs->loadFromMemory(Shader::TYPE_FRAGMENT, "../engine/resources/fragment_fbo.glsl");
 
 
     shader.passthroughShader = std::make_shared<Shader>();
 
     shader.passthroughShader->build(passthroughVs.get(), passthroughFs.get());
     shaderSetup->setupFboShader();
+
     clear();
     return true;
 }

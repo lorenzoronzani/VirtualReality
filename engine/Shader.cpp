@@ -19,6 +19,9 @@
 // FreeGLUT:
 #include <GL/freeglut.h>
 
+#include <fstream>
+#include <sstream>
+
 
 //////////////////////////
 // BODY OF CLASS Shader //
@@ -92,6 +95,11 @@ bool LIB_API Shader::loadFromMemory(int type, const char* data)
 		std::cout << "[ERROR] Invalid params" << std::endl;
 		return false;
 	}
+	std::ifstream file(data);
+	std::stringstream bufferdata;
+	bufferdata << file.rdbuf();
+	std::string shader_file = bufferdata.str();
+	data = shader_file.c_str();
 
 	// Check kind:
 	int glKind = 0;

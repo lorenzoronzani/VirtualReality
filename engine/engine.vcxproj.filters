@@ -108,4 +108,10 @@
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\vertex.glsl" />
+    <None Include="resources\fragment.glsl" />
+    <None Include="resources\vertex_fbo.glsl" />
+    <None Include="resources\fragment_fbo.glsl" />
+  </ItemGroup>
 </Project>
