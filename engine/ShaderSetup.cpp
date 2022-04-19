@@ -96,7 +96,7 @@ void ShaderSetup::setupFboShader()
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         m_shader.fbo[c] = new Fbo();
         m_shader.fbo[c]->bindTexture(0, Fbo::BIND_COLORTEXTURE, m_shader.fboTexId[c]);
-        m_shader.fbo[c]->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, 1920, 1080);
+        m_shader.fbo[c]->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, m_sizeXFbo, m_sizeYFbo);
         if (!m_shader.fbo[c]->isOk())
             std::cout << "[ERROR] Invalid FBO" << std::endl;
     }
