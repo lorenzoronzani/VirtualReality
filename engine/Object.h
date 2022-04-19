@@ -19,6 +19,8 @@
 #define LIB_API  // Dummy declaration
 #endif
 
+#include "Ovr.h"
+
 struct LightSettingsShader {
 	int lightPositionLoc;
 	int lightAmbientLoc;
@@ -60,6 +62,8 @@ struct ShaderSettings {
 	unsigned int boxVertexVbo;
 	unsigned int boxTexCoordVbo;
 	unsigned int fboTexId;
+
+	std::shared_ptr<OvVR> ovr;
 
 };
 

@@ -11,4 +11,6 @@ private:
 	ShaderSettings& m_shader;
 	int prevViewPort[4];
 	unsigned int m_vao;
+	unsigned int sizeXFbo;
+	unsigned int sizeYFbo;
 };

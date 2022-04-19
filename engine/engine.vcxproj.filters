@@ -60,6 +60,9 @@
     <ClInclude Include="ShaderSetup.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="Ovr.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -105,6 +108,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="ShaderSetup.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Ovr.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

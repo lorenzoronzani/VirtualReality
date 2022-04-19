@@ -11,8 +11,6 @@
 // FreeGLUT:
 #include <GL/freeglut.h>
 
-#include <openvr.h>
-
 #include "engine.h"
 // FreeImage
 #include "Shader.h"
@@ -41,7 +39,6 @@ std::shared_ptr<ShaderSetup> shaderSetup;
 
 //total lights
 ObjectLoader::LightsType total_lights;
-
 
 #ifdef _WINDOWS
 #include <Windows.h>
@@ -204,6 +201,18 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     //Inizializza lettore texture
     FreeImage_Initialise();
+
+    shader.ovr = std::make_shared<OvVR>();
+    if (shader.ovr->init() == false)
+    {
+        std::cout << "[ERROR] Unable to init OpenVR" << std::endl;
+        return -2;
+    }
+
+    // Report some info:
+    std::cout << "   Manufacturer . . :  " << shader.ovr->getManufacturerName() << std::endl;
+    std::cout << "   Tracking system  :  " << shader.ovr->getTrackingSysName() << std::endl;
+    std::cout << "   Model number . . :  " << shader.ovr->getModelNumber() << std::endl;
 
     std::shared_ptr<Shader> m_vertex_shader;
     std::shared_ptr<Shader> m_fragment_shader;
