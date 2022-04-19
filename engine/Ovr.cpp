@@ -5,11 +5,6 @@
 // FreeGLUT:
 #include <GL/freeglut.h>   
 
-// GLM:
-#include <glm/gtc/packing.hpp>
-
-// OpenVR:
-#include <openvr.h>
 /**
 * Constructor
 */

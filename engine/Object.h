@@ -55,13 +55,14 @@ struct ShaderSettings {
 	int num_lights_spot;
 	int texture;
 
-	std::shared_ptr<Fbo> fbo;
+	Fbo* fbo[OvVR::EYE_LAST] = { nullptr, nullptr };
+
 	std::shared_ptr<Shader> passthroughShader;
 	int ptProjLoc;
 	int ptMvLoc;
 	unsigned int boxVertexVbo;
 	unsigned int boxTexCoordVbo;
-	unsigned int fboTexId;
+	unsigned int fboTexId[2];
 
 	std::shared_ptr<OvVR> ovr;
 

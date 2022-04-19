@@ -232,7 +232,6 @@ bool LIB_API Engine::init(Handler t_handler) {
     shaderSetup = std::make_shared<ShaderSetup>(shader);
     shaderSetup->setupShader();
     //FBO SETTINGS
-    shader.fbo = std::make_shared<Fbo>();
     std::shared_ptr<Shader> passthroughVs = std::make_shared<Shader>();
     passthroughVs->loadFromMemory(Shader::TYPE_VERTEX, "../engine/resources/vertex_fbo.glsl");
 
@@ -257,29 +256,52 @@ void LIB_API Engine::clear()
 
 void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
-
+    shader.ovr->update();
     // Store the current viewport size:
-    shader.fbo->render();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glm::mat4 headPos = shader.ovr->getModelviewMatrix();
+    for (int c = 0; c < OvVR::EYE_LAST; c++)
+    {
+        // Get OpenVR matrices:
+        OvVR::OvEye curEye = (OvVR::OvEye)c;
+        glm::mat4 projMat = shader.ovr->getProjMatrix(curEye, 1.0f, 1024.0f);
+        glm::mat4 eye2Head = shader.ovr->getEye2HeadMatrix(curEye);
 
-    shader.m_shader->render();
+        // Update camera projection matrix:
+        glm::mat4 ovrProjMat = projMat * glm::inverse(eye2Head);
+#ifdef APP_VERBOSE   
+        std::cout << "Eye " << c << " proj matrix: " << glm::to_string(ovrProjMat) << std::endl;
+#endif
 
-    shader.m_shader->setMatrix(shader.projection, projection);
+        // Update camera modelview matrix:
+        glm::mat4 ovrModelViewMat = glm::inverse(headPos); // Inverted because this is the camera matrix
+#ifdef APP_VERBOSE   
+        std::cout << "Eye " << c << " modelview matrix: " << glm::to_string(ovrModelViewMat) << std::endl;
+#endif
 
-    for (int i = 0; i < list.size(); i++) {
-        shader.m_shader->setMatrix(shader.modelview, camera->inverseCamera() * list[i].second);
-        shader.m_shader->setInt(shader.num_lights, total_lights.numOmni);
-        shader.m_shader->setInt(shader.num_lights_spot, total_lights.numSpot);
+        shader.fbo[c]->render();
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        list[i].first->render(camera->inverseCamera() * list[i].second, shader);
+        shader.m_shader->render();
 
-        Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
-        if (mesh) {
-            if (mesh->shadow()) {
-                //mesh->render_shadow(camera->inverseCamera() * mesh->get_shadow_mat() * list[i].second);
+        shader.m_shader->setMatrix(shader.projection, ovrProjMat);
+
+        for (int i = 0; i < list.size(); i++) {
+            shader.m_shader->setMatrix(shader.modelview, ovrModelViewMat * list[i].second);
+            shader.m_shader->setInt(shader.num_lights, total_lights.numOmni);
+            shader.m_shader->setInt(shader.num_lights_spot, total_lights.numSpot);
+
+            list[i].first->render(ovrModelViewMat * list[i].second, shader);
+
+            Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
+            if (mesh) {
+                if (mesh->shadow()) {
+                    //mesh->render_shadow(camera->inverseCamera() * mesh->get_shadow_mat() * list[i].second);
+                }
             }
         }
+        shader.ovr->pass(curEye, shader.fboTexId[c]);
     }
+    shader.ovr->render();
     // Done with the FBO, go back to rendering into the window context buffers:
     Fbo::disable();
 
@@ -295,7 +317,7 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 
 
     // Bind the FBO buffer as texture and render:
-    glBindTexture(GL_TEXTURE_2D, shader.fboTexId);
+    glBindTexture(GL_TEXTURE_2D, shader.fboTexId[0]);
     glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
     
 }

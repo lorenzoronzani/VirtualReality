@@ -47,8 +47,8 @@ void ShaderSetup::setupShader()
 
 void ShaderSetup::setupFboShader()
 {
-    sizeXFbo = m_shader.ovr->getHmdIdealHorizRes();
-    sizeYFbo = m_shader.ovr->getHmdIdealVertRes();
+    m_sizeXFbo = m_shader.ovr->getHmdIdealHorizRes();
+    m_sizeYFbo = m_shader.ovr->getHmdIdealVertRes();
     glGenVertexArrays(1, &m_vao);
     glBindVertexArray(m_vao);
     // Copy data into VBOs:
@@ -85,17 +85,21 @@ void ShaderSetup::setupFboShader()
     m_shader.ptProjLoc = m_shader.passthroughShader->getParamLocation("projection");
     m_shader.ptMvLoc = m_shader.passthroughShader->getParamLocation("modelview");
     glGetIntegerv(GL_VIEWPORT, prevViewPort);
-    glGenTextures(1, &m_shader.fboTexId);
-    glBindTexture(GL_TEXTURE_2D, m_shader.fboTexId);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, sizeXFbo, sizeYFbo, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    m_shader.fbo->bindTexture(0, Fbo::BIND_COLORTEXTURE, m_shader.fboTexId);
-    m_shader.fbo->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, 1920, 1080);
-    if (!m_shader.fbo->isOk())
-        std::cout << "[ERROR] Invalid FBO" << std::endl;
+    for (int c = 0; c < OvVR::EYE_LAST; c++)
+    {
+        glGenTextures(1, &m_shader.fboTexId[c]);
+        glBindTexture(GL_TEXTURE_2D, m_shader.fboTexId[c]);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, m_sizeXFbo, m_sizeYFbo, 0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        m_shader.fbo[c] = new Fbo();
+        m_shader.fbo[c]->bindTexture(0, Fbo::BIND_COLORTEXTURE, m_shader.fboTexId[c]);
+        m_shader.fbo[c]->bindRenderBuffer(1, Fbo::BIND_DEPTHBUFFER, 1920, 1080);
+        if (!m_shader.fbo[c]->isOk())
+            std::cout << "[ERROR] Invalid FBO" << std::endl;
+    }
     Fbo::disable();
     glViewport(0, 0, prevViewPort[2], prevViewPort[3]);
     glBindVertexArray(0);
@@ -109,4 +113,14 @@ int* ShaderSetup::viewport()
 unsigned int ShaderSetup::vao()
 {
     return m_vao;
+}
+
+unsigned int ShaderSetup::sizeXFbo()
+{
+    return m_sizeXFbo;
+}
+
+unsigned int ShaderSetup::sizeYFbo()
+{
+    return m_sizeYFbo;
 }

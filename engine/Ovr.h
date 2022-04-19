@@ -14,7 +14,10 @@
 // C/C++:
 #include <iostream>
 #include <vector>   
-
+// GLM:
+#include <glm/gtc/packing.hpp>
+// OpenVR:
+#include "../dependencies/openvr/include/openvr.h"
 
 ////////////////
 // CLASS OvVR //

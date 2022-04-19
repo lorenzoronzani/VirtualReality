@@ -108,6 +108,9 @@
       <AdditionalLibraryDirectories>..\dependencies\freeimage\lib\$(Platform)\$(Configuration);..\dependencies\freeglut\lib\$(Platform)\$(Configuration);..\dependencies\glew\lib\$(Platform)\$(Configuration);..\dependencies\openvr\lib\$(Platform)\$(Configuration)</AdditionalLibraryDirectories>
       <AdditionalDependencies>openvr_api64.lib;FreeImageLib.lib;glew.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy ..\dependencies\openvr\bin\$(Platform)\$(Configuration)\openvr_api64.dll $(OutDir) /Y &gt; nul</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -159,7 +162,7 @@
       <PreprocessorDefinitions>GLM_FORCE_CTOR_INIT;_CRT_SECURE_NO_WARNINGS;FREEIMAGE_STATIC;FREEGLUT_STATIC;GLEW_STATIC;_DEBUG;ENGINE_EXPORTS;_WINDOWS;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalIncludeDirectories>..\dependencies\freeimage\include;..\dependencies\freeglut\include;..\dependencies\glew\include;..\dependencies\glm\include;</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\dependencies\freeimage\include;..\dependencies\freeglut\include;..\dependencies\glew\include;..\dependencies\glm\include;..\dependencies\openvr\include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
