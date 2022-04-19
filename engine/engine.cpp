@@ -113,9 +113,40 @@ void specialCallback(int key, int mouseX, int mouseY)
 {
     handler.special(key, mouseX, mouseY);
 }
-
+glm::vec4 cameraPos;
 void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     handler.keyboard(key, mouseX, mouseY);
+    switch (key) {
+    case 'w':
+        cameraPos = cameraPos + glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+        break;
+
+    case 's':
+        cameraPos = cameraPos + glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f);
+
+        break;
+
+    case 'a':
+        cameraPos = cameraPos + glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+
+        break;
+
+    case 'd':
+        //Movimento a destra
+        cameraPos = cameraPos + glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+
+        break;
+    case 'u':
+        cameraPos = cameraPos + glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+
+        break;
+
+    case 'h':
+        //Movimento a destra
+        cameraPos = cameraPos + glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
+
+        break;
+    }
 }
 
 void closeCallback()
@@ -201,7 +232,7 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     //Inizializza lettore texture
     FreeImage_Initialise();
-
+    cameraPos = glm::vec4(0.0f, 0.0f, 0.0f,0.0f);
     shader.ovr = std::make_shared<OvVR>();
     if (shader.ovr->init() == false)
     {
@@ -259,6 +290,7 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     shader.ovr->update();
     // Store the current viewport size:
     glm::mat4 headPos = shader.ovr->getModelviewMatrix();
+    headPos[3] = headPos[3] + cameraPos;
     for (int c = 0; c < OvVR::EYE_LAST; c++)
     {
         // Get OpenVR matrices:
