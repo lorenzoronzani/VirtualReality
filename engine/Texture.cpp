@@ -10,7 +10,7 @@
 
 
 
-void LIB_API Texture::load(const std::string& file,ShaderSettings &shader){
+void LIB_API Texture::load(const std::string& file){
 	if (file.find("[none]")==std::string::npos) {
 		//Crea e fa il bind della texture
 		glGenTextures(1, &m_id);

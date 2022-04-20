@@ -173,7 +173,7 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
             
             //Cerco e carico texture
             directory = directory + "/"+textureName;
-            texture->load(directory,m_shader);
+            texture->load(directory);
             
             position += (unsigned int)strlen(textureName) + 1;
             

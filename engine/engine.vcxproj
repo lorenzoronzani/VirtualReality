@@ -189,6 +189,7 @@
     <ClInclude Include="Ovr.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="ShaderSetup.h" />
+    <ClInclude Include="Skybox.h" />
     <ClInclude Include="Test.h" />
     <ClInclude Include="Texture.h" />
   </ItemGroup>
@@ -207,6 +208,7 @@
     <ClCompile Include="Ovr.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="ShaderSetup.cpp" />
+    <ClCompile Include="Skybox.cpp" />
     <ClCompile Include="Test.cpp" />
     <ClCompile Include="Texture.cpp" />
   </ItemGroup>

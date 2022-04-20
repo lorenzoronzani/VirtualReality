@@ -9,7 +9,7 @@ public:
 	Texture() = default;
 	~Texture() = default;
 
-	void load(const std::string& file,ShaderSettings &shader);
+	void load(const std::string& file);
 
 	void render(glm::mat4 modelView,ShaderSettings &shader);
 
