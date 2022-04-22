@@ -2,7 +2,7 @@
 #include "Object.h"
 class ShaderSetup {
 public:
-	ShaderSetup(ShaderSettings& shader);
+	ShaderSetup(ShaderSettings& shader,bool isVirtual);
 	void setupShader();
 	void setupFboShader();
 	int* viewport();
@@ -15,4 +15,5 @@ private:
 	unsigned int m_vao;
 	unsigned int m_sizeXFbo;
 	unsigned int m_sizeYFbo;
+	bool m_virtual;
 };

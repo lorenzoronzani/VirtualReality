@@ -40,6 +40,8 @@ std::shared_ptr<ShaderSetup> shaderSetup;
 //total lights
 ObjectLoader::LightsType total_lights;
 
+bool isVirtual = false;
+
 #ifdef _WINDOWS
 #include <Windows.h>
 
@@ -116,36 +118,38 @@ void specialCallback(int key, int mouseX, int mouseY)
 glm::vec4 cameraPos;
 void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     handler.keyboard(key, mouseX, mouseY);
-    switch (key) {
-    case 'w':
-        cameraPos = cameraPos + glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
-        break;
+    if (isVirtual) {
+        switch (key) {
+        case 'w':
+            cameraPos = cameraPos + glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+            break;
 
-    case 's':
-        cameraPos = cameraPos + glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f);
+        case 's':
+            cameraPos = cameraPos + glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f);
 
-        break;
+            break;
 
-    case 'a':
-        cameraPos = cameraPos + glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+        case 'a':
+            cameraPos = cameraPos + glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
 
-        break;
+            break;
 
-    case 'd':
-        //Movimento a destra
-        cameraPos = cameraPos + glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+        case 'd':
+            //Movimento a destra
+            cameraPos = cameraPos + glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
 
-        break;
-    case 'u':
-        cameraPos = cameraPos + glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
+            break;
+        case 'u':
+            cameraPos = cameraPos + glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
 
-        break;
+            break;
 
-    case 'h':
-        //Movimento a destra
-        cameraPos = cameraPos + glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
+        case 'h':
+            //Movimento a destra
+            cameraPos = cameraPos + glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
 
-        break;
+            break;
+        }
     }
 }
 
@@ -233,18 +237,22 @@ bool LIB_API Engine::init(Handler t_handler) {
     //Inizializza lettore texture
     FreeImage_Initialise();
     cameraPos = glm::vec4(0.0f, 0.0f, 0.0f,0.0f);
-    shader.ovr = std::make_shared<OvVR>();
-    if (shader.ovr->init() == false)
-    {
-        std::cout << "[ERROR] Unable to init OpenVR" << std::endl;
-        return -2;
+    std::ifstream virtualRead("../engine/resources/is3d.txt");
+    virtualRead >> isVirtual;
+    virtualRead.close();
+    if (isVirtual) {
+        shader.ovr = std::make_shared<OvVR>();
+        if (shader.ovr->init() == false)
+        {
+            std::cout << "[ERROR] Unable to init OpenVR" << std::endl;
+            return -2;
+        }
+
+        // Report some info:
+        std::cout << "   Manufacturer . . :  " << shader.ovr->getManufacturerName() << std::endl;
+        std::cout << "   Tracking system  :  " << shader.ovr->getTrackingSysName() << std::endl;
+        std::cout << "   Model number . . :  " << shader.ovr->getModelNumber() << std::endl;
     }
-
-    // Report some info:
-    std::cout << "   Manufacturer . . :  " << shader.ovr->getManufacturerName() << std::endl;
-    std::cout << "   Tracking system  :  " << shader.ovr->getTrackingSysName() << std::endl;
-    std::cout << "   Model number . . :  " << shader.ovr->getModelNumber() << std::endl;
-
     std::shared_ptr<Shader> m_vertex_shader;
     std::shared_ptr<Shader> m_fragment_shader;
 
@@ -260,7 +268,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.m_shader = std::make_shared<Shader>();
 
     shader.m_shader->build(m_vertex_shader.get(), m_fragment_shader.get());
-    shaderSetup = std::make_shared<ShaderSetup>(shader);
+    shaderSetup = std::make_shared<ShaderSetup>(shader,isVirtual);
     shaderSetup->setupShader();
     //FBO SETTINGS
     std::shared_ptr<Shader> passthroughVs = std::make_shared<Shader>();
@@ -287,29 +295,40 @@ void LIB_API Engine::clear()
 
 void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
-    shader.ovr->update();
-    // Store the current viewport size:
-    glm::mat4 headPos = shader.ovr->getModelviewMatrix();
-    headPos[3] = headPos[3] + cameraPos;
+    glm::mat4 headPos;
+    if (isVirtual) {
+        shader.ovr->update();
+        // Store the current viewport size:
+        headPos = shader.ovr->getModelviewMatrix();
+        headPos[3] = headPos[3] + cameraPos;
+    }
     for (int c = 0; c < OvVR::EYE_LAST; c++)
     {
-        // Get OpenVR matrices:
-        OvVR::OvEye curEye = (OvVR::OvEye)c;
-        glm::mat4 projMat = shader.ovr->getProjMatrix(curEye, 1.0f, 1024.0f);
-        glm::mat4 eye2Head = shader.ovr->getEye2HeadMatrix(curEye);
+        glm::mat4 ovrProjMat;
+        glm::mat4 ovrModelViewMat;
+        OvVR::OvEye curEye;
+        if (isVirtual) {
+            // Get OpenVR matrices:
+            curEye = (OvVR::OvEye)c;
+            glm::mat4 projMat = shader.ovr->getProjMatrix(curEye, 1.0f, 1024.0f);
+            glm::mat4 eye2Head = shader.ovr->getEye2HeadMatrix(curEye);
 
-        // Update camera projection matrix:
-        glm::mat4 ovrProjMat = projMat * glm::inverse(eye2Head);
-#ifdef APP_VERBOSE   
-        std::cout << "Eye " << c << " proj matrix: " << glm::to_string(ovrProjMat) << std::endl;
-#endif
+            // Update camera projection matrix:
+            ovrProjMat = projMat * glm::inverse(eye2Head);
+            #ifdef APP_VERBOSE   
+                        std::cout << "Eye " << c << " proj matrix: " << glm::to_string(ovrProjMat) << std::endl;
+            #endif
 
-        // Update camera modelview matrix:
-        glm::mat4 ovrModelViewMat = glm::inverse(headPos); // Inverted because this is the camera matrix
-#ifdef APP_VERBOSE   
-        std::cout << "Eye " << c << " modelview matrix: " << glm::to_string(ovrModelViewMat) << std::endl;
-#endif
-
+                        // Update camera modelview matrix:
+                        ovrModelViewMat = glm::inverse(headPos); // Inverted because this is the camera matrix
+            #ifdef APP_VERBOSE   
+                        std::cout << "Eye " << c << " modelview matrix: " << glm::to_string(ovrModelViewMat) << std::endl;
+            #endif
+        }
+        else {
+            ovrProjMat = projection;
+            ovrModelViewMat = camera->inverseCamera();
+        }
         shader.fbo[c]->render();
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -331,9 +350,13 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
                 }
             }
         }
-        shader.ovr->pass(curEye, shader.fboTexId[c]);
+        if (isVirtual) {
+            shader.ovr->pass(curEye, shader.fboTexId[c]);
+        }
     }
-    shader.ovr->render();
+    if (isVirtual) {
+        shader.ovr->render();
+    }
     // Done with the FBO, go back to rendering into the window context buffers:
     Fbo::disable();
 

@@ -2,7 +2,7 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
-ShaderSetup::ShaderSetup(ShaderSettings& shader):m_shader{shader}
+ShaderSetup::ShaderSetup(ShaderSettings& shader,bool isVirtual):m_shader{shader},m_virtual{isVirtual}
 {
 
 }
@@ -47,8 +47,14 @@ void ShaderSetup::setupShader()
 
 void ShaderSetup::setupFboShader()
 {
-    m_sizeXFbo = m_shader.ovr->getHmdIdealHorizRes();
-    m_sizeYFbo = m_shader.ovr->getHmdIdealVertRes();
+    if (m_virtual) {
+        m_sizeXFbo = m_shader.ovr->getHmdIdealHorizRes();
+        m_sizeYFbo = m_shader.ovr->getHmdIdealVertRes();
+    }
+    else {
+        m_sizeXFbo = 1920;
+        m_sizeYFbo = 1080;
+    }
     glGenVertexArrays(1, &m_vao);
     glBindVertexArray(m_vao);
     // Copy data into VBOs:

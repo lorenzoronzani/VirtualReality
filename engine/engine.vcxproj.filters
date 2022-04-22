@@ -126,4 +126,7 @@
     <None Include="resources\vertex_fbo.glsl" />
     <None Include="resources\fragment_fbo.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="resources\is3d.txt" />
+  </ItemGroup>
 </Project>

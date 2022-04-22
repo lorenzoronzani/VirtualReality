@@ -218,6 +218,9 @@
     <None Include="resources\vertex.glsl" />
     <None Include="resources\vertex_fbo.glsl" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="resources\is3d.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
