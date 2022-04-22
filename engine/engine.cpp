@@ -371,7 +371,7 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         }
         shader.cubemapShader->render();
         shader.cubemapShader->setMatrix(shader.projCubemap, ovrProjMat);
-        skybox->render(camera->inverseCamera(),shader);
+        skybox->render(ovrModelViewMat,shader);
         if (isVirtual) {
             shader.ovr->pass(curEye, shader.fboTexId[c]);
         }
