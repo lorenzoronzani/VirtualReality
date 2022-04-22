@@ -69,6 +69,8 @@ struct ShaderSettings {
 	std::shared_ptr<Shader> cubemapShader;
 
 	unsigned int mvLocCubemap;
+	unsigned int projCubemap;
+
 };
 
 class LIB_API Object {

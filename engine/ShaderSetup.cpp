@@ -43,6 +43,10 @@ void ShaderSetup::setupShader()
         m_shader.lightSpotSettings[i].outerCutOff = m_shader.m_shader->getParamLocation(std::string("lightsSpot[" + std::to_string(i) + "].outerCutOff").c_str());
     }
     m_shader.texture = m_shader.m_shader->getParamLocation("texture1");
+    m_shader.cubemapShader->render();
+    m_shader.mvLocCubemap = m_shader.cubemapShader->getParamLocation("modelview");
+    m_shader.projCubemap = m_shader.cubemapShader->getParamLocation("projection");
+
 }
 
 void ShaderSetup::setupFboShader()

@@ -273,7 +273,6 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     shader.m_shader->build(m_vertex_shader.get(), m_fragment_shader.get());
     shaderSetup = std::make_shared<ShaderSetup>(shader,isVirtual);
-    shaderSetup->setupShader();
     //FBO SETTINGS
     std::shared_ptr<Shader> passthroughVs = std::make_shared<Shader>();
     passthroughVs->loadFromMemory(Shader::TYPE_VERTEX, "../engine/resources/vertex_fbo.glsl");
@@ -292,7 +291,6 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.passthroughShader->build(passthroughVs.get(), passthroughFs.get());
     shader.cubemapShader->build(cubemapVs.get(), cubemapFs.get());
 
-    shaderSetup->setupFboShader();
     skybox = std::make_shared<Skybox>();
     skybox->load({ "test/posx.jpg",
       "test/negx.jpg",
@@ -300,6 +298,10 @@ bool LIB_API Engine::init(Handler t_handler) {
       "test/negy.jpg",
       "test/posz.jpg",
       "test/negz.jpg" });
+    shaderSetup->setupShader();
+
+    shaderSetup->setupFboShader();
+
     clear();
     return true;
 }
@@ -367,6 +369,9 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
                 }
             }
         }
+        shader.cubemapShader->render();
+        shader.cubemapShader->setMatrix(shader.projCubemap, ovrProjMat);
+        skybox->render(camera->inverseCamera(),shader);
         if (isVirtual) {
             shader.ovr->pass(curEye, shader.fboTexId[c]);
         }
