@@ -35,7 +35,7 @@ void LIB_API Skybox::load(const std::array<std::string,6>& file) {
 	//Crea e fa il bind della texture
 	glGenTextures(1, &m_id);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
-
+    std::cout << m_id<<std::endl;
 
 	// Set params:
 	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);

@@ -43,6 +43,8 @@ ObjectLoader::LightsType total_lights;
 
 bool isVirtual = false;
 
+std::shared_ptr<Skybox> skybox;
+
 #ifdef _WINDOWS
 #include <Windows.h>
 
@@ -291,7 +293,13 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.cubemapShader->build(cubemapVs.get(), cubemapFs.get());
 
     shaderSetup->setupFboShader();
-
+    skybox = std::make_shared<Skybox>();
+    skybox->load({ "test/posx.jpg",
+      "test/negx.jpg",
+      "test/posy.jpg",
+      "test/negy.jpg",
+      "test/posz.jpg",
+      "test/negz.jpg" });
     clear();
     return true;
 }
