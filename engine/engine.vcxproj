@@ -214,8 +214,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="resources\fragment.glsl" />
+    <None Include="resources\fragment_cubemap.glsl" />
     <None Include="resources\fragment_fbo.glsl" />
     <None Include="resources\vertex.glsl" />
+    <None Include="resources\vertex_cubemap.glsl" />
     <None Include="resources\vertex_fbo.glsl" />
   </ItemGroup>
   <ItemGroup>

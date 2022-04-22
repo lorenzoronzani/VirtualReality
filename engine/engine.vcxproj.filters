@@ -125,6 +125,8 @@
     <None Include="resources\fragment.glsl" />
     <None Include="resources\vertex_fbo.glsl" />
     <None Include="resources\fragment_fbo.glsl" />
+    <None Include="resources\vertex_cubemap.glsl" />
+    <None Include="resources\fragment_cubemap.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="resources\is3d.txt" />
