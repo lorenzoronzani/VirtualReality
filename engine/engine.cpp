@@ -222,6 +222,7 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     //OpenGL enables
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
 
 
     //Callbacks
