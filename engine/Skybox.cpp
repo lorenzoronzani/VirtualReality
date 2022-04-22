@@ -82,12 +82,12 @@ void LIB_API Skybox::render(glm::mat4 modelView, ShaderSettings& shader) {
 
     glm::mat4 f = glm::mat4(1.0f);
 
-    f = glm::translate(f, glm::vec3(0.0f, 0.0f, -200.0f));
+    f = glm::translate(f, glm::vec3(0.0f, 0.0f, -500.0f));
     f = glm::scale(f, glm::vec3(100.0f, 100.0f, 100.0f));
 
     // Set model matrix as current OpenGL matrix:   
     modelView = glm::mat3(modelView);
-    shader.cubemapShader->setMatrix(shader.mvLocCubemap, f*modelView);
+    shader.cubemapShader->setMatrix(shader.mvLocCubemap, modelView*f);
     glDrawElements(GL_TRIANGLES, cubeFaces.size()*3, GL_UNSIGNED_SHORT, nullptr);
 }
 
