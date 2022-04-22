@@ -17,6 +17,7 @@
 #include "FreeImage.h"
 #include "ObjectLoader.h"
 #include "ShaderSetup.h"
+#include "Skybox.h"
 
 
 
@@ -278,10 +279,17 @@ bool LIB_API Engine::init(Handler t_handler) {
     std::shared_ptr<Shader> passthroughFs = std::make_shared<Shader>();
     passthroughFs->loadFromMemory(Shader::TYPE_FRAGMENT, "../engine/resources/fragment_fbo.glsl");
 
+    std::shared_ptr<Shader> cubemapVs = std::make_shared<Shader>();
+    cubemapVs->loadFromMemory(Shader::TYPE_VERTEX, "../engine/resources/vertex_cubemap.glsl");
+
+    std::shared_ptr<Shader> cubemapFs = std::make_shared<Shader>();
+    cubemapFs->loadFromMemory(Shader::TYPE_FRAGMENT, "../engine/resources/fragment_cubemap.glsl");
 
     shader.passthroughShader = std::make_shared<Shader>();
-
+    shader.cubemapShader = std::make_shared<Shader>();
     shader.passthroughShader->build(passthroughVs.get(), passthroughFs.get());
+    shader.cubemapShader->build(cubemapVs.get(), cubemapFs.get());
+
     shaderSetup->setupFboShader();
 
     clear();
