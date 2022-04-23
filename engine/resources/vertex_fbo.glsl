@@ -13,6 +13,7 @@ out vec2 texCoord;
 
 void main(void)
 {      
+    
     gl_Position = projection * modelview * vec4(in_Position, 0.0f, 1.0f);    
     texCoord = in_TexCoord;
 }

@@ -77,18 +77,17 @@ void LIB_API Skybox::load(const std::array<std::string,6>& file) {
 void LIB_API Skybox::render(glm::mat4 modelView, ShaderSettings& shader) {
 
     glBindVertexArray(m_vao);
-    
+    glDepthFunc(GL_LEQUAL);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_id);
 
     glm::mat4 f = glm::mat4(1.0f);
 
-    f = glm::translate(f, glm::vec3(0.0f, 0.0f, -500.0f));
-    f = glm::scale(f, glm::vec3(100.0f, 100.0f, 100.0f));
 
     // Set model matrix as current OpenGL matrix:   
-    modelView = glm::mat3(modelView);
+    modelView = glm::mat4(glm::mat3(modelView));
     shader.cubemapShader->setMatrix(shader.mvLocCubemap, modelView*f);
     glDrawElements(GL_TRIANGLES, cubeFaces.size()*3, GL_UNSIGNED_SHORT, nullptr);
+    glDepthFunc(GL_LESS);
 }
 
 void LIB_API Skybox::id(unsigned int id)
