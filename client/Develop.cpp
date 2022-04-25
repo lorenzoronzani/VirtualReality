@@ -60,7 +60,7 @@ float y_text = 15;
 int fps = 0;
 
 
-void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
+glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     float cameraSpeed = 2.5;
 
     //Segmento da muovere
@@ -234,6 +234,7 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     if (dynamic) {
         camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
     }
+    return cameraPos;
 }
 
 void mouseMove(int mouseX, int mouseY) {
@@ -334,6 +335,7 @@ int main()
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;
+                std::cout << fps<<std::endl;
             }
 
             if (current - last > 1000) {

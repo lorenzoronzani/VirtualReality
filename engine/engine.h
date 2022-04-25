@@ -23,7 +23,7 @@ class LIB_API Engine {
 public:
 	struct Handler {
 		std::function<void(int, int, int)> special;
-		std::function<void(unsigned char, int, int)> keyboard;
+		std::function<glm::vec3(unsigned char, int, int)> keyboard;
 		std::function<void(int, int)> mouse;
 		std::function<void()> close;
 		int width;

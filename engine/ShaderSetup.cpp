@@ -26,6 +26,7 @@ void ShaderSetup::setupShader()
     m_shader.matShininessLoc = m_shader.m_shader->getParamLocation("matShininess");
     m_shader.num_lights = m_shader.m_shader->getParamLocation("numLights");
     m_shader.num_lights_spot = m_shader.m_shader->getParamLocation("numLightsSpot");
+    m_shader.view = m_shader.m_shader->getParamLocation("view");
 
     for (int i = 0; i < 16; i++) {
         m_shader.lightSettings[i].lightPositionLoc = m_shader.m_shader->getParamLocation(std::string("lights[" + std::to_string(i) + "].lightPosition").c_str());

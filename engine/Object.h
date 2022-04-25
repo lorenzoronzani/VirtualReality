@@ -42,6 +42,7 @@ struct LightSpotSettingShader {
 struct ShaderSettings {
 	std::shared_ptr<Shader> m_shader;
 	int modelview;
+	int view;
 	int projection;
 	int normalMatLoc;
 	int matEmissionLoc;
