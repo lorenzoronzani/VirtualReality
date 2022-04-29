@@ -341,6 +341,7 @@ int main()
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;
+                std::cout << fps << std::endl;
             }
 
             if (current - last > 1000) {

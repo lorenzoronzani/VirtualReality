@@ -78,6 +78,7 @@ void LIB_API Mesh::vertices(LODdata vertices)
         m_lod_uv->data(), GL_STATIC_DRAW);
     glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(2);
+    face_size = m_lod_faces->size();
 }
 
 LODdata LIB_API Mesh::vertices() const
@@ -92,12 +93,10 @@ void LIB_API Mesh::render(glm::mat4 modelView, ShaderSettings &shader) {
     if (m_material) {
         m_material->render(modelView,shader);
     }
-    auto m_lod_faces = &m_vertices->lod.at(lods).faces;
-    auto size = m_lod_faces->size();
 
     glBindVertexArray(m_VAO);
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
-    glDrawElements(GL_TRIANGLES, m_lod_faces->size() * 3, GL_UNSIGNED_INT, nullptr);
+    glDrawElements(GL_TRIANGLES, face_size * 3, GL_UNSIGNED_INT, nullptr);
 
 
     //if (shadow()) {

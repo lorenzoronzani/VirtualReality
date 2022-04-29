@@ -59,4 +59,5 @@ private:
 	unsigned int normalVbo;
 	unsigned int uvVbo;
 
+	int face_size;
 };

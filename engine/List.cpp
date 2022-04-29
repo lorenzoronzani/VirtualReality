@@ -24,17 +24,16 @@ const LIB_API std::pair<std::shared_ptr<Node>, glm::mat4> List::operator[](std::
 
 void LIB_API List::pass(std::shared_ptr<Node> node)
 {
+	node_pass(node,glm::mat4(1.0f));
+}
+
+void LIB_API List::node_pass(std::shared_ptr<Node> node,glm::mat4 mat) {
 	//Attraversa la lista
 	for (int i = 0; i < node->getNumberOfChildren(); i++) {
 		//virtual copy pattern
-		std::shared_ptr<Node> current(node->getChild(i)->clone());
-
-		glm::mat4 posMat = node->getFinalMatrix() * current->getFinalMatrix();
-
-		current->setTransformation(posMat);
-
-		add(current, posMat);
-		pass(current);
+		glm::mat4 posMat = mat * node->getChild(i)->getFinalMatrix();
+		add(node->getChild(i), posMat);
+		node_pass(node->getChild(i),posMat);
 	}
 }
 

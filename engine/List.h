@@ -25,5 +25,6 @@ public:
 private:
 	std::deque<std::pair<std::shared_ptr<Node>, glm::mat4>> m_list;
 	std::map<std::string, std::shared_ptr<Node>> m_map;
+	void node_pass(std::shared_ptr<Node> node,glm::mat4 mat);
 };
 
