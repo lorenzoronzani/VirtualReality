@@ -18,12 +18,6 @@
     <ClCompile Include="main.cpp">
       <Filter>File di risorse</Filter>
     </ClCompile>
-    <ClCompile Include="RoboticArm.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="Develop.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RoboticArm.h">

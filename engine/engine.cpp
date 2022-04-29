@@ -291,12 +291,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     shader.cubemapShader->build(cubemapVs.get(), cubemapFs.get());
 
     skybox = std::make_shared<Skybox>();
-    skybox->load({ "test/posx.jpg",
-      "test/negx.jpg",
-      "test/posy.jpg",
-      "test/negy.jpg",
-      "test/posz.jpg",
-      "test/negz.jpg" });
+    skybox->load(handler.skybox_data);
     shaderSetup->setupShader();
 
     shaderSetup->setupFboShader();

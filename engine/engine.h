@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <functional>
+#include <array>
 
 #include "Node.h"
 #include "Camera.h"
@@ -28,6 +29,7 @@ public:
 		std::function<void()> close;
 		int width;
 		int height;
+		std::array<std::string, 6> skybox_data;
 	};
 
 	static bool init(Handler p_handler);

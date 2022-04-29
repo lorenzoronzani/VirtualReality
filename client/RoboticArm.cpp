@@ -1,6 +1,4 @@
-#include "RoboticArm.h"
-
-#include <engine.h>
+#include "engine.h"
 #include <glm/glm.hpp>
 
 //Path scena
@@ -25,7 +23,7 @@ glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 float fov = 45.0f;
 
 //Camera Flags
-bool dynamic = false;
+bool dynamic = true;
 
 //Movimento con mouse
 bool firstMouse = true;
@@ -62,7 +60,7 @@ float y_text = 15;
 int fps = 0;
 
 
-void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
+glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     float cameraSpeed = 2.5;
 
     //Segmento da muovere
@@ -236,6 +234,7 @@ void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     if (dynamic) {
         camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
     }
+    return cameraPos;
 }
 
 void mouseMove(int mouseX, int mouseY) {
@@ -280,23 +279,33 @@ void mouseMove(int mouseX, int mouseY) {
     }
 }
 
+void special(int a, int b, int c) {
+
+}
+
 void close() {
     is_open = false;
 }
 
-void LIB_API RoboticArm::start() {
+int main()
+{
     Engine::Handler handler;
     handler.keyboard = keyboardCallback;
     handler.mouse = mouseMove;
-    handler.width = 2048;
-    handler.height = 1024;
+    handler.width = 1920;
+    handler.height = 1080;
+    handler.special = special;
     handler.close = close;
+    handler.skybox_data = { "test/posx.jpg",
+      "test/negx.jpg",
+      "test/posy.jpg",
+      "test/negy.jpg",
+      "test/posz.jpg",
+      "test/negz.jpg" };
 
     if (Engine::init(handler)) {
         //Carico scena
         node = Engine::load(path);
-        //Disattivo l'ombra al piano di base
-        dynamic_cast<Mesh*>(node->getChildByName("Plane001").get())->shadow(false);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
 
         bool passed_1_sec = false;
@@ -318,12 +327,6 @@ void LIB_API RoboticArm::start() {
 
             list.pass(node);
 
-            //Prendo sfera e centro del braccio dalla scena
-            auto sphere_center = list.getByName("CenterSphere");
-            auto arm_center = list.getByName("Center");
-            auto sphere_column = sphere_center->getFinalMatrix()[3];
-            auto arm_column = arm_center->getFinalMatrix()[3];
-
             Engine::drawText(to_screen, x_text, y_text);
             Engine::drawText("fps: " + std::to_string(fps), 1, 2);
 
@@ -331,45 +334,6 @@ void LIB_API RoboticArm::start() {
 
             Engine::swap();
             Engine::update();
-            //Ruoto luce blu
-            node->getChildByName("Spot001")->setTransformation(glm::rotate(node->getChildByName("Spot001")->getFinalMatrix(), glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
-
-            //Controllo per presa palla
-            if (!is_attached && !is_falling && glm::length(arm_column - sphere_column) < min_distance) {
-                auto distance = glm::vec4(0, 0, 0, 0) - sphere_column;
-
-                //Catturo palla
-                node->getChildByName("Sphere004")->setTransformation(glm::translate(glm::translate(glm::mat4(1.0f), glm::vec3(distance)) * node->getChildByName("Sphere004")->getFinalMatrix(), glm::vec3(0, 2.5, -0.5)));
-                node->getChildByName("Center")->addChild(node->getChildByName("Sphere004"));
-                node->removeChild(node->getChildByName("Sphere004")->id());
-
-                is_attached = true;
-                has_touched = false;
-            }
-
-            if (is_falling && !has_touched) {
-                if (is_attached) {
-                    is_attached = false;
-
-                    auto last = sphere_column;
-
-                    //Stacco la palla
-                    node->addChild(node->getChildByName("Sphere004"));
-                    node->getChildByName("Center")->removeChild(node->getChildByName("Sphere004")->id());
-                    node->getChildByName("Sphere004")->setTransformation(glm::translate(glm::mat4(1.0f), -glm::vec3(0, 2.5, -0.5)) * glm::translate(glm::mat4(1.0f), glm::vec3(last)) * node->getChildByName("Sphere004")->getFinalMatrix());
-                }
-
-                if (sphere_center->getFinalMatrix()[3][1] >= distance_ground) {
-                    //Simulo gravità
-                    node->getChildByName("Sphere004")->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0, -0.1, 0)) * node->getChildByName("Sphere004")->getFinalMatrix());
-                }
-                else {
-                    //La palla è a terra
-                    has_touched = true;
-                    is_attached = false;
-                    is_falling = false;
-                }
-            }
 
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
@@ -377,6 +341,7 @@ void LIB_API RoboticArm::start() {
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;
+                std::cout << fps << std::endl;
             }
 
             if (current - last > 1000) {

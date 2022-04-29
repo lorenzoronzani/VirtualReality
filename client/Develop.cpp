@@ -296,6 +296,12 @@ int main()
     handler.height = 1080;
     handler.special = special;
     handler.close = close;
+    handler.skybox_data = { "test/posx.jpg",
+      "test/negx.jpg",
+      "test/posy.jpg",
+      "test/negy.jpg",
+      "test/posz.jpg",
+      "test/negz.jpg" };
 
     if (Engine::init(handler)) {
         //Carico scena
