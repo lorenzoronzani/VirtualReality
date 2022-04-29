@@ -12,8 +12,9 @@
  //////////////
 
 	// Header:
-#include "fboh.h"
+#include "Fbo.h"
 
+#include <GL/glew.h>
 
 ///////////////////////
 // BODY OF CLASS Fbo //
