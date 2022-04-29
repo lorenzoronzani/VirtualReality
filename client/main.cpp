@@ -42,7 +42,6 @@ int choose = 0;
 bool is_falling = false;
 bool is_attached = false;
 bool has_touched = false;
-
 //Flag chiusura finistra
 bool is_open = true;
 

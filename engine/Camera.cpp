@@ -10,6 +10,6 @@ void LIB_API Camera::setTransformation(const glm::mat4& transformation)
     m_camera_inverse = glm::inverse(m_camera);
 }
 
-void LIB_API Camera::render(glm::mat4 modelView, ShaderSettings &shader){
+void LIB_API Camera::render(glm::mat4 modelView, ShaderSettings& shader) {
 
 }

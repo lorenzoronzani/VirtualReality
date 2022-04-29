@@ -40,4 +40,3 @@ public:
 private:
 	LightSettings m_settings;
 };
-

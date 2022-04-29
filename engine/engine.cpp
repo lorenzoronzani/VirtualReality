@@ -349,12 +349,12 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         shader.m_shader->setMatrix(shader.projection, ovrProjMat);
         shader.m_shader->setInt(shader.num_lights, total_lights.numOmni);
         shader.m_shader->setInt(shader.num_lights_spot, total_lights.numSpot);
+        shader.m_shader->setMatrix(shader.view, ovrModelViewMat);
         for (int i = 0; i < list.size(); i++) {
             shader.m_shader->setMatrix(shader.modelview, ovrModelViewMat * list[i].second);
-            shader.m_shader->setMatrix(shader.view, ovrModelViewMat);
-
+            
             list[i].first->render(ovrModelViewMat * list[i].second, shader);
-
+            
             Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
             if (mesh) {
                 if (mesh->shadow()) {

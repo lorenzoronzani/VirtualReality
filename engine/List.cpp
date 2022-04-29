@@ -24,7 +24,7 @@ const LIB_API std::pair<std::shared_ptr<Node>, glm::mat4> List::operator[](std::
 
 void LIB_API List::pass(std::shared_ptr<Node> node)
 {
-	node_pass(node,glm::mat4(1.0f));
+	node_pass(node,node->getFinalMatrix());
 }
 
 void LIB_API List::node_pass(std::shared_ptr<Node> node,glm::mat4 mat) {

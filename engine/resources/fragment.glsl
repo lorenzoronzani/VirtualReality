@@ -67,7 +67,7 @@ void main(void)
         // Diffuse term:
         vec3 _normal = normalize(normal);
         vec3 lightDirection = normalize(lightsSpot[i].lightPosition - fragPosition.xyz);   
-        float theta = dot(lightDirection, normalize(-lightsSpot[i].direction));    
+        float theta = dot(lightDirection, glm::mat3(view)*(-lightsSpot[i].direction));    
         float nDotL = dot(lightDirection, _normal);   
         if (nDotL > 0 && theta > lightsSpot[i].cutOff)
         {
