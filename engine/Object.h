@@ -4,6 +4,8 @@
 #include <string>
 #include <memory>
 #include <glm/glm.hpp>
+#include "Shader.h"
+#include "Fbo.h"
 
 #ifdef _WINDOWS
 // Export API:
@@ -17,6 +19,61 @@
 #define LIB_API  // Dummy declaration
 #endif
 
+#include "Ovr.h"
+
+struct LightSettingsShader {
+	int lightPositionLoc;
+	int lightAmbientLoc;
+	int lightDiffuseLoc;
+	int lightSpecularLoc;
+};
+
+struct LightSpotSettingShader {
+	int direction;
+	float cutOff;
+	float outerCutOff;
+
+	int lightPositionLoc;
+	int lightAmbientLoc;
+	int lightDiffuseLoc;
+	int lightSpecularLoc;
+};
+
+struct ShaderSettings {
+	std::shared_ptr<Shader> m_shader;
+	int modelview;
+	int view;
+	int projection;
+	int normalMatLoc;
+	int matEmissionLoc;
+	int matAmbientLoc;
+	int matDiffuseLoc;
+	int matSpecularLoc;
+	int matShininessLoc;
+	LightSettingsShader lightSettings[16];
+	LightSpotSettingShader lightSpotSettings[16];
+	int num_lights;
+	int num_lights_spot;
+	int texture;
+
+	Fbo* fbo[OvVR::EYE_LAST] = { nullptr, nullptr };
+
+	std::shared_ptr<Shader> passthroughShader;
+	int ptProjLoc;
+	int ptMvLoc;
+	unsigned int boxVertexVbo;
+	unsigned int boxTexCoordVbo;
+	unsigned int fboTexId[2];
+
+	std::shared_ptr<OvVR> ovr;
+
+	std::shared_ptr<Shader> cubemapShader;
+
+	unsigned int mvLocCubemap;
+	unsigned int projCubemap;
+
+};
+
 class LIB_API Object {
 public:
 	Object();
@@ -27,10 +84,9 @@ public:
 	void name(std::string name);
 	std::string name() const;
 
-	//virtual void render(std::shared_ptr<Object> camera) = 0;
-	virtual void render(glm::mat4 modelView) = 0;
+	virtual void render(glm::mat4 modelView,ShaderSettings &shader) = 0;
 
-private:
+protected:
 	const int m_id;
 	std::string m_name;
 };

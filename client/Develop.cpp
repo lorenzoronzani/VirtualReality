@@ -1,116 +1,119 @@
-#include "Develop.h"
-
-#include <engine.h>
+#include "engine.h"
 #include <glm/glm.hpp>
 
 //Path scena
-const std::string d_path = "test/simple3Rect.OVO";
+const std::string path = "test/cube.OVO";
+
+//Distanze per la palla
+const int min_distance = 7;
+const float distance_ground = 3.2f;
 
 //Oggetto camera
-std::shared_ptr<Camera> d_camera = std::make_shared<Camera>();
+auto camera = std::make_shared<Camera>();
 
 //Nodo principale -> root
-std::shared_ptr<Node> d_node;
+std::shared_ptr<Node> node;
 
 //Posizioni camera, per il lookAt
-glm::vec3 d_cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 d_cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 d_cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
+glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 //Angolo di visione
-float d_fov = 45.0f;
+float fov = 45.0f;
 
 //Camera Flags
-bool d_dynamic = true;
+bool dynamic = true;
 
 //Movimento con mouse
-bool d_firstMouse = true;
-float d_yaw = -90.0f;
-float d_pitch = 0.0f;
-float d_lastX = 800.0f / 2.0;
-float d_lastY = 600.0 / 2.0;
+bool firstMouse = true;
+float yaw = -90.0f;
+float pitch = 0.0f;
+float lastX = 800.0f / 2.0;
+float lastY = 600.0 / 2.0;
 
 //Fps
-clock_t d_current_ticks, d_delta_ticks;
+clock_t current_ticks, delta_ticks;
 
 //Flag per braccio da muovere
-int d_choose = 0;
+int choose = 0;
 
 //Flag palla
-bool d_is_falling = false;
-bool d_is_attached = false;
-bool d_has_touched = false;
+bool is_falling = false;
+bool is_attached = false;
+bool has_touched = false;
 
 //Flag chiusura finistra
-bool d_is_open = true;
+bool is_open = true;
 
 //Flag help
-bool d_is_tutorial = false;
+bool is_tutorial = false;
 
 //Messaggio di default
-std::string d_to_screen = "h -help";
+std::string to_screen = "h -help";
 
 //Coordinate per stampa 2D
-float d_x_text = 1;
-float d_y_text = 15;
+float x_text = 1;
+float y_text = 15;
 
 //Fps
-int d_fps = 0;
+int fps = 0;
 
-void d_keyboardCallback(unsigned char key, int mouseX, int mouseY) {
+
+glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     float cameraSpeed = 2.5;
 
     //Segmento da muovere
     std::shared_ptr<Node> sphere;
-    switch (d_choose) {
+    switch (choose) {
     case 0:
         //Basso
-        sphere = d_node->getChildByName("Sphere001");
+        sphere = node->getChildByName("Sphere001");
         break;
     case 1:
         //Mezzo
-        sphere = d_node->getChildByName("Sphere002");
+        sphere = node->getChildByName("Sphere002");
         break;
     case 2:
         //Alto
-        sphere = d_node->getChildByName("Sphere003");
+        sphere = node->getChildByName("Sphere003");
         break;
     }
 
     switch (key) {
     case 'w':
         //Cambio camera / Movimento avanti
-        if (d_dynamic) {
-            d_cameraPos += cameraSpeed * d_cameraFront;
+        if (dynamic) {
+            cameraPos += cameraSpeed * cameraFront;
         }
         else {
             glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
-            d_camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(d_node->getChildByName("Camera1")->getFinalMatrix()[3] + glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(d_node->getChildByName("Camera1")->getFinalMatrix()[3] + glm::vec4(0.0f, 0.0f, 10.0f, 0.0f)) + cameraFront, d_cameraUp)));
+            camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] + glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] + glm::vec4(0.0f, 0.0f, 10.0f, 0.0f)) + cameraFront, cameraUp)));
         }
         break;
 
     case 's':
         //Movimento indietro
-        if (d_dynamic) {
-            d_cameraPos -= cameraSpeed * d_cameraFront;
+        if (dynamic) {
+            cameraPos -= cameraSpeed * cameraFront;
         }
         break;
 
     case 'a':
         //Cambio camera / Movimento a sinistra
-        if (d_dynamic) {
-            d_cameraPos -= glm::normalize(glm::cross(d_cameraFront, d_cameraUp)) * cameraSpeed;
+        if (dynamic) {
+            cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         }
         else {
             glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-            d_camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(d_node->getChildByName("Camera2")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(d_node->getChildByName("Camera1")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)) + cameraFront, d_cameraUp)));
+            camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(node->getChildByName("Camera2")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)) + cameraFront, cameraUp)));
         }
         break;
 
     case 'd':
         //Movimento a destra
-        if (d_dynamic) {
-            d_cameraPos += glm::normalize(glm::cross(d_cameraFront, d_cameraUp)) * cameraSpeed;
+        if (dynamic) {
+            cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
         }
         break;
 
@@ -136,15 +139,15 @@ void d_keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
     case 'n':
         //Cambio nodo
-        d_choose = (d_choose + 1) % 3;
+        choose = (choose + 1) % 3;
         break;
 
     case 'c': {
         //Comprime palla
-        if (d_is_attached) {
-            auto cube = d_node->getChildByName("Box006");
-            auto cube1 = d_node->getChildByName("Box007");
-            auto sphere1 = d_node->getChildByName("Sphere004");
+        if (is_attached) {
+            auto cube = node->getChildByName("Box006");
+            auto cube1 = node->getChildByName("Box007");
+            auto sphere1 = node->getChildByName("Sphere004");
 
             cube->setTransformation(glm::translate(cube->getFinalMatrix(), glm::vec3(0.0f, 0.0f, 0.1f)));
             cube1->setTransformation(glm::translate(cube1->getFinalMatrix(), glm::vec3(0.0f, 0.0f, -0.1f)));
@@ -155,10 +158,10 @@ void d_keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
     case 'v': {
         //Decomprime palla
-        if (d_is_attached) {
-            auto cube = d_node->getChildByName("Box006");
-            auto cube1 = d_node->getChildByName("Box007");
-            auto sphere1 = d_node->getChildByName("Sphere004");
+        if (is_attached) {
+            auto cube = node->getChildByName("Box006");
+            auto cube1 = node->getChildByName("Box007");
+            auto sphere1 = node->getChildByName("Sphere004");
 
             cube->setTransformation(glm::translate(cube->getFinalMatrix(), glm::vec3(0.0f, 0.0f, -0.1f)));
             cube1->setTransformation(glm::translate(cube1->getFinalMatrix(), glm::vec3(0.0f, 0.0f, 0.1f)));
@@ -169,84 +172,85 @@ void d_keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
     case 't':
         //Rilascia palla
-        if (d_is_attached) {
-            d_is_falling = true;
+        if (is_attached) {
+            is_falling = true;
         }
         break;
 
     case 'p':
         //Switch dynamic/static camera
-        d_dynamic = !d_dynamic;
+        dynamic = !dynamic;
         break;
 
     case 'y':
         //Exit
-        d_is_open = false;
+        is_open = false;
         break;
 
     case 'h':
         //Tutorial
-        d_is_tutorial = !d_is_tutorial;
+        is_tutorial = !is_tutorial;
 
-        if (d_is_tutorial) {
-            d_to_screen = "n -choose node of the arm to move\n";
-            d_to_screen = d_to_screen + "p -switch dynamic/static camera\n";
-            d_to_screen = d_to_screen + "dynamic\n  w -front\n  a -left\n  s -back\n  d -right\n";
-            d_to_screen = d_to_screen + "static\n  w -camera 1\n  a -camera 2\n";
-            d_to_screen = d_to_screen + "arm direction\n  i -front\n  j -left\n  k -back\n  l -right\n";
-            d_to_screen = d_to_screen + "c -compress the ball\n";
-            d_to_screen = d_to_screen + "v -decompress the ball\n";
-            d_to_screen = d_to_screen + "t -release the ball\n";
-            d_to_screen = d_to_screen + "r -reset\n";
-            d_to_screen = d_to_screen + "y -exit\n";
+        if (is_tutorial) {
+            to_screen = "n -choose node of the arm to move\n";
+            to_screen = to_screen + "p -switch dynamic/static camera\n";
+            to_screen = to_screen + "dynamic\n  w -front\n  a -left\n  s -back\n  d -right\n";
+            to_screen = to_screen + "static\n  w -camera 1\n  a -camera 2\n";
+            to_screen = to_screen + "arm direction\n  i -front\n  j -left\n  k -back\n  l -right\n";
+            to_screen = to_screen + "c -compress the ball\n";
+            to_screen = to_screen + "v -decompress the ball\n";
+            to_screen = to_screen + "t -release the ball\n";
+            to_screen = to_screen + "r -reset\n";
+            to_screen = to_screen + "y -exit\n";
 
-            d_x_text = 1;
-            d_y_text = 300;
+            x_text = 1;
+            y_text = 300;
 
         }
         else {
-            d_x_text = 1;
-            d_y_text = 15;
-            d_to_screen = "h -help";
+            x_text = 1;
+            y_text = 15;
+            to_screen = "h -help";
         }
 
         break;
 
     case 'r':
         //Reset
-        d_node = Engine::load(d_path);
+        node = Engine::load(path);
 
         //Disattivo ombra piano base
-        dynamic_cast<Mesh*>(d_node->getChildByName("Plane001").get())->shadow(false);
+        dynamic_cast<Mesh*>(node->getChildByName("Plane001").get())->shadow(false);
 
         //Reset flag
-        d_is_falling = false;
-        d_is_attached = false;
-        d_is_open = true;
-        d_has_touched = false;
+        is_falling = false;
+        is_attached = false;
+        is_open = true;
+        has_touched = false;
         break;
     }
 
     //effettuo movimento con camera dinamica
-    if (d_dynamic) {
-        d_camera->setTransformation(glm::inverse(glm::lookAt(d_cameraPos, d_cameraPos + d_cameraFront, d_cameraUp)));
+    if (dynamic) {
+        camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
     }
+    return cameraPos;
 }
 
-void d_mouseMove(int mouseX, int mouseY) {
-    if (d_dynamic) {
+void mouseMove(int mouseX, int mouseY) {
+    if (dynamic) {
         //Prendo coordinate del mouse
-        if (d_firstMouse) {
-            d_lastX = (float)mouseX;
-            d_lastY = (float)mouseY;
-            d_firstMouse = false;
+        if (firstMouse) {
+            lastX = (float)mouseX;
+            lastY = (float)mouseY;
+            firstMouse = false;
         }
 
         //Sposto offset per movimento camera
-        float xoffset = mouseX - d_lastX;
-        float yoffset = d_lastY - mouseY;
-        d_lastX = (float)mouseX;
-        d_lastY = (float)mouseY;
+        float xoffset = mouseX - lastX;
+        float yoffset = lastY - mouseY;
+        lastX = (float)mouseX;
+        lastY = (float)mouseY;
 
         //Sensibilità del mouse
         float sensitivity = 0.5f;
@@ -254,44 +258,49 @@ void d_mouseMove(int mouseX, int mouseY) {
         yoffset *= sensitivity;
 
         //Rotazione intorno asse y
-        d_yaw += xoffset;
+        yaw += xoffset;
         //Rotazione intorno asse x
-        d_pitch += yoffset;
+        pitch += yoffset;
 
         //Imposto bound max e min
-        if (d_pitch > 89.0f)
-            d_pitch = 89.0f;
-        if (d_pitch < -89.0f)
-            d_pitch = -89.0f;
+        if (pitch > 89.0f)
+            pitch = 89.0f;
+        if (pitch < -89.0f)
+            pitch = -89.0f;
 
         //Ricavo distanza tramite il sin e il cos come da documentazione
         glm::vec3 front;
-        front.x = cos(glm::radians(d_yaw)) * cos(glm::radians(d_pitch));
-        front.y = sin(glm::radians(d_pitch));
-        front.z = sin(glm::radians(d_yaw)) * cos(glm::radians(d_pitch));
+        front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        front.y = sin(glm::radians(pitch));
+        front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
         //Normalizzo  e setto trasformazione
-        d_cameraFront = glm::normalize(front);
-        d_camera->setTransformation(glm::inverse(glm::lookAt(d_cameraPos, d_cameraPos + d_cameraFront, d_cameraUp)));
+        cameraFront = glm::normalize(front);
+        camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
     }
 }
 
-void d_close() {
-    d_is_open = false;
+void special(int a, int b, int c) {
+
 }
 
-void LIB_API Develop::start() {
+void close() {
+    is_open = false;
+}
+
+int main()
+{
     Engine::Handler handler;
-    handler.keyboard = d_keyboardCallback;
-    handler.mouse = d_mouseMove;
-    handler.width = 2048;
-    handler.height = 1024;
-    handler.close = d_close;
+    handler.keyboard = keyboardCallback;
+    handler.mouse = mouseMove;
+    handler.width = 1920;
+    handler.height = 1080;
+    handler.special = special;
+    handler.close = close;
 
     if (Engine::init(handler)) {
         //Carico scena
-        d_node = Engine::load(d_path);
-
-        d_camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
+        node = Engine::load(path);
+        camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
 
         bool passed_1_sec = false;
 
@@ -300,32 +309,33 @@ void LIB_API Develop::start() {
         clock_t current = last;
 
         //Setto posizione camera iniziale
-        d_cameraPos = glm::vec3(-10, 10, 0);
-        d_camera->setTransformation(glm::inverse(glm::lookAt(d_cameraPos, d_cameraPos + d_cameraFront, d_cameraUp)));
+        cameraPos = glm::vec3(-10, 10, 0);
+        camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
 
-        while (d_is_open) {
-            d_current_ticks = clock();
+        while (is_open) {
+            current_ticks = clock();
 
             List list;
 
             Engine::clear();
 
-            list.pass(d_node);
+            list.pass(node);
 
-            Engine::drawText(d_to_screen, d_x_text, d_y_text);
-            Engine::drawText("fps: " + std::to_string(d_fps), 1, 2);
+            Engine::drawText(to_screen, x_text, y_text);
+            Engine::drawText("fps: " + std::to_string(fps), 1, 2);
 
-            Engine::render(list, d_camera);
+            Engine::render(list, camera);
 
             Engine::swap();
             Engine::update();
 
             //Calcolo fps
-            d_delta_ticks = clock() - d_current_ticks;
+            delta_ticks = clock() - current_ticks;
 
-            if (d_delta_ticks > 0 && passed_1_sec) {
-                d_fps = CLOCKS_PER_SEC / d_delta_ticks;
+            if (delta_ticks > 0 && passed_1_sec) {
+                fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;
+                std::cout << fps<<std::endl;
             }
 
             if (current - last > 1000) {

@@ -1,5 +1,7 @@
 #include "ObjectLoader.h"
-LIB_API ObjectLoader::ObjectLoader() : num_light{0}, num_texture{1}{
+
+
+LIB_API ObjectLoader::ObjectLoader(ShaderSettings& shader) : m_shader{ shader },lights { 0,0 }, num_texture{ 1 }{
 }
 
 LIB_API ObjectLoader::~ObjectLoader(){
@@ -13,8 +15,12 @@ std::shared_ptr<Node LIB_API> ObjectLoader::LoadScene(const std::string& file)
     position = 0;
     
     readMaterials(read_file.data(), position);
-	
     return recursiveLoad(read_file.data(),position);
+}
+
+ObjectLoader::LightsType LIB_API ObjectLoader::getLights()
+{
+    return lights;
 }
 
 std::vector<char> LIB_API ObjectLoader::readFile(std::string filepath)
@@ -435,12 +441,27 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
             LightSettings settings;
             
             //Setto numero luce
-            settings.light_number = num_light;
-            num_light = num_light + 1;
-            
+
             //Setto tipologia luce
             settings.light_type = (OvLight::Subtype)subtype;
-            
+            switch ((OvLight::Subtype)settings.light_type)
+            {
+            case OvLight::Subtype::DIRECTIONAL: {
+
+                break;
+            }
+            case OvLight::Subtype::OMNI: {
+                settings.light_number = lights.numOmni;
+                lights.numOmni = lights.numOmni + 1;
+
+                break;
+            }
+            case OvLight::Subtype::SPOT: {
+                settings.light_number = lights.numSpot;
+                lights.numSpot = lights.numSpot + 1;
+                break;
+            }
+            }
             position += sizeof(unsigned char);
         
             //Leggo e setto colore

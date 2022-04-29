@@ -51,7 +51,19 @@
     <ClInclude Include="Test.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="fboh.h">
+    <ClInclude Include="Shader.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Fbo.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="ShaderSetup.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Ovr.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="Skybox.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,9 +78,6 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>File di origine</Filter>
-    </ClCompile>
-    <ClCompile Include="Engine.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="Light.cpp">
@@ -92,8 +101,34 @@
     <ClCompile Include="Test.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="fbo.cpp">
+    <ClCompile Include="Shader.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="Fbo.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="engine.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="ShaderSetup.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Ovr.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="Skybox.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\vertex.glsl" />
+    <None Include="resources\fragment.glsl" />
+    <None Include="resources\vertex_fbo.glsl" />
+    <None Include="resources\fragment_fbo.glsl" />
+    <None Include="resources\vertex_cubemap.glsl" />
+    <None Include="resources\fragment_cubemap.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="resources\is3d.txt" />
   </ItemGroup>
 </Project>

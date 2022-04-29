@@ -48,7 +48,7 @@ int LIB_API Node::getNumberOfChildren() const{
     return (int)m_children.size();
 }
 
-void LIB_API Node::render(glm::mat4 modelView) {
+void LIB_API Node::render(glm::mat4 modelView, ShaderSettings &shader) {
 
 }
 
@@ -64,5 +64,3 @@ Node LIB_API* Node::clone()
 {
     return new Node(*this);
 }
-
-

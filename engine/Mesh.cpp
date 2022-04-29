@@ -1,6 +1,8 @@
 #include "Mesh.h"
 #include <GL/glew.h>
 #include <GL/freeglut.h>
+#include <glm/gtc/matrix_inverse.hpp>
+
 
 LIB_API Mesh::Mesh() :m_has_shadows{ true } {
     matrix_shadow = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 1.0f));
@@ -38,11 +40,11 @@ void LIB_API Mesh::vertices(LODdata vertices)
     for (int i = 0; i < m_lod_faces->size(); i++) {
         for (int j = 0; j < 3; j++) {
             faces.push_back(m_lod_faces->at(i).at(j));
-            //std::cout << m_lod_faces->at(i).at(j);
         }
     }
-    //std::cout << m_lod_faces->size() << " " << faces.size() << std::endl;
-    //std::cout << m_lod_vertices.size() << std::endl;
+    // Init VAO:   
+    glGenVertexArrays(1, &m_VAO);
+    glBindVertexArray(m_VAO);
 
     glGenBuffers(1, &vertexVbo);
     glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
@@ -50,17 +52,6 @@ void LIB_API Mesh::vertices(LODdata vertices)
     glBufferData(GL_ARRAY_BUFFER, m_lod_vertices.size() * sizeof(glm::vec3),
         m_lod_vertices.data(), GL_STATIC_DRAW);
 
-    glGenBuffers(1, &normalVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
-    // Copy the normal data from system to video memory:
-    glBufferData(GL_ARRAY_BUFFER, m_lod_normal->size() * sizeof(glm::vec3),
-        m_lod_normal->data(), GL_STATIC_DRAW);
-
-    glGenBuffers(1, &uvVbo);
-    glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
-    // Copy the uv data from system to video memory:
-    glBufferData(GL_ARRAY_BUFFER, m_lod_uv->size() * sizeof(glm::vec2),
-        m_lod_uv->data(), GL_STATIC_DRAW);
 
     glGenBuffers(1, &faceVbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
@@ -69,7 +60,24 @@ void LIB_API Mesh::vertices(LODdata vertices)
         m_lod_faces->size() * 3 * sizeof(unsigned int),
         faces.data(), GL_STATIC_DRAW);
 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0);
+    glEnableVertexAttribArray(0);
 
+    glGenBuffers(1, &normalVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
+    // Copy the normal data from system to video memory:
+    glBufferData(GL_ARRAY_BUFFER, m_lod_normal->size() * sizeof(glm::vec3),
+        m_lod_normal->data(), GL_STATIC_DRAW);
+    glVertexAttribPointer((GLuint)1, 3, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(1);
+
+    glGenBuffers(1, &uvVbo);
+    glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
+    // Copy the uv data from system to video memory:
+    glBufferData(GL_ARRAY_BUFFER, m_lod_uv->size() * sizeof(glm::vec2),
+        m_lod_uv->data(), GL_STATIC_DRAW);
+    glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
+    glEnableVertexAttribArray(2);
 }
 
 LODdata LIB_API Mesh::vertices() const
@@ -77,60 +85,19 @@ LODdata LIB_API Mesh::vertices() const
     return *m_vertices;
 }
 
-void LIB_API Mesh::render(glm::mat4 modelView) {
+void LIB_API Mesh::render(glm::mat4 modelView, ShaderSettings &shader) {
     int lods = 0;
-
-    //Prendo matrice camera
-    //glm::mat4 model_view;
-    //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() * getFinalMatrix();
-    //model_view = dynamic_cast<Camera*>(camera.get())->inverseCamera() ;
-    glLoadMatrixf(glm::value_ptr(modelView));
+    shader.m_shader->setMatrix3(shader.normalMatLoc, glm::inverseTranspose(glm::mat3(modelView)));
 
     if (m_material) {
-        m_material->render(modelView);
+        m_material->render(modelView,shader);
     }
-    auto m_lod_vertices = m_vertices->lod.at(lods).vertices;
-    auto m_lod_normal = &m_vertices->lod.at(lods).normal;
-    auto m_lod_uv = &m_vertices->lod.at(lods).uv;
     auto m_lod_faces = &m_vertices->lod.at(lods).faces;
     auto size = m_lod_faces->size();
-    //itera vertici
-    /*glBegin(GL_TRIANGLES);
-    for (int j = 0; j < size; j++) {
-        //prende tutti i vertici della faccia j
-        auto m_lod_faces_0 = m_lod_faces->at(j).at(0);
-        auto m_lod_faces_1 = m_lod_faces->at(j).at(1);
-        auto m_lod_faces_2 = m_lod_faces->at(j).at(2);
-        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_0)));
-        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_0)));
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_0)));
-        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_1)));
-        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_1)));
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_1)));
-        glNormal3fv(glm::value_ptr(m_lod_normal->at(m_lod_faces_2)));
-        glTexCoord2fv(glm::value_ptr(m_lod_uv->at(m_lod_faces_2)));
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_2)));
-    }
-    glEnd();*/
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_NORMAL_ARRAY);
-    glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 
-    glBindBuffer(GL_ARRAY_BUFFER, normalVbo);
-    glNormalPointer(GL_FLOAT, 0, nullptr);
-
-    glBindBuffer(GL_ARRAY_BUFFER, uvVbo);
-    glTexCoordPointer(2, GL_FLOAT, 0, nullptr);
-
-    glBindBuffer(GL_ARRAY_BUFFER, vertexVbo);
-    glVertexPointer(3, GL_FLOAT, 0, nullptr);
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
+    glBindVertexArray(m_VAO);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
     glDrawElements(GL_TRIANGLES, m_lod_faces->size() * 3, GL_UNSIGNED_INT, nullptr);
-
-    glDisableClientState(GL_VERTEX_ARRAY);
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
 
     //if (shadow()) {

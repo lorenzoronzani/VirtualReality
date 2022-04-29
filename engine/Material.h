@@ -4,6 +4,7 @@
 #include <memory>
 #include <iostream>
 #include <glm/glm.hpp>
+#include "Shader.h"
 
 struct MaterialSettings {
 	glm::vec3 emission;
@@ -25,7 +26,7 @@ public:
 	std::shared_ptr<Texture> texture() const;
 
 	//void render(std::shared_ptr<Object> camera);
-	void render(glm::mat4 modelView);
+	void render(glm::mat4 modelView, ShaderSettings &shader);
 
 private:
 	MaterialSettings m_settings;

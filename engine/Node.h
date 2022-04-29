@@ -10,7 +10,6 @@
 #include <glm/gtx/string_cast.hpp>
 
 
-
 class LIB_API Node : public Object {
 protected:
 	using NodePtr = std::shared_ptr<Node>;
@@ -33,15 +32,17 @@ public:
 	int getNumberOfChildren() const;
 
 	//void render(std::shared_ptr<Object> camera);
-	void render(glm::mat4 modelView);
+	virtual void render(glm::mat4 modelView,ShaderSettings& shader);
 
 	virtual void setTransformation(const glm::mat4& transformation);
 	glm::mat4 getFinalMatrix() const;
 
 	virtual Node* clone();
 
+
 private:
 	glm::mat4 m_matrix;
 	std::vector<NodePtr> m_children;
 	NodePtr m_parent;
+
 };
