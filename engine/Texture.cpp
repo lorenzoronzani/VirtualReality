@@ -38,7 +38,8 @@ void LIB_API Texture::load(const std::string& file){
 			intFormat = GL_COMPRESSED_RGBA;
 			extFormat = GL_BGRA;
 		}
-
+		// Fix mirroring:
+		FreeImage_FlipVertical(bitmap);    // Correct JPG's upside-down
 		//gluBuild2DMipmaps(GL_TEXTURE_2D, 4, FreeImage_GetWidth(bitmap), FreeImage_GetHeight(bitmap), GL_BGRA_EXT, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
 		glTexImage2D(GL_TEXTURE_2D, 0, intFormat, FreeImage_GetWidth(bitmap), FreeImage_GetHeight(bitmap), 0, extFormat, GL_UNSIGNED_BYTE, (void*)FreeImage_GetBits(bitmap));
 		//Unloda texture

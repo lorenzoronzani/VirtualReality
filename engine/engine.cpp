@@ -346,14 +346,12 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         shader.m_shader->render();
-
         shader.m_shader->setMatrix(shader.projection, ovrProjMat);
-
+        shader.m_shader->setInt(shader.num_lights, total_lights.numOmni);
+        shader.m_shader->setInt(shader.num_lights_spot, total_lights.numSpot);
         for (int i = 0; i < list.size(); i++) {
             shader.m_shader->setMatrix(shader.modelview, ovrModelViewMat * list[i].second);
             shader.m_shader->setMatrix(shader.view, ovrModelViewMat);
-            shader.m_shader->setInt(shader.num_lights, total_lights.numOmni);
-            shader.m_shader->setInt(shader.num_lights_spot, total_lights.numSpot);
 
             list[i].first->render(ovrModelViewMat * list[i].second, shader);
 

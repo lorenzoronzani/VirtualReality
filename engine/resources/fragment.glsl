@@ -66,10 +66,10 @@ void main(void)
         vec3 fragColor = matEmission + matAmbient * lightsSpot[i].lightAmbient;
         // Diffuse term:
         vec3 _normal = normalize(normal);
-        vec3 lightDirection = normalize(normalize(lightsSpot[i].lightPosition - fragPosition.xyz)*mat3(view));   
-        float theta = acos(dot(lightDirection, normalize(-lightsSpot[i].direction)));    
+        vec3 lightDirection = normalize(lightsSpot[i].lightPosition - fragPosition.xyz);   
+        float theta = dot(lightDirection, normalize(-lightsSpot[i].direction));    
         float nDotL = dot(lightDirection, _normal);   
-        if (nDotL > 0 && theta < lightsSpot[i].cutOff)
+        if (nDotL > 0 && theta > lightsSpot[i].cutOff)
         {
             fragColor += matDiffuse * nDotL * lightsSpot[i].lightDiffuse;
             // Specular term:
