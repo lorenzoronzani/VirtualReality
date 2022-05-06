@@ -42,8 +42,11 @@ std::shared_ptr<ShaderSetup> shaderSetup;
 ObjectLoader::LightsType total_lights;
 
 bool isVirtual = false;
+bool isLeap = false;
 
 std::shared_ptr<Skybox> skybox;
+std::shared_ptr<Leap> leap;
+
 
 #ifdef _WINDOWS
 #include <Windows.h>
@@ -242,6 +245,7 @@ bool LIB_API Engine::init(Handler t_handler) {
     cameraPos = glm::vec4(0.0f, 0.0f, 0.0f,0.0f);
     std::ifstream virtualRead("../engine/resources/is3d.txt");
     virtualRead >> isVirtual;
+    virtualRead >> isLeap;
     virtualRead.close();
     if (isVirtual) {
         shader.ovr = std::make_shared<OvVR>();
@@ -255,6 +259,15 @@ bool LIB_API Engine::init(Handler t_handler) {
         std::cout << "   Manufacturer . . :  " << shader.ovr->getManufacturerName() << std::endl;
         std::cout << "   Tracking system  :  " << shader.ovr->getTrackingSysName() << std::endl;
         std::cout << "   Model number . . :  " << shader.ovr->getModelNumber() << std::endl;
+    }
+    if (isLeap) {
+        // Leap init:
+        leap = std::make_shared<Leap>();
+        if (!leap->init())
+        {
+            std::cout << "[ERROR] Unable to init Leap Motion" << std::endl;
+            return -1;
+        }
     }
     std::shared_ptr<Shader> m_vertex_shader;
     std::shared_ptr<Shader> m_fragment_shader;
