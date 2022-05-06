@@ -66,6 +66,9 @@
     <ClInclude Include="Skybox.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="leap.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -117,6 +120,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="Skybox.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="leap.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
