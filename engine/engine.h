@@ -6,6 +6,7 @@
 #include "Node.h"
 #include "Camera.h"
 #include "List.h"
+#include "LeapHand.h"
 
 
 #ifdef _WINDOWS 	
@@ -30,6 +31,7 @@ public:
 		int width;
 		int height;
 		std::array<std::string, 6> skybox_data;
+		std::shared_ptr<LeapHand> leap;
 	};
 
 	static bool init(Handler p_handler);

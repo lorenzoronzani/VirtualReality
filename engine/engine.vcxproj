@@ -180,6 +180,7 @@
     <ClInclude Include="Fbo.h" />
     <ClInclude Include="GraphFinder.h" />
     <ClInclude Include="leap.h" />
+    <ClInclude Include="LeapHand.h" />
     <ClInclude Include="Light.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="Material.h" />
@@ -200,6 +201,7 @@
     <ClCompile Include="Fbo.cpp" />
     <ClCompile Include="GraphFinder.cpp" />
     <ClCompile Include="leap.cpp" />
+    <ClCompile Include="LeapHand.cpp" />
     <ClCompile Include="Light.cpp" />
     <ClCompile Include="List.cpp" />
     <ClCompile Include="Material.cpp" />

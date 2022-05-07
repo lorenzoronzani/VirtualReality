@@ -310,6 +310,9 @@ bool LIB_API Engine::init(Handler t_handler) {
     shaderSetup->setupFboShader();
 
     clear();
+
+    handler.leap->setPosition({ 0.0f,0.0f,0.0f });
+
     return true;
 }
 
@@ -322,14 +325,29 @@ void LIB_API Engine::clear()
 void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
     glm::mat4 headPos;
+    const LEAP_TRACKING_EVENT* l=nullptr;
     if (isVirtual) {
         shader.ovr->update();
         // Store the current viewport size:
         headPos = shader.ovr->getModelviewMatrix();
         headPos[3] = headPos[3] + cameraPos;
     }
+    if (isLeap) {
+        leap->update();
+        l = leap->getCurFrame();
+    }
+    if (isLeap) {
+        // Render hands using spheres:
+        handler.leap->setNumHands(l->nHands);
+        for (unsigned int h = 0; h < l->nHands; h++)
+        {
+            LEAP_HAND hand = l->pHands[h];
+            handler.leap->setPosition({ hand.palm.position.x, hand.palm.position.y, hand.palm.position.z });
+        }
+    }
     for (int c = 0; c < OvVR::EYE_LAST; c++)
     {
+
         glm::mat4 ovrProjMat;
         glm::mat4 ovrModelViewMat;
         OvVR::OvEye curEye;
