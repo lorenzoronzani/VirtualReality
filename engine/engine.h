@@ -39,6 +39,8 @@ public:
 	static void clear();
 
 	static void render(const List& list, std::shared_ptr<Camera> camera);
+	
+	static void updateLeap(std::shared_ptr<Node> node);
 
 	static void swap();
 

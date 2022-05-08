@@ -318,8 +318,7 @@ int main()
         //Setto posizione camera iniziale
         cameraPos = glm::vec3(-10, 10, 0);
         camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
-        auto sphere_node = node->getChildByName("Sphere001");
-        glm::mat4 init_position = sphere_node->getFinalMatrix();
+        
         while (is_open) {
             current_ticks = clock();
 
@@ -336,10 +335,8 @@ int main()
 
             Engine::swap();
             Engine::update();
-            for (int i = 0; i < handler.leap->getNumHands(); i++) {
-                sphere_node->setTransformation(glm::translate(init_position, glm::vec3(handler.leap->getPosition().x, handler.leap->getPosition().y, handler.leap->getPosition().z)));
-                std::cout << glm::to_string(glm::vec3(handler.leap->getPosition().x, handler.leap->getPosition().y, handler.leap->getPosition().z));
-            }
+            Engine::updateLeap(node);
+            
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
 
