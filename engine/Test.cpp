@@ -51,7 +51,7 @@ void LIB_API Test::testAll() {
 
 	//Check get matrix from list
 	auto sphere=list_node.getByName("Sphere001");
-	auto sphere_init_matrix=sphere->getFinalMatrix();
+	auto sphere_init_matrix=sphere.first->getFinalMatrix();
 
 	glm::mat4 sphere_matrix = { {0,0,-2,0} ,{1.96,0,0,0} ,{0,-2,0,0} ,{-0.9,12.55,-1,1} };
 

@@ -286,17 +286,22 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
             memcpy(&radius, data + position, sizeof(float));
             
             position += sizeof(float);
-            
+            LODdata lods;
+
             //Leggo bBoxMin
             glm::vec3 bBoxMin;
             memcpy(&bBoxMin, data + position, sizeof(glm::vec3));
+            lods.bBoxMin = bBoxMin;
             
+
             position += sizeof(glm::vec3);
             
             //Leggo bBoxMax
             glm::vec3 bBoxMax;
             memcpy(&bBoxMax, data + position, sizeof(glm::vec3));
             
+            lods.bBoxMax = bBoxMax;
+
             position += sizeof(glm::vec3);
             
             //Leggo se possiede fisica
@@ -314,7 +319,6 @@ ObjectLoader::NodeType LIB_API ObjectLoader::readNode(char* data, int chunkId)
             dynamic_cast<Mesh*>(node.node.get())->LOD(LODs);
             
             std::vector<unsigned int> verticesPerLOD(LODs);
-            LODdata lods;
 
             for (unsigned int l = 0; l < LODs; l++)
             {

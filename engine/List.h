@@ -20,11 +20,11 @@ public:
 
 	void pass(std::shared_ptr<Node> node);
 
-	std::shared_ptr<Node> getByName(const std::string& name);
+	std::pair<std::shared_ptr<Node>, glm::mat4> getByName(const std::string& name);
 
 private:
 	std::deque<std::pair<std::shared_ptr<Node>, glm::mat4>> m_list;
-	std::map<std::string, std::shared_ptr<Node>> m_map;
+	std::map<std::string, std::pair<std::shared_ptr<Node>, glm::mat4>> m_map;
 	void node_pass(std::shared_ptr<Node> node,glm::mat4 mat);
 };
 

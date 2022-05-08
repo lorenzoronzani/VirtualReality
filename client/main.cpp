@@ -68,7 +68,7 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     switch (choose) {
     case 0:
         //Basso
-        sphere = node->getChildByName("Sphere001");
+        sphere = node->getChildByName("Box001");
         break;
     case 1:
         //Mezzo
@@ -119,12 +119,12 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
     case 'i':
         //Rotazione braccio avanti
-        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+        sphere->setTransformation(glm::translate(sphere->getFinalMatrix(), glm::vec3(1.0f, 0.0f, 0.0f)));
         break;
 
     case 'j':
         //Rotazione braccio sinistra
-        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+        sphere->setTransformation(glm::translate(sphere->getFinalMatrix(), glm::vec3(-1.0f, 0.0f, 0.0f)));
         break;
 
     case 'k':
@@ -303,11 +303,11 @@ int main()
       "test/posz.jpg",
       "test/negz.jpg" };
     handler.leap = std::make_shared<LeapHand>();
-
     if (Engine::init(handler)) {
         //Carico scena
         node = Engine::load(path);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
+        //node->getChildByName("Arm")->setTransformation(glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1)));
 
         bool passed_1_sec = false;
 
@@ -335,11 +335,11 @@ int main()
 
             Engine::swap();
             Engine::update();
-            Engine::updateLeap(node);
+            //Engine::updateLeap(node);
             
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
-
+            std::cout<<dynamic_cast<Mesh*>(list.getByName("Box001").first.get())->hits(dynamic_cast<Mesh*>(list.getByName("Box002").first.get()), camera->getFinalMatrix()*list.getByName("Box001").second, list.getByName("Box002").second);
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;

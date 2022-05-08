@@ -370,7 +370,6 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         shader.m_shader->setMatrix(shader.view, ovrModelViewMat);
         for (int i = 0; i < list.size(); i++) {
             shader.m_shader->setMatrix(shader.modelview, ovrModelViewMat * list[i].second);
-            
             list[i].first->render(ovrModelViewMat * list[i].second, shader);
             
             Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
@@ -420,7 +419,6 @@ void LIB_API Engine::updateLeap(std::shared_ptr<Node> node)
     if (isLeap) {
         // Render hands using spheres:
         handler.leap->setNumHands(l->nHands);
-        node->getChildByName("Arm")->setTransformation(glm::mat4(1.0f));
         for (unsigned int h = 0; h < l->nHands; h++)
         {
             LEAP_HAND hand = l->pHands[h];
@@ -445,7 +443,7 @@ void LIB_API Engine::updateLeap(std::shared_ptr<Node> node)
                 {
                     LEAP_BONE bone = finger.bones[b];
                     c = glm::translate(glm::mat4(1.0f), glm::vec3(bone.next_joint.x, bone.next_joint.y, bone.next_joint.z));
-                    node->getChildByName("Arm")->getChildByName("Sphere"+std::to_string(d*4+b+3))->setTransformation(c);
+                    node->getChildByName("Arm")->getChildByName("Sphere"+std::to_string(d*4+b+4))->setTransformation(c);
                 }
             }
         }

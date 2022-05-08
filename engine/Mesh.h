@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 #include <array>
+#include <tuple>
 
 struct LIB_API VerticesData {
 	std::vector<glm::vec3> vertices;
@@ -15,6 +16,8 @@ struct LIB_API VerticesData {
 
 struct LIB_API LODdata {
 	std::vector<VerticesData> lod;
+	glm::vec3 bBoxMin;
+	glm::vec3 bBoxMax;
 };
 
 class LIB_API Mesh : public Node {
@@ -42,6 +45,8 @@ public:
 	void VAO(int vao);
 	int VAO() const;
 	virtual Mesh* clone() override;
+	bool hits(Mesh* mesh,glm::mat4 a,glm::mat4 b);
+	std::pair<glm::vec3, glm::vec3> getBBox();
 
 private:
 	std::shared_ptr<Material> m_material;

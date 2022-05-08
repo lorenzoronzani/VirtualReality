@@ -1,7 +1,7 @@
 #include "List.h"
 
 void LIB_API List::add(std::shared_ptr<Node> object, glm::mat4 posMat) {
-	m_map[object->name()] = object;
+	m_map[object->name()] = std::make_pair(object, posMat);
 
 	//Aggiunge differenziando luci e altre mesh
 	if (dynamic_cast<Light*>(object.get())) {
@@ -37,7 +37,7 @@ void LIB_API List::node_pass(std::shared_ptr<Node> node,glm::mat4 mat) {
 	}
 }
 
-std::shared_ptr<Node LIB_API> List::getByName(const std::string& name)
+std::pair<std::shared_ptr<Node>, glm::mat4> LIB_API List::getByName(const std::string& name)
 {
 	return m_map[name];
 }
