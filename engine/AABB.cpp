@@ -11,3 +11,24 @@ bool LIB_API AABB::collide(Mesh* a, Mesh* b, glm::mat4 model_a, glm::mat4 model_
         (min.y <= max_other.y && max.y >= min_other.y) &&
         (min.z <= max_other.z && max.z >= min_other.z);
 }
+
+Frustum LIB_API AABB::createFrustumFromCamera(glm::mat4 camera, float aspect, float fovY, float zNear, float zFar)
+{
+	Frustum     frustum;
+	const float halfVSide = zFar * tanf(fovY * .5f);
+	const float halfHSide = halfVSide * aspect;
+	auto front = glm::vec3(camera[2]);
+
+	const glm::vec3 frontMultFar = zFar * front;
+	auto pos = glm::vec3(camera[3]);
+	auto up = glm::vec3(camera[1]);
+	auto right = glm::vec3(camera[0]);
+	frustum.nearFace = { pos + zNear * front, front };
+	frustum.farFace = { pos + frontMultFar, -front };
+	frustum.rightFace = { pos, glm::cross(up, frontMultFar + right * halfHSide) };
+	frustum.leftFace = { pos, glm::cross(frontMultFar - right * halfHSide, up) };
+	frustum.topFace = { pos, glm::cross(right, frontMultFar - up * halfVSide) };
+	frustum.bottomFace = { pos, glm::cross(frontMultFar + up * halfVSide, right) };
+
+	return frustum;
+}
