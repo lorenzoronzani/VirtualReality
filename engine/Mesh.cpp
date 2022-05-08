@@ -170,19 +170,6 @@ Mesh LIB_API* Mesh::clone()
     return new Mesh(*this);
 }
 
-bool LIB_API Mesh::hits(Mesh* mesh,glm::mat4 a,glm::mat4 b)
-{
-
-    auto min = a * glm::vec4(m_vertices->bBoxMin,1);
-    auto max = a * glm::vec4(m_vertices->bBoxMax,1);
-
-    auto min_other = b * glm::vec4(mesh->getBBox().first,1);
-    auto max_other = b * glm::vec4(mesh->getBBox().second,1);
-    return (min.x <= max_other.x && max.x >= min_other.x) &&
-        (min.y <= max_other.y && max.y >= min_other.y) &&
-        (min.z <= max_other.z && max.z >= min_other.z);
-}
-
 std::pair<glm::vec3, glm::vec3> LIB_API Mesh::getBBox()
 {
     return {m_vertices->bBoxMin,m_vertices->bBoxMax};

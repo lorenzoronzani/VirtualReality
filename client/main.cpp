@@ -1,4 +1,5 @@
 #include "engine.h"
+#include "AABB.h"
 #include <glm/glm.hpp>
 
 //Path scena
@@ -303,6 +304,7 @@ int main()
       "test/posz.jpg",
       "test/negz.jpg" };
     handler.leap = std::make_shared<LeapHand>();
+    AABB aabb;
     if (Engine::init(handler)) {
         //Carico scena
         node = Engine::load(path);
@@ -339,7 +341,7 @@ int main()
             
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
-            std::cout<<dynamic_cast<Mesh*>(list.getByName("Box001").first.get())->hits(dynamic_cast<Mesh*>(list.getByName("Box002").first.get()), camera->getFinalMatrix()*list.getByName("Box001").second, list.getByName("Box002").second);
+            std::cout<<aabb.collide(dynamic_cast<Mesh*>(list.getByName("Box001").first.get()),dynamic_cast<Mesh*>(list.getByName("Box002").first.get()), camera->getFinalMatrix()*list.getByName("Box001").second, list.getByName("Box002").second);
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;

@@ -45,7 +45,6 @@ public:
 	void VAO(int vao);
 	int VAO() const;
 	virtual Mesh* clone() override;
-	bool hits(Mesh* mesh,glm::mat4 a,glm::mat4 b);
 	std::pair<glm::vec3, glm::vec3> getBBox();
 
 private:

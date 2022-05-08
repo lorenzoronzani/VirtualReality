@@ -72,6 +72,9 @@
     <ClInclude Include="LeapHand.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="AABB.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
@@ -129,6 +132,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="LeapHand.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="AABB.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
