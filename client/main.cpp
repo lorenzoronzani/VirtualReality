@@ -309,6 +309,7 @@ int main()
         //Carico scena
         node = Engine::load(path);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
+        std::cout << node;
         std::shared_ptr<Node> sphere;
         sphere = node->getChildByName("Sphere001");
 
@@ -328,7 +329,10 @@ int main()
         auto right = node->getChildByName("Box012");
         auto material = dynamic_cast<Mesh*>(up.get())->material();
         auto settings = dynamic_cast<Mesh*>(up.get())->material()->settings();
-       
+        dynamic_cast<Mesh*>(node->getChildByName("Plane001").get())->shadow(false);
+        for (int i = 0; i < 23; i++) {
+            dynamic_cast<Mesh*>(node->getChildByName("Sphere" + std::to_string(i + 1)).get())->shadow(false);
+        }
         while (is_open) {
             current_ticks = clock();
 

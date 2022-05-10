@@ -78,7 +78,9 @@ void LIB_API Mesh::vertices(LODdata vertices)
         m_lod_uv->data(), GL_STATIC_DRAW);
     glVertexAttribPointer((GLuint)2, 2, GL_FLOAT, GL_FALSE, 0, nullptr);
     glEnableVertexAttribArray(2);
+
     face_size = m_lod_faces->size();
+    matrix_shadow = glm::scale(glm::mat4(1.0f), glm::vec3(1.0f, 0.0f, 1.0f));
 }
 
 LODdata LIB_API Mesh::vertices() const
@@ -88,6 +90,8 @@ LODdata LIB_API Mesh::vertices() const
 
 void LIB_API Mesh::render(glm::mat4 modelView, ShaderSettings &shader) {
     int lods = 0;
+    shader.m_shader->setMatrix(shader.modelview, modelView);
+
     shader.m_shader->setMatrix3(shader.normalMatLoc, glm::inverseTranspose(glm::mat3(modelView)));
 
     if (m_material) {
@@ -98,51 +102,16 @@ void LIB_API Mesh::render(glm::mat4 modelView, ShaderSettings &shader) {
     //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
     glDrawElements(GL_TRIANGLES, face_size * 3, GL_UNSIGNED_INT, nullptr);
 
-
-    //if (shadow()) {
-    //std::cout << this->name() << " ho l'ombra" << std::endl;
-        //glm::mat4 matrix_shadow_new = matrix_shadow * getFinalMatrix();
-        //glm::mat4 matrix_shadow_new = modelView * matrix_shadow;
-
-        //view*model
-        //matrix_shadow_new = dynamic_cast<Camera*>(camera.get())->inverseCamera() * matrix_shadow_new;
-        //matrix_shadow_new = modelView * matrix_shadow_new;
-        //glLoadMatrixf(glm::value_ptr(matrix_shadow_new));
-        //render_shadow();
-    //}
 }
 
-void LIB_API Mesh::render_shadow(glm::mat4 modelViewShadow) {
-    glLoadMatrixf(glm::value_ptr(modelViewShadow));
-
-    int lods = 0;
-
-    glm::vec3 color_shadow;
-    color_shadow = glm::vec3(0.0f, 0.0f, 0.0f);
-
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-
-    auto m_lod_vertices = &m_vertices->lod.at(lods).vertices;
-    auto m_lod_faces = &m_vertices->lod.at(lods).faces;
-
-    auto size = m_lod_faces->size();
-
-    //Renderizzo l'ombra
-    glBegin(GL_TRIANGLES);
-    for (int j = 0; j < size; j++) {
-        glColor3fv(glm::value_ptr(color_shadow));
-
-        auto m_lod_faces_j = m_lod_faces->at(j);
-
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(0))));
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(1))));
-        glVertex3fv(glm::value_ptr(m_lod_vertices->at(m_lod_faces_j.at(2))));
-    }
-    glEnd();
-
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_LIGHTING);
+void LIB_API Mesh::render_shadow(glm::mat4 modelViewShadow,ShaderSettings &shader) {
+    shader.m_shader->setMatrix(shader.modelview, modelViewShadow);
+    shader.m_shader->setVec3(shader.matAmbientLoc, glm::vec3(0.0f,0.0f,0.0f));
+    shader.m_shader->setVec3(shader.matDiffuseLoc, glm::vec3(0.0f, 0.0f, 0.0f));
+    shader.m_shader->setVec3(shader.matSpecularLoc, glm::vec3(0.0f, 0.0f, 0.0f));
+    glBindVertexArray(m_VAO);
+    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, faceVbo);
+    glDrawElements(GL_TRIANGLES, face_size * 3, GL_UNSIGNED_INT, nullptr);
 }
 
 void LIB_API Mesh::shadow(const bool& shadow)

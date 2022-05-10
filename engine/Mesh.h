@@ -37,7 +37,7 @@ public:
 	//void render(std::shared_ptr<Object> camera) override;
 	void render(glm::mat4 modelView, ShaderSettings &shader) override;
 
-	void render_shadow(glm::mat4 modelViewShadow);
+	void render_shadow(glm::mat4 modelViewShadow, ShaderSettings& shader);
 	glm::mat4 get_shadow_mat() { return matrix_shadow; };
 
 	void shadow(const bool& shadow);
