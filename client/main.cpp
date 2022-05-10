@@ -69,7 +69,7 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     switch (choose) {
     case 0:
         //Basso
-        sphere = node->getChildByName("Ramiona_do");
+        sphere = node->getChildByName("Sphere001");
         break;
     case 1:
         //Mezzo
@@ -120,12 +120,12 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
     case 'i':
         //Rotazione braccio avanti
-        sphere->setTransformation(glm::translate(sphere->getFinalMatrix(), glm::vec3(1.0f, 0.0f, 0.0f)));
+        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(),glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
         break;
 
     case 'j':
         //Rotazione braccio sinistra
-        sphere->setTransformation(glm::translate(sphere->getFinalMatrix(), glm::vec3(-1.0f, 0.0f, 0.0f)));
+        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(),glm::radians(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
         break;
 
     case 'k':
