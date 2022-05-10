@@ -69,7 +69,7 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     switch (choose) {
     case 0:
         //Basso
-        sphere = node->getChildByName("Box001");
+        sphere = node->getChildByName("Ramiona_do");
         break;
     case 1:
         //Mezzo
@@ -309,7 +309,6 @@ int main()
         //Carico scena
         node = Engine::load(path);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
-        node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,-35.0f,0.0f))*glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1)));
         std::shared_ptr<Node> sphere;
         sphere = node->getChildByName("Sphere001");
 
@@ -322,7 +321,14 @@ int main()
         //Setto posizione camera iniziale
         cameraPos = glm::vec3(-110, 10, 0);
         camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
-        
+        node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(-110.0f, 0.0f, 0.0f))*glm::rotate(glm::mat4(1.0f),glm::radians(-90.0f),glm::vec3(0.0f,1.0f,0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
+        auto up = node->getChildByName("Box014");
+        auto down = node->getChildByName("Box011");
+        auto left = node->getChildByName("Box013");
+        auto right = node->getChildByName("Box012");
+        auto material = dynamic_cast<Mesh*>(up.get())->material();
+        auto settings = dynamic_cast<Mesh*>(up.get())->material()->settings();
+       
         while (is_open) {
             current_ticks = clock();
 
@@ -339,25 +345,37 @@ int main()
 
             Engine::swap();
             Engine::update();
+            node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),cameraPos+cameraFront*glm::vec3(10)+glm::vec3(10.0f,-10.0f,0.0f))*glm::rotate(glm::mat4(1.0f),glm::radians(-90.0f),glm::vec3(0.0f,1.0f,0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1)));
+
+            bool found = false;
             for (int i = 0; i < 23; i++) {
                 auto current_node = list.getByName("Sphere" + std::to_string(i+1));
                 auto up = list.getByName("Box014");
-                auto down = list.getByName("Box012");
-                auto left = list.getByName("Box011");
-                auto right = list.getByName("Box013");
-
+                auto down = list.getByName("Box011");
+                auto left = list.getByName("Box013");
+                auto right = list.getByName("Box012");
                 if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(up.first.get()), current_node.second, up.second)) {
                     sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(),glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+                    found = true;
                 }
                 if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(down.first.get()), current_node.second, down.second)) {
                     sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+                    found = true;
                 }
                 if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(left.first.get()), current_node.second, left.second)) {
                     sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+                    found = true;
                 }
                 if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(right.first.get()), current_node.second, right.second)) {
                     sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+                    found = true;
                 }
+            }
+            if (found) {
+                material->settings({ glm::vec3(1.0f,0.0f,0.0f),glm::vec3(1.0f,0.0f,0.0f) ,glm::vec3(1.0f,0.0f,0.0f) });
+            }
+            else {
+                material->settings(settings);
             }
             Engine::updateLeap(node);
             

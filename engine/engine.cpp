@@ -122,27 +122,29 @@ void specialCallback(int key, int mouseX, int mouseY)
     handler.special(key, mouseX, mouseY);
 }
 glm::vec4 cameraPos;
+glm::mat4 headPos;
+
 void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     handler.keyboard(key, mouseX, mouseY);
     if (isVirtual) {
         switch (key) {
         case 'w':
-            cameraPos = cameraPos + glm::vec4(1.0f, 0.0f, 0.0f, 0.0f);
+            cameraPos = cameraPos - headPos[2];
             break;
 
         case 's':
-            cameraPos = cameraPos + glm::vec4(-1.0f, 0.0f, 0.0f, 0.0f);
+            cameraPos = cameraPos + headPos[2];
 
             break;
 
         case 'a':
-            cameraPos = cameraPos + glm::vec4(0.0f, 0.0f, -1.0f, 0.0f);
+            cameraPos = cameraPos + glm::vec4(glm::normalize(glm::cross(glm::vec3(headPos[2]), glm::vec3(headPos[1]))),0.0f);
 
             break;
 
         case 'd':
             //Movimento a destra
-            cameraPos = cameraPos + glm::vec4(0.0f, 0.0f, 1.0f, 0.0f);
+            cameraPos = cameraPos - glm::vec4(glm::normalize(glm::cross(glm::vec3(headPos[2]), glm::vec3(headPos[1]))), 0.0f);
 
             break;
         case 'u':
@@ -324,7 +326,6 @@ void LIB_API Engine::clear()
 
 void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
-    glm::mat4 headPos;
     const LEAP_TRACKING_EVENT* l=nullptr;
     if (isVirtual) {
         shader.ovr->update();
@@ -417,6 +418,7 @@ void LIB_API Engine::updateLeap(std::shared_ptr<Node> node)
         leap->update();
         l = leap->getCurFrame();
     }
+    glm::vec3 scale = glm::vec3(5);
     if (isLeap) {
         // Render hands using spheres:
         handler.leap->setNumHands(l->nHands);
@@ -425,15 +427,15 @@ void LIB_API Engine::updateLeap(std::shared_ptr<Node> node)
             LEAP_HAND hand = l->pHands[h];
             handler.leap->setPosition({ hand.palm.position.x, hand.palm.position.y, hand.palm.position.z });
             // Elbow:
-            glm::mat4 c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.arm.prev_joint.x, hand.arm.prev_joint.y, hand.arm.prev_joint.z));
+            glm::mat4 c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.arm.prev_joint.x, hand.arm.prev_joint.y, hand.arm.prev_joint.z)/scale);
             node->getChildByName("Arm")->getChildByName("Sphere1")->setTransformation(c);
 
             // Wrist:
-            c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.arm.next_joint.x, hand.arm.next_joint.y, hand.arm.next_joint.z));
+            c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.arm.next_joint.x, hand.arm.next_joint.y, hand.arm.next_joint.z)/scale);
             node->getChildByName("Arm")->getChildByName("Sphere2")->setTransformation(c);
 
             // Palm:
-            c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.palm.position.x, hand.palm.position.y, hand.palm.position.z));
+            c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.palm.position.x, hand.palm.position.y, hand.palm.position.z)/scale);
             node->getChildByName("Arm")->getChildByName("Sphere3")->setTransformation(c);
 
             // Distal ends of bones for each digit:
@@ -443,7 +445,7 @@ void LIB_API Engine::updateLeap(std::shared_ptr<Node> node)
                 for (unsigned int b = 0; b < 4; b++)
                 {
                     LEAP_BONE bone = finger.bones[b];
-                    c = glm::translate(glm::mat4(1.0f), glm::vec3(bone.next_joint.x, bone.next_joint.y, bone.next_joint.z));
+                    c = glm::translate(glm::mat4(1.0f), glm::vec3(bone.next_joint.x, bone.next_joint.y, bone.next_joint.z)/scale);
                     node->getChildByName("Arm")->getChildByName("Sphere"+std::to_string(d*4+b+4))->setTransformation(c);
                 }
             }
