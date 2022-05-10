@@ -3,7 +3,7 @@
 #include <glm/glm.hpp>
 
 //Path scena
-const std::string path = "test/scene.OVO";
+const std::string path = "test/cube.OVO";
 
 //Distanze per la palla
 const int min_distance = 7;
@@ -309,7 +309,9 @@ int main()
         //Carico scena
         node = Engine::load(path);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
-        //node->getChildByName("Arm")->setTransformation(glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1)));
+        node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(0.0f,-35.0f,0.0f))*glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1)));
+        std::shared_ptr<Node> sphere;
+        sphere = node->getChildByName("Sphere001");
 
         bool passed_1_sec = false;
 
@@ -318,7 +320,7 @@ int main()
         clock_t current = last;
 
         //Setto posizione camera iniziale
-        cameraPos = glm::vec3(-10, 10, 0);
+        cameraPos = glm::vec3(-110, 10, 0);
         camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
         
         while (is_open) {
@@ -337,11 +339,30 @@ int main()
 
             Engine::swap();
             Engine::update();
-            //Engine::updateLeap(node);
+            for (int i = 0; i < 23; i++) {
+                auto current_node = list.getByName("Sphere" + std::to_string(i+1));
+                auto up = list.getByName("Box014");
+                auto down = list.getByName("Box012");
+                auto left = list.getByName("Box011");
+                auto right = list.getByName("Box013");
+
+                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(up.first.get()), current_node.second, up.second)) {
+                    sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(),glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+                }
+                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(down.first.get()), current_node.second, down.second)) {
+                    sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
+                }
+                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(left.first.get()), current_node.second, left.second)) {
+                    sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
+                }
+                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(right.first.get()), current_node.second, right.second)) {
+                    sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
+                }
+            }
+            Engine::updateLeap(node);
             
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
-            std::cout<<aabb.collide(dynamic_cast<Mesh*>(list.getByName("Box001").first.get()),dynamic_cast<Mesh*>(list.getByName("Box002").first.get()), camera->getFinalMatrix()*list.getByName("Box001").second, list.getByName("Box002").second);
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;

@@ -75,9 +75,6 @@
     <ClInclude Include="AABB.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="Frustum.h">
-      <Filter>File di intestazione</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Object.cpp">
