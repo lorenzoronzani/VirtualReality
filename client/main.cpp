@@ -309,7 +309,6 @@ int main()
         //Carico scena
         node = Engine::load(path);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
-        std::cout << node;
         std::shared_ptr<Node> sphere;
         sphere = node->getChildByName("Sphere001");
 
@@ -333,6 +332,7 @@ int main()
         for (int i = 0; i < 23; i++) {
             dynamic_cast<Mesh*>(node->getChildByName("Sphere" + std::to_string(i + 1)).get())->shadow(false);
         }
+        auto hand = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1));
         while (is_open) {
             current_ticks = clock();
 
@@ -349,7 +349,7 @@ int main()
 
             Engine::swap();
             Engine::update();
-            node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),cameraPos+cameraFront*glm::vec3(10)+glm::vec3(10.0f,-10.0f,0.0f))*glm::rotate(glm::mat4(1.0f),glm::radians(-90.0f),glm::vec3(0.0f,1.0f,0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1)));
+            node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),cameraPos+cameraFront*glm::vec3(10)+glm::vec3(10.0f,-10.0f,0.0f))*hand);
 
             bool found = false;
             for (int i = 0; i < 23; i++) {
@@ -388,7 +388,7 @@ int main()
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;
-                std::cout << fps << std::endl;
+                std::cout << fps<<std::endl;
             }
 
             if (current - last > 1000) {
