@@ -16,7 +16,7 @@ auto camera = std::make_shared<Camera>();
 std::shared_ptr<Node> node;
 
 //Posizioni camera, per il lookAt
-glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 cameraPos = glm::vec3(-39.759022f, 4.359999f, -5.635690f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 glm::vec4 cameraHead = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -331,6 +331,7 @@ int main()
     handler.leap = std::make_shared<LeapHand>();
     AABB aabb;
     if (Engine::init(handler)) {
+        isVr=Engine::getIsVr();
         //Carico scena
         node = Engine::load(path);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
@@ -344,7 +345,6 @@ int main()
         clock_t current = last;
 
         //Setto posizione camera iniziale
-        cameraPos = glm::vec3(-110, 10, 0);
         camera->setTransformation(glm::inverse(glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp)));
         node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(-110.0f, 0.0f, 0.0f))*glm::rotate(glm::mat4(1.0f),glm::radians(-90.0f),glm::vec3(0.0f,1.0f,0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.5, 0.5, 0.5)));
         auto up = node->getChildByName("Box014");
@@ -408,7 +408,6 @@ int main()
                 material->settings(settings);
             }
             Engine::updateLeap(hands);
-            
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
             if (delta_ticks > 0 && passed_1_sec) {

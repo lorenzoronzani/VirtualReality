@@ -54,6 +54,8 @@ public:
 
 	static glm::mat4 getHead();
 
+	static bool getIsVr();
+
 private:
 	Engine(Engine& other) = delete;
 	void operator=(const Engine&) = delete;

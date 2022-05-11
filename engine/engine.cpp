@@ -122,7 +122,7 @@ void specialCallback(int key, int mouseX, int mouseY)
 {
     handler.special(key, mouseX, mouseY);
 }
-glm::vec4 cameraPos;
+glm::vec4 cameraPos=glm::vec4(-39.759022f, 4.359999f, -5.635690f,0.0f);
 glm::mat4 headPos;
 
 void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
@@ -452,6 +452,11 @@ void LIB_API Engine::setPosition(glm::vec4 pos)
 glm::mat4 LIB_API Engine::getHead()
 {
     return headPos;
+}
+
+bool LIB_API Engine::getIsVr()
+{
+    return isVirtual;
 }
 
 
