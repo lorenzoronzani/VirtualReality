@@ -20,6 +20,7 @@
 #include "Skybox.h"
 #include "leap.h"
 #include "AABB.h"
+#include <mutex>
 
 
 //Id finestra
@@ -46,8 +47,10 @@ bool isVirtual = false;
 bool isLeap = false;
 
 std::shared_ptr<Skybox> skybox;
+
 std::shared_ptr<Leap> leap;
 
+std::mutex mutex;
 
 #ifdef _WINDOWS
 #include <Windows.h>
@@ -335,7 +338,6 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         shader.m_shader->setMatrix(shader.projection, ovrProjMat);
         shader.m_shader->setInt(shader.num_lights, total_lights.numOmni);
         shader.m_shader->setInt(shader.num_lights_spot, total_lights.numSpot);
-        shader.m_shader->setMatrix(shader.view, ovrModelViewMat);
 
         for (int i = 0; i < list.size(); i++) {
             Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
@@ -390,6 +392,7 @@ void LIB_API Engine::updateLeap(std::vector<std::shared_ptr<Node>>& node)
         leap->update();
         const LEAP_TRACKING_EVENT* l = leap->getCurFrame();
         // Render hands using spheres:
+        mutex.lock();
         handler.leap->setNumHands(l->nHands);
         for (unsigned int h = 0; h < l->nHands; h++)
         {
@@ -418,6 +421,7 @@ void LIB_API Engine::updateLeap(std::vector<std::shared_ptr<Node>>& node)
                 }
             }
         }
+        mutex.unlock();
     }
 }
 

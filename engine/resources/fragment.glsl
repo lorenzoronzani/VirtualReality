@@ -22,7 +22,6 @@ struct omniLight{
 struct SpotLight {
 vec3 direction;
 float cutOff;
-float outerCutOff;
   
 vec3 lightPosition; 
 vec3 lightAmbient; 
@@ -32,7 +31,6 @@ vec3 lightSpecular;
 
 uniform omniLight lights[MAX_LIGHTS];
 uniform SpotLight lightsSpot[MAX_LIGHTS];
-uniform mat4 view;
 
 uniform int numLights;
 uniform int numLightsSpot;

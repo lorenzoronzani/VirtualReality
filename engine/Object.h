@@ -31,7 +31,6 @@ struct LightSettingsShader {
 struct LightSpotSettingShader {
 	int direction;
 	float cutOff;
-	float outerCutOff;
 
 	int lightPositionLoc;
 	int lightAmbientLoc;
@@ -42,7 +41,6 @@ struct LightSpotSettingShader {
 struct ShaderSettings {
 	std::shared_ptr<Shader> m_shader;
 	int modelview;
-	int view;
 	int projection;
 	int normalMatLoc;
 	int matEmissionLoc;
