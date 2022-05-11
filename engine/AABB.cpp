@@ -12,6 +12,19 @@ bool LIB_API AABB::collide(Mesh* a, Mesh* b, glm::mat4 model_a, glm::mat4 model_
         (min.z <= max_other.z && max.z >= min_other.z);
 }
 
+bool LIB_API AABB::collideSphere(glm::vec4 pos, Mesh* a, glm::mat4 model_a,float distance)
+{
+	auto min = model_a * glm::vec4(a->getBBox().first, 1);
+	auto max = model_a * glm::vec4(a->getBBox().second, 1);
+	if (glm::abs(glm::distance(pos, min)) >= distance) {
+		return true;
+	}
+	if (glm::abs(glm::distance(pos, max)) >= distance) {
+		return true;
+	}
+	return false;
+}
+
 Frustum LIB_API AABB::createFrustumFromCamera(glm::mat4 camera, float aspect, float fovY, float zNear, float zFar)
 {
 	Frustum     frustum;

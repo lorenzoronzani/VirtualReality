@@ -60,7 +60,7 @@ float y_text = 15;
 //Fps
 int fps = 0;
 
-bool isVr = true;
+bool isVr = false;
 
 glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     float cameraSpeed = 2.5;
@@ -362,6 +362,7 @@ int main()
             hands.push_back(node->getChildByName("Sphere" + std::to_string(i + 1)));
         }
         auto hand = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1));
+        auto arm = node->getChildByName("Arm");
         while (is_open) {
             current_ticks = clock();
 
@@ -375,7 +376,7 @@ int main()
 
             Engine::swap();
             Engine::update();
-            node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(cameraHead)+ glm::vec3(Engine::getHead()[2]) *glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand);
+            arm->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(cameraHead)+ glm::vec3(Engine::getHead()[2]) *glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand);
 
             bool found = false;
             for (int i = 0; i < 23; i++) {

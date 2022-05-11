@@ -33,5 +33,6 @@ struct LIB_API Frustum
 class LIB_API AABB {
 public:
 	bool collide(Mesh* a, Mesh* b, glm::mat4 model_a, glm::mat4 model_b);
+	bool collideSphere(glm::vec4 pos, Mesh* a, glm::mat4 model_a,float distance);
 	Frustum createFrustumFromCamera(glm::mat4 camera, float aspect, float fovY, float zNear, float zFar);
 };

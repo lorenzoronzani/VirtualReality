@@ -19,6 +19,7 @@
 #include "ShaderSetup.h"
 #include "Skybox.h"
 #include "leap.h"
+#include "AABB.h"
 
 
 //Id finestra
@@ -292,13 +293,13 @@ void LIB_API Engine::clear()
 
 void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
 {
-    const LEAP_TRACKING_EVENT* l=nullptr;
     if (isVirtual) {
         shader.ovr->update();
         // Store the current viewport size:
         headPos = shader.ovr->getModelviewMatrix();
         headPos[3] = headPos[3] + cameraPos;
     }
+    AABB aabb;
     for (int c = 0; c < OvVR::EYE_LAST; c++)
     {
 
@@ -337,13 +338,17 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         shader.m_shader->setMatrix(shader.view, ovrModelViewMat);
 
         for (int i = 0; i < list.size(); i++) {
-            list[i].first->render(ovrModelViewMat * list[i].second, shader);
-            
             Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
             if (mesh) {
-                if (mesh->shadow()) {
-                    mesh->render_shadow(camera->inverseCamera() * mesh->get_shadow_mat() * list[i].second, shader);
+                if (!aabb.collideSphere(ovrModelViewMat[3], mesh, list[i].second, 400.0f)) {
+                    list[i].first->render(ovrModelViewMat * list[i].second, shader);
+                    if (mesh->shadow()) {
+                        mesh->render_shadow(ovrModelViewMat * mesh->get_shadow_mat() * list[i].second, shader);
+                    }
                 }
+            }
+            else {
+                list[i].first->render(ovrModelViewMat * list[i].second, shader);
             }
         }
         shader.cubemapShader->render();
@@ -376,15 +381,15 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     
 }
 
-void LIB_API Engine::updateLeap(std::vector<std::shared_ptr<Node>> node)
+void LIB_API Engine::updateLeap(std::vector<std::shared_ptr<Node>>& node)
 {
-    const LEAP_TRACKING_EVENT* l = nullptr;
+
     if (isLeap) {
+        const LEAP_TRACKING_EVENT* l = nullptr;
+        glm::vec3 scale = glm::vec3(5);
+
         leap->update();
         l = leap->getCurFrame();
-    }
-    glm::vec3 scale = glm::vec3(5);
-    if (isLeap) {
         // Render hands using spheres:
         handler.leap->setNumHands(l->nHands);
         for (unsigned int h = 0; h < l->nHands; h++)
