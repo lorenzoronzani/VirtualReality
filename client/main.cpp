@@ -1,6 +1,7 @@
 #include "engine.h"
 #include "AABB.h"
 #include <glm/glm.hpp>
+#include <thread>
 
 //Path scena
 const std::string path = "test/cube.OVO";
@@ -312,6 +313,13 @@ void special(int a, int b, int c) {
 void close() {
     is_open = false;
 }
+std::vector<std::shared_ptr<Node>> hands;
+
+void leapMotion() {
+    while (true) {
+        Engine::updateLeap(hands);
+    }
+}
 
 int main()
 {
@@ -354,7 +362,6 @@ int main()
         auto material = dynamic_cast<Mesh*>(up.get())->material();
         auto settings = dynamic_cast<Mesh*>(up.get())->material()->settings();
         dynamic_cast<Mesh*>(node->getChildByName("Plane001").get())->shadow(false);
-        std::vector<std::shared_ptr<Node>> hands;
         hands.push_back(std::make_shared<Node>());
         for (int i = 0; i < 23; i++) {
             dynamic_cast<Mesh*>(node->getChildByName("Sphere" + std::to_string(i + 1)).get())->shadow(false);
@@ -363,6 +370,8 @@ int main()
         auto hand = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1));
         auto arm = node->getChildByName("Arm");
         Engine::setPosition(cameraHead);
+        std::thread t(leapMotion);
+        t.detach();
         while (is_open) {
             current_ticks = clock();
 
@@ -408,7 +417,6 @@ int main()
             else {
                 material->settings(settings);
             }
-            Engine::updateLeap(hands);
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
             if (delta_ticks > 0 && passed_1_sec) {
