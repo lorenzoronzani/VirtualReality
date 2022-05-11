@@ -126,39 +126,6 @@ glm::mat4 headPos;
 
 void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     handler.keyboard(key, mouseX, mouseY);
-    if (isVirtual) {
-        switch (key) {
-        case 'w':
-            cameraPos = cameraPos - headPos[2];
-            break;
-
-        case 's':
-            cameraPos = cameraPos + headPos[2];
-
-            break;
-
-        case 'a':
-            cameraPos = cameraPos + glm::vec4(glm::normalize(glm::cross(glm::vec3(headPos[2]), glm::vec3(headPos[1]))),0.0f);
-
-            break;
-
-        case 'd':
-            //Movimento a destra
-            cameraPos = cameraPos - glm::vec4(glm::normalize(glm::cross(glm::vec3(headPos[2]), glm::vec3(headPos[1]))), 0.0f);
-
-            break;
-        case 'u':
-            cameraPos = cameraPos + glm::vec4(0.0f, 1.0f, 0.0f, 0.0f);
-
-            break;
-
-        case 'h':
-            //Movimento a destra
-            cameraPos = cameraPos + glm::vec4(0.0f, -1.0f, 0.0f, 0.0f);
-
-            break;
-        }
-    }
 }
 
 void closeCallback()

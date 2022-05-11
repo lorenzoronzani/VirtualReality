@@ -19,7 +19,7 @@ std::shared_ptr<Node> node;
 glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-
+glm::vec4 cameraHead = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
 //Angolo di visione
 float fov = 45.0f;
 
@@ -60,7 +60,7 @@ float y_text = 15;
 //Fps
 int fps = 0;
 
-bool isVr = false;
+bool isVr = true;
 
 glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     float cameraSpeed = 2.5;
@@ -95,7 +95,8 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
             }
         }
         else {
-
+            cameraHead = cameraHead - Engine::getHead()[2];
+            Engine::setPosition(cameraHead);
         }
         break;
 
@@ -107,7 +108,8 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
             }
         }
         else {
-
+            cameraHead = cameraHead + Engine::getHead()[2];
+            Engine::setPosition(cameraHead);
         }
         break;
 
@@ -123,7 +125,8 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
             }
         }
         else {
-
+            cameraHead = cameraHead + glm::vec4(glm::normalize(glm::cross(glm::vec3(Engine::getHead()[2]), glm::vec3(Engine::getHead()[1]))), 0.0f);
+            Engine::setPosition(cameraHead);
         }
         break;
 
@@ -135,7 +138,8 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
             }
         }
         else {
-
+            cameraHead = cameraHead - glm::vec4(glm::normalize(glm::cross(glm::vec3(Engine::getHead()[2]), glm::vec3(Engine::getHead()[1]))), 0.0f);
+            Engine::setPosition(cameraHead);
         }
         break;
 
@@ -371,7 +375,7 @@ int main()
 
             Engine::swap();
             Engine::update();
-            node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),cameraPos+cameraFront*glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand);
+            node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(cameraHead)+ glm::vec3(Engine::getHead()[2]) *glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand);
 
             bool found = false;
             for (int i = 0; i < 23; i++) {
@@ -410,7 +414,7 @@ int main()
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;
-                std::cout << fps;
+                std::cout << fps<<std::endl;
             }
 
             if (current - last > 1000) {
