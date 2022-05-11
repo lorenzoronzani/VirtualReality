@@ -50,7 +50,9 @@ public:
 
 	static void update();
 
-	static void drawText(const std::string& text, float x, float y);
+	static void setPosition(glm::vec4 pos);
+
+	static glm::mat4 getHead();
 
 private:
 	Engine(Engine& other) = delete;

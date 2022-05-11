@@ -473,30 +473,16 @@ void LIB_API Engine::update()
     glutMainLoopEvent();
 }
 
-void LIB_API Engine::drawText(const std::string& text, float x, float y)
+void LIB_API Engine::setPosition(glm::vec4 pos)
 {
-    //Setto matrice di proiezione
-   /* glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(ortho));
-
-    //Setto matrice di model view
-    glMatrixMode(GL_MODELVIEW);
-    glLoadMatrixf(glm::value_ptr(glm::mat4(1.0f)));
-
-    // Disable lighting before rendering 2D text:
-    glDisable(GL_LIGHTING);
-    glDisable(GL_TEXTURE_2D);
-
-    // Write some text:
-    glColor3f(1.0f, 1.0f, 1.0f);
-    glRasterPos2f(x, y);
-    glutBitmapString(GLUT_BITMAP_8_BY_13, (unsigned char*)text.c_str());
-
-    // Reactivate lighting:
-    glEnable(GL_LIGHTING);
-    glEnable(GL_TEXTURE_2D);
-
-    // Reimposto proiezione
-    glMatrixMode(GL_PROJECTION);
-    glLoadMatrixf(glm::value_ptr(projection));*/
+    cameraPos = pos;
 }
+
+glm::mat4 LIB_API Engine::getHead()
+{
+    return headPos;
+}
+
+
+
+

@@ -60,6 +60,7 @@ float y_text = 15;
 //Fps
 int fps = 0;
 
+bool isVr = false;
 
 glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     float cameraSpeed = 2.5;
@@ -83,38 +84,58 @@ glm::vec3 keyboardCallback(unsigned char key, int mouseX, int mouseY) {
 
     switch (key) {
     case 'w':
-        //Cambio camera / Movimento avanti
-        if (dynamic) {
-            cameraPos += cameraSpeed * cameraFront;
+        if (!isVr) {
+            //Cambio camera / Movimento avanti
+            if (dynamic) {
+                cameraPos += cameraSpeed * cameraFront;
+            }
+            else {
+                glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
+                camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] + glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] + glm::vec4(0.0f, 0.0f, 10.0f, 0.0f)) + cameraFront, cameraUp)));
+            }
         }
         else {
-            glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, 1.0f);
-            camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] + glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] + glm::vec4(0.0f, 0.0f, 10.0f, 0.0f)) + cameraFront, cameraUp)));
+
         }
         break;
 
     case 's':
-        //Movimento indietro
-        if (dynamic) {
-            cameraPos -= cameraSpeed * cameraFront;
+        if (!isVr) {
+            //Movimento indietro
+            if (dynamic) {
+                cameraPos -= cameraSpeed * cameraFront;
+            }
+        }
+        else {
+
         }
         break;
 
     case 'a':
-        //Cambio camera / Movimento a sinistra
-        if (dynamic) {
-            cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        if (!isVr) {
+            //Cambio camera / Movimento a sinistra
+            if (dynamic) {
+                cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+            }
+            else {
+                glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
+                camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(node->getChildByName("Camera2")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)) + cameraFront, cameraUp)));
+            }
         }
         else {
-            glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-            camera->setTransformation(glm::inverse(glm::lookAt(glm::vec3(node->getChildByName("Camera2")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)), glm::vec3(node->getChildByName("Camera1")->getFinalMatrix()[3] - glm::vec4(0.0f, 0.0f, 5.0f, 0.0f)) + cameraFront, cameraUp)));
+
         }
         break;
 
     case 'd':
-        //Movimento a destra
-        if (dynamic) {
-            cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+        if (!isVr) {
+            //Movimento a destra
+            if (dynamic) {
+                cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+            }
+        }
+        else {
+
         }
         break;
 
@@ -346,14 +367,11 @@ int main()
 
             list.pass(node);
 
-            Engine::drawText(to_screen, x_text, y_text);
-            Engine::drawText("fps: " + std::to_string(fps), 1, 2);
-
             Engine::render(list, camera);
 
             Engine::swap();
             Engine::update();
-            node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),cameraPos+cameraFront*glm::vec3(10)+glm::vec3(10.0f,-10.0f,0.0f))*hand);
+            node->getChildByName("Arm")->setTransformation(glm::translate(glm::mat4(1.0f),cameraPos+cameraFront*glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand);
 
             bool found = false;
             for (int i = 0; i < 23; i++) {
