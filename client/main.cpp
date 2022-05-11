@@ -19,7 +19,7 @@ std::shared_ptr<Node> node;
 glm::vec3 cameraPos = glm::vec3(-39.759022f, 4.359999f, -5.635690f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec4 cameraHead = glm::vec4(0.0f, 0.0f, 0.0f, 0.0f);
+glm::vec4 cameraHead = glm::vec4(-39.759022f, 4.359999f, -5.635690f, 0.0f);
 //Angolo di visione
 float fov = 45.0f;
 
@@ -362,6 +362,7 @@ int main()
         }
         auto hand = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1));
         auto arm = node->getChildByName("Arm");
+        Engine::setPosition(cameraHead);
         while (is_open) {
             current_ticks = clock();
 
