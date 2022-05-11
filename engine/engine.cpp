@@ -340,7 +340,7 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         for (int i = 0; i < list.size(); i++) {
             Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
             if (mesh) {
-                if (!aabb.collideSphere(ovrModelViewMat[3], mesh, list[i].second, 400.0f)) {
+                if (!aabb.collideSphere(ovrModelViewMat[3], mesh, list[i].second, 600.0f)) {
                     list[i].first->render(ovrModelViewMat * list[i].second, shader);
                     if (mesh->shadow()) {
                         mesh->render_shadow(ovrModelViewMat * mesh->get_shadow_mat() * list[i].second, shader);
@@ -385,17 +385,15 @@ void LIB_API Engine::updateLeap(std::vector<std::shared_ptr<Node>>& node)
 {
 
     if (isLeap) {
-        const LEAP_TRACKING_EVENT* l = nullptr;
         glm::vec3 scale = glm::vec3(5);
 
         leap->update();
-        l = leap->getCurFrame();
+        const LEAP_TRACKING_EVENT* l = leap->getCurFrame();
         // Render hands using spheres:
         handler.leap->setNumHands(l->nHands);
         for (unsigned int h = 0; h < l->nHands; h++)
         {
             LEAP_HAND hand = l->pHands[h];
-            handler.leap->setPosition({ hand.palm.position.x, hand.palm.position.y, hand.palm.position.z });
             // Elbow:
             glm::mat4 c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.arm.prev_joint.x, hand.arm.prev_joint.y, hand.arm.prev_joint.z)/scale);
             node.at(1)->setTransformation(c);
@@ -438,6 +436,7 @@ std::shared_ptr<Node LIB_API> Engine::load(std::string file) {
 void LIB_API Engine::free()
 {
     FreeImage_DeInitialise();
+    leap->free();
 }
 
 void LIB_API Engine::update()
