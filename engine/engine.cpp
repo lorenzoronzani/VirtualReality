@@ -409,7 +409,7 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
     
 }
 
-void LIB_API Engine::updateLeap(std::shared_ptr<Node> node)
+void LIB_API Engine::updateLeap(std::vector<std::shared_ptr<Node>> node)
 {
     const LEAP_TRACKING_EVENT* l = nullptr;
     if (isLeap) {
@@ -426,15 +426,15 @@ void LIB_API Engine::updateLeap(std::shared_ptr<Node> node)
             handler.leap->setPosition({ hand.palm.position.x, hand.palm.position.y, hand.palm.position.z });
             // Elbow:
             glm::mat4 c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.arm.prev_joint.x, hand.arm.prev_joint.y, hand.arm.prev_joint.z)/scale);
-            node->getChildByName("Arm")->getChildByName("Sphere1")->setTransformation(c);
+            node.at(1)->setTransformation(c);
 
             // Wrist:
             c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.arm.next_joint.x, hand.arm.next_joint.y, hand.arm.next_joint.z)/scale);
-            node->getChildByName("Arm")->getChildByName("Sphere2")->setTransformation(c);
+            node.at(2)->setTransformation(c);
 
             // Palm:
             c = glm::translate(glm::mat4(1.0f), glm::vec3(hand.palm.position.x, hand.palm.position.y, hand.palm.position.z)/scale);
-            node->getChildByName("Arm")->getChildByName("Sphere3")->setTransformation(c);
+            node.at(3)->setTransformation(c);
 
             // Distal ends of bones for each digit:
             for (unsigned int d = 0; d < 5; d++)
@@ -444,7 +444,7 @@ void LIB_API Engine::updateLeap(std::shared_ptr<Node> node)
                 {
                     LEAP_BONE bone = finger.bones[b];
                     c = glm::translate(glm::mat4(1.0f), glm::vec3(bone.next_joint.x, bone.next_joint.y, bone.next_joint.z)/scale);
-                    node->getChildByName("Arm")->getChildByName("Sphere"+std::to_string(d*4+b+4))->setTransformation(c);
+                    node.at((d*4+b+4))->setTransformation(c);
                 }
             }
         }

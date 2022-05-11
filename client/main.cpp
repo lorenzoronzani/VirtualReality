@@ -309,6 +309,7 @@ int main()
         //Carico scena
         node = Engine::load(path);
         camera->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 10.0f, 50.0f)));
+        std::cout << node;
         std::shared_ptr<Node> sphere;
         sphere = node->getChildByName("Sphere001");
 
@@ -329,8 +330,11 @@ int main()
         auto material = dynamic_cast<Mesh*>(up.get())->material();
         auto settings = dynamic_cast<Mesh*>(up.get())->material()->settings();
         dynamic_cast<Mesh*>(node->getChildByName("Plane001").get())->shadow(false);
+        std::vector<std::shared_ptr<Node>> hands;
+        hands.push_back(std::make_shared<Node>());
         for (int i = 0; i < 23; i++) {
             dynamic_cast<Mesh*>(node->getChildByName("Sphere" + std::to_string(i + 1)).get())->shadow(false);
+            hands.push_back(node->getChildByName("Sphere" + std::to_string(i + 1)));
         }
         auto hand = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1));
         while (is_open) {
@@ -381,14 +385,14 @@ int main()
             else {
                 material->settings(settings);
             }
-            Engine::updateLeap(node);
+            Engine::updateLeap(hands);
             
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;
-                std::cout << fps<<std::endl;
+                std::cout << fps;
             }
 
             if (current - last > 1000) {
