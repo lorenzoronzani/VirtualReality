@@ -330,12 +330,13 @@ int main()
     handler.height = 1080;
     handler.special = special;
     handler.close = close;
-    handler.skybox_data = { "test/posx.jpg",
-      "test/negx.jpg",
-      "test/posy.jpg",
-      "test/negy.jpg",
-      "test/posz.jpg",
-      "test/negz.jpg" };
+    handler.skybox_data = { 
+      "test/bkg1_left.png",
+      "test/bkg1_right.png",
+      "test/bkg1_top.png",
+      "test/bkg1_bot.png",
+      "test/bkg1_front.png",
+      "test/bkg1_back.png" };
     handler.leap = std::make_shared<LeapHand>();
     AABB aabb;
     if (Engine::init(handler)) {
@@ -372,6 +373,11 @@ int main()
         Engine::setPosition(cameraHead);
         std::thread t(leapMotion);
         t.detach();
+        auto earth = node->getChildByName("Sphere004");
+        int trueCount = 0;
+        bool isClicked = false;
+        bool isChecked = false;
+        float speedRobot = 0.5;
         while (is_open) {
             current_ticks = clock();
 
@@ -388,24 +394,37 @@ int main()
             arm->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(cameraPos)+ glm::vec3(cameraFront) *glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand_transformation);
 
             bool found = false;
+            isChecked = false;
             for (int i = 0; i < 23; i++) {
                 auto current_node = list.getByName("Sphere" + std::to_string(i+1));
                 auto up = list.getByName("Box014");
                 auto down = list.getByName("Box011");
                 auto left = list.getByName("Box013");
                 auto right = list.getByName("Box012");
-                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(up.first.get()), current_node.second, up.second)) {
-                    sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(),glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
+                auto changeButton = list.getByName("Box018");
+
+                if (!found) {
+                    if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(up.first.get()), current_node.second, up.second)) {
+                        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(speedRobot), glm::vec3(1.0f, 0.0f, 0.0f)));
+                        found = true;
+                    }
+                    else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(down.first.get()), current_node.second, down.second)) {
+                        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(speedRobot), glm::vec3(-1.0f, 0.0f, 0.0f)));
+                        found = true;
+                    }
+                    else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(left.first.get()), current_node.second, left.second)) {
+                        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(speedRobot), glm::vec3(0.0f, 1.0f, 0.0f)));
+                        found = true;
+                    }
+                    else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(right.first.get()), current_node.second, right.second)) {
+                        sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(speedRobot), glm::vec3(0.0f, -1.0f, 0.0f)));
+                        found = true;
+                    }
+                }
+
+                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(changeButton.first.get()), current_node.second, changeButton.second)) {
                     found = true;
-                }else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(down.first.get()), current_node.second, down.second)) {
-                    sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
-                    found = true;
-                }else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(left.first.get()), current_node.second, left.second)) {
-                    sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
-                    found = true;
-                }else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(right.first.get()), current_node.second, right.second)) {
-                    sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
-                    found = true;
+                    isChecked = true;
                 }
             }
             if (found) {
@@ -414,19 +433,37 @@ int main()
             else {
                 material->settings(settings);
             }
+            if (!isClicked && isChecked) {
+                choose = (choose + 1) % 3;
+            }
             //Calcolo fps
             delta_ticks = clock() - current_ticks;
             if (delta_ticks > 0 && passed_1_sec) {
                 fps = CLOCKS_PER_SEC / delta_ticks;
                 passed_1_sec = false;
-                std::cout << fps << std::endl;
             }
+            earth->setTransformation(glm::rotate(earth->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
 
             if (current - last > 1000) {
                 last = current;
                 passed_1_sec = true;
             }
             current = clock();
+            isClicked = isChecked;
+            switch (choose) {
+            case 0:
+                //Basso
+                sphere = node->getChildByName("Sphere001");
+                break;
+            case 1:
+                //Mezzo
+                sphere = node->getChildByName("Sphere002");
+                break;
+            case 2:
+                //Alto
+                sphere = node->getChildByName("Sphere003");
+                break;
+            }
         }
     }
 }
