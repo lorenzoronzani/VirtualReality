@@ -20,7 +20,7 @@ std::shared_ptr<Node> node;
 glm::vec3 cameraPos = glm::vec3(-39.759022f, 4.359999f, -5.635690f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
-glm::vec4 cameraHead = glm::vec4(-39.759022f, 4.359999f, -5.635690f, 0.0f);
+glm::vec4 cameraHead = glm::vec4(-38.776985f, 4.186854f, -5.560669f, 0.000000f);
 //Angolo di visione
 float fov = 45.0f;
 
@@ -391,7 +391,12 @@ int main()
 
             Engine::swap();
             Engine::update();
-            arm->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(cameraPos)+ glm::vec3(cameraFront) *glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand_transformation);
+            if (!isVr) {
+                arm->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(cameraPos) + glm::vec3(cameraFront) * glm::vec3(2) + glm::vec3(10.0f, -5.0f, 0.0f)) * hand_transformation);
+            }
+            else {
+                arm->setTransformation(glm::translate(glm::mat4(1.0f), glm::vec3(cameraHead) + glm::vec3(Engine::getHead()[2]) * glm::vec3(1) + glm::vec3(10.0f, -5.0f, 0.0f)) * hand_transformation);
+            }
 
             bool found = false;
             isChecked = false;
