@@ -367,7 +367,7 @@ int main()
             dynamic_cast<Mesh*>(node->getChildByName("Sphere" + std::to_string(i + 1)).get())->shadow(false);
             hands.push_back(node->getChildByName("Sphere" + std::to_string(i + 1)));
         }
-        auto hand = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1));
+        auto hand_transformation = glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)) * glm::scale(glm::mat4(1.0f), glm::vec3(0.1, 0.1, 0.1));
         auto arm = node->getChildByName("Arm");
         Engine::setPosition(cameraHead);
         std::thread t(leapMotion);
@@ -385,7 +385,7 @@ int main()
 
             Engine::swap();
             Engine::update();
-            arm->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(cameraPos)+ glm::vec3(cameraFront) *glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand);
+            arm->setTransformation(glm::translate(glm::mat4(1.0f),glm::vec3(cameraPos)+ glm::vec3(cameraFront) *glm::vec3(2)+glm::vec3(10.0f,-5.0f,0.0f))*hand_transformation);
 
             bool found = false;
             for (int i = 0; i < 23; i++) {
@@ -397,16 +397,13 @@ int main()
                 if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(up.first.get()), current_node.second, up.second)) {
                     sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(),glm::radians(1.0f), glm::vec3(1.0f, 0.0f, 0.0f)));
                     found = true;
-                }
-                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(down.first.get()), current_node.second, down.second)) {
+                }else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(down.first.get()), current_node.second, down.second)) {
                     sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(-1.0f, 0.0f, 0.0f)));
                     found = true;
-                }
-                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(left.first.get()), current_node.second, left.second)) {
+                }else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(left.first.get()), current_node.second, left.second)) {
                     sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, 1.0f, 0.0f)));
                     found = true;
-                }
-                if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(right.first.get()), current_node.second, right.second)) {
+                }else if (aabb.collide(dynamic_cast<Mesh*>(current_node.first.get()), dynamic_cast<Mesh*>(right.first.get()), current_node.second, right.second)) {
                     sphere->setTransformation(glm::rotate(sphere->getFinalMatrix(), glm::radians(1.0f), glm::vec3(0.0f, -1.0f, 0.0f)));
                     found = true;
                 }

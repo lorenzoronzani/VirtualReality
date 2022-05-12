@@ -7,6 +7,7 @@ ShaderSetup::ShaderSetup(ShaderSettings& shader,bool isVirtual):m_shader{shader}
 
 }
 
+//Inizializza ShaderSettings con le posizioni iniziali
 void ShaderSetup::setupShader()
 {
     m_shader.m_shader->render();

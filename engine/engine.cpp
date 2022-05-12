@@ -52,6 +52,9 @@ std::shared_ptr<Leap> leap;
 
 std::mutex mutex;
 
+glm::vec4 cameraPos = glm::vec4(-39.759022f, 4.359999f, -5.635690f, 0.0f);
+glm::mat4 headPos;
+
 #ifdef _WINDOWS
 #include <Windows.h>
 
@@ -125,8 +128,6 @@ void specialCallback(int key, int mouseX, int mouseY)
 {
     handler.special(key, mouseX, mouseY);
 }
-glm::vec4 cameraPos=glm::vec4(-39.759022f, 4.359999f, -5.635690f,0.0f);
-glm::mat4 headPos;
 
 void keyboardCallback(unsigned char key, int mouseX, int mouseY) {
     handler.keyboard(key, mouseX, mouseY);
@@ -141,19 +142,20 @@ void mouseMove(int mouseX, int mouseY) {
     handler.mouse(mouseX, mouseY);
 }
 
+/*
 void __stdcall DebugCallback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, GLvoid* userParam)
 {
 }
-
+*/
 bool LIB_API Engine::init(Handler t_handler) {
     //Inizializzazioni di glut
     glutInitDisplayMode(GLUT_RGB | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitContextVersion(4, 4);
     glutInitContextProfile(GLUT_CORE_PROFILE);
-    glutInitContextFlags(GLUT_DEBUG); // <-- Debug flag required by the OpenGL debug callback      
+    //glutInitContextFlags(GLUT_DEBUG); // <-- Debug flag required by the OpenGL debug callback      
 
     glutInitWindowPosition(150, 150);
-    glutInitWindowSize(1920, 1080);
+
     total_lights = { 0,0 };
     //default per inizializzazione glut
     char* argv[1];
@@ -173,7 +175,7 @@ bool LIB_API Engine::init(Handler t_handler) {
 
     //Settaggio handler per callbacks
     handler = t_handler;
-
+    glutInitWindowSize(handler.width, handler.height);
     //Creazione window e contesto OpenGL
     windowId = glutCreateWindow("VR Robotic Arm");
 
@@ -191,8 +193,8 @@ bool LIB_API Engine::init(Handler t_handler) {
 
 
     // Register OpenGL debug callback:
-    glDebugMessageCallback((GLDEBUGPROC)DebugCallback, nullptr);
-    glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+    //glDebugMessageCallback((GLDEBUGPROC)DebugCallback, nullptr);
+    //glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 
     //Lighting
     glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -210,11 +212,14 @@ bool LIB_API Engine::init(Handler t_handler) {
     glutCloseFunc(closeCallback);
     glutPassiveMotionFunc(mouseMove);
 
+    //Creo texture vuota
     createVoidTexture();
 
     //Inizializza lettore texture
     FreeImage_Initialise();
+    //Inizializza posizione camera
     cameraPos = glm::vec4(0.0f, 0.0f, 0.0f,0.0f);
+    //Inizializza se è vr o senza vr, leap motion o no
     std::ifstream virtualRead("../engine/resources/is3d.txt");
     virtualRead >> isVirtual;
     virtualRead >> isLeap;
@@ -338,15 +343,17 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         shader.m_shader->setMatrix(shader.projection, ovrProjMat);
         shader.m_shader->setInt(shader.num_lights, total_lights.numOmni);
         shader.m_shader->setInt(shader.num_lights_spot, total_lights.numSpot);
-
+        
         for (int i = 0; i < list.size(); i++) {
             Mesh* mesh = dynamic_cast<Mesh*>(list[i].first.get());
             if (mesh) {
                 if (!aabb.collideSphere(ovrModelViewMat[3], mesh, list[i].second, 600.0f)) {
+                    mutex.lock();
                     list[i].first->render(ovrModelViewMat * list[i].second, shader);
                     if (mesh->shadow()) {
                         mesh->render_shadow(ovrModelViewMat * mesh->get_shadow_mat() * list[i].second, shader);
                     }
+                    mutex.unlock();
                 }
             }
             else {
@@ -357,6 +364,7 @@ void LIB_API Engine::render(const List& list, std::shared_ptr<Camera> camera)
         shader.cubemapShader->setMatrix(shader.projCubemap, ovrProjMat);
         skybox->render(ovrModelViewMat,shader);
         if (isVirtual) {
+            //Setta la texture del fbo a SteamVr
             shader.ovr->pass(curEye, shader.fboTexId[c]);
         }
     }

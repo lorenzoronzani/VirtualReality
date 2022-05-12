@@ -39,6 +39,7 @@ struct LightSpotSettingShader {
 };
 
 struct ShaderSettings {
+	//Shader renderizza scena
 	std::shared_ptr<Shader> m_shader;
 	int modelview;
 	int projection;
@@ -54,6 +55,7 @@ struct ShaderSettings {
 	int num_lights_spot;
 	int texture;
 
+	//Shader renderizza fbo su schermo
 	Fbo* fbo[OvVR::EYE_LAST] = { nullptr, nullptr };
 
 	std::shared_ptr<Shader> passthroughShader;
@@ -65,6 +67,7 @@ struct ShaderSettings {
 
 	std::shared_ptr<OvVR> ovr;
 
+	//Shader cubemap render
 	std::shared_ptr<Shader> cubemapShader;
 
 	unsigned int mvLocCubemap;
